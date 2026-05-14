@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <!-- PWA -->
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#5B4CF5"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="AKIT_CHAT"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AKIT_CHAT - Inscription</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;min-height:100vh;background:#0a0f1e;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;padding:20px 0;}
+    body::before{content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 20% 50%,rgba(24,119,242,0.15) 0%,transparent 50%),
+        radial-gradient(ellipse at 80% 20%,rgba(0,180,216,0.1) 0%,transparent 50%),
+        radial-gradient(ellipse at 50% 80%,rgba(124,58,237,0.1) 0%,transparent 50%);
+      animation:bgPulse 8s ease-in-out infinite alternate;}
+    @keyframes bgPulse{0%{opacity:0.6}100%{opacity:1}}
+    body::after{content:'';position:absolute;inset:0;
+      background-image:linear-gradient(rgba(24,119,242,0.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(24,119,242,0.05) 1px,transparent 1px);
+      background-size:40px 40px;}
+    .card{position:relative;z-index:10;background:rgba(255,255,255,0.05);
+      backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);
+      border-radius:24px;padding:36px;width:100%;max-width:440px;
+      box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:fadeIn 0.5s ease;margin:16px;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .logo{text-align:center;margin-bottom:4px;font-size:28px;font-weight:800;letter-spacing:-1px;
+      background:linear-gradient(135deg,#1877f2,#00b4d8);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .subtitle{text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:24px;}
+    .input-group{position:relative;margin-bottom:12px;}
+    .input-group input{width:100%;padding:13px 44px 13px 16px;
+      background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;color:#fff;font-size:14px;font-family:'Poppins',sans-serif;
+      outline:none;transition:border-color 0.2s;}
+    .input-group input:-webkit-autofill,.input-group input:-webkit-autofill:hover,
+    .input-group input:-webkit-autofill:focus{
+      -webkit-box-shadow:0 0 0 30px rgba(10,15,30,0.9) inset !important;
+      -webkit-text-fill-color:#fff !important;}
+    .input-group input::placeholder{color:rgba(255,255,255,0.4)}
+    .input-group input:focus{border-color:#1877f2}
+    .input-group i{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+      color:rgba(255,255,255,0.4);font-size:15px;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn-submit{width:100%;padding:14px;margin-top:6px;
+      background:linear-gradient(135deg,#1877f2,#0d6efd);
+      border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;
+      font-family:'Poppins',sans-serif;cursor:pointer;transition:all 0.2s;
+      box-shadow:0 4px 15px rgba(24,119,242,0.4);
+      display:flex;align-items:center;justify-content:center;gap:8px;}
+    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(24,119,242,0.5)}
+    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .error-msg{background:rgba(228,30,63,0.15);border:1px solid rgba(228,30,63,0.3);
+      color:#ff6b6b;border-radius:8px;padding:10px 14px;
+      font-size:13px;text-align:center;margin-bottom:12px;display:none;}
+    .success-msg{background:rgba(67,233,123,0.15);border:1px solid rgba(67,233,123,0.3);
+      color:#43e97b;border-radius:8px;padding:10px 14px;
+      font-size:13px;text-align:center;margin-bottom:12px;display:none;}
+    .divider{text-align:center;color:rgba(255,255,255,0.3);font-size:12px;margin:16px 0;position:relative;}
+    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:rgba(255,255,255,0.1);}
+    .divider::before{left:0}.divider::after{right:0}
+    .link-row{text-align:center;font-size:13px;color:rgba(255,255,255,0.5);}
+    .link-row a{color:#1877f2;font-weight:600;text-decoration:none;}
+    .link-row a:hover{text-decoration:underline;}
+    .password-strength{height:4px;border-radius:4px;margin-top:4px;background:rgba(255,255,255,0.1);overflow:hidden;}
+    .password-strength-bar{height:100%;width:0%;border-radius:4px;transition:all 0.3s;}
+    .strength-text{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">AKIT_CHAT</div>
+  <div class="subtitle">Créer votre compte</div>
+  <p class="error-msg"   id="erreurInscription"></p>
+  <p class="success-msg" id="successMsg"></p>
+  <div class="row2">
+    <div class="input-group">
+      <input type="text" id="nom" placeholder="Nom" autocomplete="off"/>
+      <i class="fas fa-user"></i>
+    </div>
+    <div class="input-group">
+      <input type="text" id="prenom" placeholder="Prénom" autocomplete="off"/>
+      <i class="fas fa-user"></i>
+    </div>
+  </div>
+  <div class="input-group">
+    <input type="email" id="email" placeholder="Email" autocomplete="off"/>
+    <i class="fas fa-envelope"></i>
+  </div>
+  <div class="input-group">
+    <input type="date" id="date" autocomplete="off"/>
+    <i class="fas fa-calendar"></i>
+  </div>
+  <div class="input-group">
+    <input type="tel" id="talphone" placeholder="Numéro de téléphone" autocomplete="off"/>
+    <i class="fas fa-phone"></i>
+  </div>
+  <div class="input-group">
+    <input type="password" id="password" placeholder="Mot de passe (6 min)"
+      autocomplete="new-password" oninput="checkStrength(this.value)"/>
+    <i class="fas fa-lock"></i>
+    <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
+    <div class="strength-text" id="strengthText"></div>
+  </div>
+  <div class="input-group">
+    <input type="password" id="password2" placeholder="Confirmer le mot de passe" autocomplete="new-password"/>
+    <i class="fas fa-lock"></i>
+  </div>
+  <button class="btn-submit" id="btnInscription" onclick="sInscrire()">
+    <div class="spinner" id="spinner2"></div>
+    <span id="btnTxt2">S'inscrire</span>
+  </button>
+  <div class="divider">ou</div>
+  <div class="link-row">Déjà un compte ? <a href="index.html">Se connecter</a></div>
+</div>
+
+<script>
+  function checkStrength(pwd) {
+    const bar = document.getElementById("strengthBar");
+    const text = document.getElementById("strengthText");
+    if (!bar || !text) return;
+    let score = 0;
+    if (pwd.length >= 6)  score++;
+    if (pwd.length >= 10) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    const levels = [
+      {w:"0%",c:"transparent",t:""},
+      {w:"20%",c:"#e41e3f",t:"Très faible"},
+      {w:"40%",c:"#ff6b35",t:"Faible"},
+      {w:"60%",c:"#f7b928",t:"Moyen"},
+      {w:"80%",c:"#43e97b",t:"Fort"},
+      {w:"100%",c:"#1877f2",t:"Très fort"},
+    ];
+    const l = levels[score] || levels[0];
+    bar.style.width = l.w; bar.style.background = l.c;
+    text.textContent = l.t; text.style.color = l.c;
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, updateProfile }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, collection, addDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",
+    authDomain: "akit-chat.firebaseapp.com",
+    projectId: "akit-chat",
+    storageBucket: "akit-chat.firebasestorage.app",
+    messagingSenderId: "902366174407",
+    appId: "1:902366174407:web:eb38057c473be0fabd32e2"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  window.addEventListener("DOMContentLoaded", () => {
+    ["nom","prenom","email","date","talphone","password","password2"]
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+    document.querySelectorAll("input").forEach(inp =>
+      inp.addEventListener("input", () =>
+        document.getElementById("erreurInscription").style.display = "none"));
+  });
+
+  window.sInscrire = async function() {
+    const nom       = document.getElementById("nom").value.trim();
+    const prenom    = document.getElementById("prenom").value.trim();
+    const email     = document.getElementById("email").value.trim();
+    const date      = document.getElementById("date").value.trim();
+    const telephone = document.getElementById("talphone").value.trim();
+    const password  = document.getElementById("password").value;
+    const password2 = document.getElementById("password2").value;
+
+    if (!nom)       { affErr("⚠️ Entrez votre nom."); return; }
+    if (!prenom)    { affErr("⚠️ Entrez votre prénom."); return; }
+    if (!email)     { affErr("⚠️ Entrez votre email."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { affErr("⚠️ Format email invalide."); return; }
+    if (!date)      { affErr("⚠️ Entrez votre date de naissance."); return; }
+    if (!telephone) { affErr("⚠️ Entrez votre numéro de téléphone."); return; }
+    if (!/^[0-9]{8,15}$/.test(telephone)) { affErr("⚠️ Numéro invalide (8-15 chiffres)."); return; }
+    if (!password)  { affErr("⚠️ Créez un mot de passe."); return; }
+    if (password.length < 6) { affErr("⚠️ Mot de passe trop court (6 min)."); return; }
+    if (password !== password2) { affErr("⚠️ Les mots de passe ne correspondent pas."); return; }
+
+    setLoading(true);
+    try {
+      // Créer le compte Firebase Auth
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid  = cred.user.uid;
+
+      // Mettre à jour le displayName
+      await updateProfile(cred.user, { displayName: `${prenom} ${nom}` });
+
+      // Sauvegarder le profil dans Firestore
+      await setDoc(doc(db, "users", uid), {
+        id:               uid,
+        nom:              nom,
+        prenom:           prenom,
+        email:            email,
+        date:             date,
+        telephone:        telephone,
+        avatarUrl:        null,
+        coverUrl:         null,
+        enLigne:          true,
+        date_inscription: new Date().toISOString()
+      });
+
+      // Notification de bienvenue
+      await addDoc(collection(db, "notifications"), {
+        userId: uid,
+        type:   "bienvenue",
+        texte:  `Bienvenue sur AKIT_CHAT, ${prenom} ! 🎉`,
+        date:   new Date().toISOString(),
+        lu:     false
+      });
+
+      document.getElementById("successMsg").textContent = "✅ Compte créé ! Redirection...";
+      document.getElementById("successMsg").style.display = "block";
+      setTimeout(() => window.location.href = "test.html", 1200);
+    } catch(err) {
+      let msg = "❌ Erreur lors de l'inscription.";
+      if (err.code === "auth/email-already-in-use") msg = "❌ Cet email est déjà utilisé.";
+      if (err.code === "auth/weak-password") msg = "❌ Mot de passe trop faible (6 min).";
+      if (err.code === "auth/network-request-failed") msg = "❌ Erreur réseau.";
+      affErr(msg);
+    } finally { setLoading(false); }
+  };
+
+  function setLoading(v) {
+    document.getElementById("btnInscription").disabled = v;
+    document.getElementById("spinner2").style.display = v ? "block" : "none";
+    document.getElementById("btnTxt2").textContent = v ? "Inscription..." : "S'inscrire";
+  }
+
+  function affErr(msg) {
+    const el = document.getElementById("erreurInscription");
+    el.textContent = msg; el.style.display = "block";    
+  }
+  </script>
+  
+<script>
+  if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('SW enregistré'))
+        .catch(e => console.log('SW erreur:', e));
+    });
+  }
+</script>
+
+</body>
+</html>
