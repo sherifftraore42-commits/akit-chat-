@@ -2,279 +2,314 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <!-- PWA -->
-<link rel="manifest" href="/manifest.json"/>
-<meta name="theme-color" content="#5B4CF5"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="AKIT_CHAT"/>
-<link rel="apple-touch-icon" href="/icon-192.png"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#5B4CF5"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="AKIT_CHAT"/>
+  <link rel="apple-touch-icon" href="/icon-192.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>AKIT_CHAT - Connexion</title>
+  <title>AKIT_CHAT</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Poppins',sans-serif;min-height:100vh;background:#0a0f1e;
       display:flex;align-items:center;justify-content:center;
       position:relative;overflow:hidden;}
+
+    /* ===== SPLASH SCREEN ===== */
+    #splashScreen{
+      position:fixed;inset:0;z-index:9999;
+      background:radial-gradient(ellipse at 30% 40%,#0d2b1a 0%,#060d0a 50%,#000 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+      transition:opacity .6s ease;
+    }
+    #splashScreen.hide{opacity:0;pointer-events:none;}
+    .splash-stars{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+    .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;animation:twinkle var(--d,3s) var(--delay,0s) infinite;}
+    @keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op,.6)}}
+    .splash-logo{
+      font-size:clamp(42px,12vw,80px);font-weight:900;letter-spacing:5px;text-transform:uppercase;
+      background:linear-gradient(90deg,#00FF88,#FFD700,#00FF88);
+      background-size:200% auto;
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      animation:shimmerLogo 2s linear infinite,clignote .8s ease-in-out infinite;
+      filter:drop-shadow(0 0 24px rgba(0,255,136,.5));
+    }
+    @keyframes shimmerLogo{0%{background-position:0% center}100%{background-position:200% center}}
+    @keyframes clignote{0%,100%{opacity:1;filter:drop-shadow(0 0 24px rgba(0,255,136,.7))}50%{opacity:.25;filter:drop-shadow(0 0 4px rgba(0,255,136,.2))}}
+    .splash-sub{font-size:13px;font-weight:500;letter-spacing:7px;color:rgba(255,255,255,.3);text-transform:uppercase;}
+    .splash-bar-wrap{width:200px;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+    .splash-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,#00FF88,#FFD700);border-radius:2px;transition:width .05s linear;}
+    .splash-pct{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:1px;text-align:center;}
+
+    /* ===== LOGIN CARD ===== */
     body::before{content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse at 20% 50%,rgba(24,119,242,0.15) 0%,transparent 50%),
-        radial-gradient(ellipse at 80% 20%,rgba(0,180,216,0.1) 0%,transparent 50%),
-        radial-gradient(ellipse at 50% 80%,rgba(124,58,237,0.1) 0%,transparent 50%);
+      background:radial-gradient(ellipse at 20% 50%,rgba(24,119,242,.15) 0%,transparent 50%),
+        radial-gradient(ellipse at 80% 20%,rgba(0,180,216,.1) 0%,transparent 50%),
+        radial-gradient(ellipse at 50% 80%,rgba(124,58,237,.1) 0%,transparent 50%);
       animation:bgPulse 8s ease-in-out infinite alternate;}
-    @keyframes bgPulse{0%{opacity:0.6}100%{opacity:1}}
+    @keyframes bgPulse{0%{opacity:.6}100%{opacity:1}}
     body::after{content:'';position:absolute;inset:0;
-      background-image:linear-gradient(rgba(24,119,242,0.05) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(24,119,242,0.05) 1px,transparent 1px);
+      background-image:linear-gradient(rgba(24,119,242,.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(24,119,242,.05) 1px,transparent 1px);
       background-size:40px 40px;}
-    .card{position:relative;z-index:10;background:rgba(255,255,255,0.05);
-      backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);
+    .card{position:relative;z-index:10;background:rgba(255,255,255,.05);
+      backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);
       border-radius:24px;padding:40px 36px;width:100%;max-width:420px;
-      box-shadow:0 25px 50px rgba(0,0,0,0.5);animation:fadeIn 0.5s ease;margin:16px;}
+      box-shadow:0 25px 50px rgba(0,0,0,.5);animation:fadeIn .5s ease;margin:16px;display:none;}
     @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     .logo{text-align:center;margin-bottom:4px;font-size:32px;font-weight:800;letter-spacing:-1px;
       background:linear-gradient(135deg,#1877f2,#00b4d8);
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .subtitle{text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:28px;}
+    .subtitle{text-align:center;color:rgba(255,255,255,.5);font-size:13px;margin-bottom:28px;}
     .input-group{position:relative;margin-bottom:14px;}
     .input-group input{width:100%;padding:14px 44px 14px 16px;
-      background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
       border-radius:12px;color:#fff;font-size:16px;font-family:'Poppins',sans-serif;
-      outline:none;transition:border-color 0.2s;}
-    .input-group input:-webkit-autofill,.input-group input:-webkit-autofill:hover,
-    .input-group input:-webkit-autofill:focus{
-      -webkit-box-shadow:0 0 0 30px rgba(10,15,30,0.95) inset !important;
+      outline:none;transition:border-color .2s;}
+    .input-group input:-webkit-autofill,.input-group input:-webkit-autofill:hover,.input-group input:-webkit-autofill:focus{
+      -webkit-box-shadow:0 0 0 30px rgba(10,15,30,.95) inset !important;
       -webkit-text-fill-color:#fff !important;}
-    .input-group input::placeholder{color:rgba(255,255,255,0.4)}
+    .input-group input::placeholder{color:rgba(255,255,255,.4)}
     .input-group input:focus{border-color:#1877f2}
-    .input-group i{position:absolute;right:14px;top:50%;transform:translateY(-50%);
-      color:rgba(255,255,255,0.4);font-size:15px;}
+    .input-group i{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:15px;}
     .toggle-pw{cursor:pointer;}
-    .remember-row{display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:20px;font-size:13px;}
-    .remember-row label{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.6);cursor:pointer;}
+    .remember-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;font-size:13px;}
+    .remember-row label{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.6);cursor:pointer;}
     .remember-row a{color:#1877f2;text-decoration:none;}
     .remember-row a:hover{text-decoration:underline;}
     .btn-connect{width:100%;padding:14px;
       background:linear-gradient(135deg,#1877f2,#0d6efd);
       border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;
-      font-family:'Poppins',sans-serif;cursor:pointer;transition:all 0.2s;
-      box-shadow:0 4px 15px rgba(24,119,242,0.4);
+      font-family:'Poppins',sans-serif;cursor:pointer;transition:all .2s;
+      box-shadow:0 4px 15px rgba(24,119,242,.4);
       display:flex;align-items:center;justify-content:center;gap:8px;}
-    .btn-connect:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(24,119,242,0.5)}
-    .btn-connect:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
-    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);
-      border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+    .btn-connect:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(24,119,242,.5)}
+    .btn-connect:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+      border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none;}
     @keyframes spin{to{transform:rotate(360deg)}}
-    .error-msg{background:rgba(228,30,63,0.15);border:1px solid rgba(228,30,63,0.3);
-      color:#ff6b6b;border-radius:8px;padding:10px 14px;
-      font-size:13px;text-align:center;margin-bottom:14px;display:none;}
-    .divider{text-align:center;color:rgba(255,255,255,0.3);font-size:12px;margin:20px 0;position:relative;}
-    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:rgba(255,255,255,0.1);}
+    .error-msg{border-radius:8px;padding:10px 14px;font-size:13px;text-align:center;margin-bottom:14px;display:none;}
+    .divider{text-align:center;color:rgba(255,255,255,.3);font-size:12px;margin:20px 0;position:relative;}
+    .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:rgba(255,255,255,.1);}
     .divider::before{left:0}.divider::after{right:0}
-    .link-row{text-align:center;font-size:13px;color:rgba(255,255,255,0.5);}
+    .link-row{text-align:center;font-size:13px;color:rgba(255,255,255,.5);}
     .link-row a{color:#1877f2;font-weight:600;text-decoration:none;}
     .link-row a:hover{text-decoration:underline;}
 
-    /* Écran de chargement pendant vérification auth */
-    #authCheck{position:fixed;inset:0;background:#0a0f1e;z-index:999;
+    /* Auth check overlay */
+    #authCheck{position:fixed;inset:0;background:#0a0f1e;z-index:9998;
       display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-    #authCheck .sp{width:36px;height:36px;border:3px solid rgba(24,119,242,0.3);
-      border-top-color:#1877f2;border-radius:50%;animation:spin 0.7s linear infinite;}
-    #authCheck p{color:rgba(255,255,255,0.5);font-size:13px;}
-    .card{display:none;}
+    #authCheck .sp{width:36px;height:36px;border:3px solid rgba(24,119,242,.3);
+      border-top-color:#1877f2;border-radius:50%;animation:spin .7s linear infinite;}
+    #authCheck p{color:rgba(255,255,255,.5);font-size:13px;}
   </style>
 </head>
 <body>
 
-  <!-- Écran pendant la vérification de session -->
-  <div id="authCheck">
-    <div class="sp"></div>
-    <p>Vérification en cours...</p>
+<!-- SPLASH SCREEN -->
+<div id="splashScreen">
+  <div class="splash-stars" id="splashStars"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+    <div class="splash-logo">AKIT-CHAT</div>
+    <div class="splash-sub">Réseau Social Africain</div>
   </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:200px">
+    <div class="splash-bar-wrap"><div class="splash-bar-fill" id="splashFill"></div></div>
+    <div class="splash-pct" id="splashPct">0%</div>
+  </div>
+</div>
 
-  <!-- Formulaire de connexion (caché jusqu'à confirmation non-connecté) -->
-  <div class="card" id="loginCard">
-    <div class="logo">AKIT_CHAT</div>
-    <div class="subtitle">Connectez-vous à votre compte</div>
-    <p class="error-msg" id="erreurLogin"></p>
-    <div class="input-group">
-      <input type="email" id="email" placeholder="Adresse email" autocomplete="email"/>
-      <i class="fas fa-envelope"></i>
-    </div>
-    <div class="input-group">
-      <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password"/>
-      <i class="fas fa-eye toggle-pw" id="toggleIcon" onclick="togglePw()"></i>
-    </div>
-    <div class="remember-row">
-      <label><input type="checkbox" id="remember"/> Se souvenir de moi</label>
-      <a href="#" onclick="forgotPw(event)">Mot de passe oublié ?</a>
-    </div>
-    <button class="btn-connect" id="btnLogin" onclick="seConnecter()">
-      <div class="spinner" id="spinner"></div>
-      <span id="btnTxt">Se connecter</span>
-    </button>
-    <div class="divider">ou</div>
-    <div class="link-row">Pas de compte ? <a href="acceuil.html">S'inscrire</a></div>
+<!-- AUTH CHECK -->
+<div id="authCheck" style="display:none">
+  <div class="sp"></div>
+  <p>Vérification en cours...</p>
+</div>
+
+<!-- LOGIN CARD -->
+<div class="card" id="loginCard">
+  <div class="logo">AKIT_CHAT</div>
+  <div class="subtitle">Connectez-vous à votre compte</div>
+  <p class="error-msg" id="erreurLogin"></p>
+  <div class="input-group">
+    <input type="email" id="email" placeholder="Adresse email" autocomplete="email"/>
+    <i class="fas fa-envelope"></i>
   </div>
+  <div class="input-group">
+    <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password"/>
+    <i class="fas fa-eye toggle-pw" id="toggleIcon" onclick="togglePw()"></i>
+  </div>
+  <div class="remember-row">
+    <label><input type="checkbox" id="remember"/> Se souvenir de moi</label>
+    <a href="#" onclick="forgotPw(event)">Mot de passe oublié ?</a>
+  </div>
+  <button class="btn-connect" id="btnLogin" onclick="seConnecter()">
+    <div class="spinner" id="spinner"></div>
+    <span id="btnTxt">Se connecter</span>
+  </button>
+  <div class="divider">ou</div>
+  <div class="link-row">Pas de compte ? <a href="acceuil.html">S'inscrire</a></div>
+</div>
+
+<script>
+  // Générer étoiles
+  (function(){
+    const c=document.getElementById('splashStars');
+    for(let i=0;i<60;i++){
+      const s=document.createElement('div');s.className='star';
+      s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;
+      c.appendChild(s);
+    }
+  })();
+
+  let pct=0,splashDone=false;
+  const fill=document.getElementById('splashFill');
+  const pctEl=document.getElementById('splashPct');
+  
+  function stepSplash(){
+    pct+=Math.random()*3+1;
+    if(pct>=100){
+      pct=100;fill.style.width='100%';pctEl.textContent='100%';
+      splashDone=true;
+      setTimeout(()=>{
+        document.getElementById('splashScreen').classList.add('hide');
+        setTimeout(()=>{
+          document.getElementById('splashScreen').style.display='none';
+          // Maintenant montrer auth check
+          document.getElementById('authCheck').style.display='flex';
+        },600);
+      },400);
+      return;
+    }
+    fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';
+    setTimeout(stepSplash,50+Math.random()*60);
+  }
+  setTimeout(stepSplash,300);
+</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
-    getAuth,
-    onAuthStateChanged,
-    signInWithEmailAndPassword,
-    sendPasswordResetEmail,
-    setPersistence,
-    browserLocalPersistence,
-    browserSessionPersistence
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+    sendPasswordResetEmail, setPersistence,
+    browserLocalPersistence, browserSessionPersistence
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, updateDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ✅ UN SEUL initializeApp avec la vraie config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",
-    authDomain: "akit-chat.firebaseapp.com",
-    projectId: "akit-chat",
-    storageBucket: "akit-chat.firebasestorage.app",
-    messagingSenderId: "902366174407",
-    appId: "1:902366174407:web:eb38057c473be0fabd32e2"
+  const firebaseConfig={
+    apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",
+    authDomain:"akit-chat.firebaseapp.com",
+    projectId:"akit-chat",
+    storageBucket:"akit-chat.firebasestorage.app",
+    messagingSenderId:"902366174407",
+    appId:"1:902366174407:web:eb38057c473be0fabd32e2"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+  const app=initializeApp(firebaseConfig);
+  const auth=getAuth(app);
+  const db=getFirestore(app);
 
-  // ✅ Vérification de session : si déjà connecté → rediriger directement
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      // Déjà connecté → aller sur le feed sans afficher le formulaire
-      window.location.replace("test.html");
-    } else {
-      // Pas connecté → afficher le formulaire
-      document.getElementById("authCheck").style.display = "none";
-      document.getElementById("loginCard").style.display = "block";
-    }
+  // Empêcher retour en arrière depuis test.html
+  window.history.pushState(null,'',window.location.href);
+  window.addEventListener('popstate',()=>{
+    window.history.pushState(null,'',window.location.href);
   });
 
-  // ✅ Vider les champs au chargement (évite l'autofill fantôme)
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("email").value    = "";
-    document.getElementById("password").value = "";
-  });
-
-  // ✅ Afficher/masquer mot de passe
-  window.togglePw = function() {
-    const inp  = document.getElementById("password");
-    const icon = document.getElementById("toggleIcon");
-    if (inp.type === "password") {
-      inp.type = "text";
-      icon.classList.replace("fa-eye", "fa-eye-slash");
-    } else {
-      inp.type = "password";
-      icon.classList.replace("fa-eye-slash", "fa-eye");
-    }
-  };
-
-  // ✅ Mot de passe oublié
-  window.forgotPw = async function(e) {
-    e.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    if (!email) { showErr("⚠️ Entrez votre email d'abord."); return; }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      showErr("✅ Email de réinitialisation envoyé !", true);
-    } catch {
-      showErr("❌ Email introuvable.");
-    }
-  };
-
-  // ✅ Connexion principale
-  window.seConnecter = async function() {
-    const email    = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const remember = document.getElementById("remember").checked;
-
-    if (!email)    { showErr("⚠️ Entrez votre email."); return; }
-    if (!password) { showErr("⚠️ Entrez votre mot de passe."); return; }
-
-    setLoading(true);
-    try {
-      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-
-      // Marquer en ligne dans Firestore
-      try {
-        await updateDoc(doc(db, "users", cred.user.uid), {
-          enLigne: true,
-          dernierVu: new Date().toISOString()
+  // Attendre que le splash soit terminé avant de vérifier l'auth
+  function waitSplashThenAuth(){
+    const checkInterval=setInterval(()=>{
+      if(document.getElementById('authCheck').style.display==='flex'){
+        clearInterval(checkInterval);
+        onAuthStateChanged(auth,user=>{
+          if(user){
+            window.location.replace("test.html");
+          } else {
+            document.getElementById('authCheck').style.display='none';
+            document.getElementById('loginCard').style.display='block';
+          }
         });
-      } catch(e) {
-        // Si le doc n'existe pas encore, on ignore l'erreur
-        console.warn("updateDoc ignoré:", e.message);
       }
+    },100);
+  }
+  waitSplashThenAuth();
 
-      window.location.replace("test.html");
+  window.addEventListener("DOMContentLoaded",()=>{
+    document.getElementById("email").value="";
+    document.getElementById("password").value="";
+  });
 
-    } catch(err) {
-      let msg = "❌ Email ou mot de passe incorrect.";
-      if (err.code === "auth/too-many-requests")      msg = "❌ Trop de tentatives. Réessayez plus tard.";
-      if (err.code === "auth/network-request-failed") msg = "❌ Erreur réseau. Vérifiez votre connexion.";
-      if (err.code === "auth/user-not-found")         msg = "❌ Aucun compte avec cet email.";
-      if (err.code === "auth/wrong-password")         msg = "❌ Mot de passe incorrect.";
-      if (err.code === "auth/invalid-email")          msg = "❌ Format d'email invalide.";
-      if (err.code === "auth/invalid-credential")     msg = "❌ Email ou mot de passe incorrect.";
-      showErr(msg);
-    } finally {
-      setLoading(false);
-    }
+  window.togglePw=function(){
+    const inp=document.getElementById("password");
+    const icon=document.getElementById("toggleIcon");
+    if(inp.type==="password"){inp.type="text";icon.classList.replace("fa-eye","fa-eye-slash");}
+    else{inp.type="password";icon.classList.replace("fa-eye-slash","fa-eye");}
   };
 
-  function setLoading(v) {
-    document.getElementById("btnLogin").disabled        = v;
-    document.getElementById("spinner").style.display    = v ? "block" : "none";
-    document.getElementById("btnTxt").textContent       = v ? "Connexion..." : "Se connecter";
+  window.forgotPw=async function(e){
+    e.preventDefault();
+    const email=document.getElementById("email").value.trim();
+    if(!email){showErr("⚠️ Entrez votre email d'abord.");return;}
+    try{
+      await sendPasswordResetEmail(auth,email);
+      showErr("✅ Email de réinitialisation envoyé !",true);
+    }catch{showErr("❌ Email introuvable.");}
+  };
+
+  window.seConnecter=async function(){
+    const email=document.getElementById("email").value.trim();
+    const password=document.getElementById("password").value;
+    const remember=document.getElementById("remember").checked;
+    if(!email){showErr("⚠️ Entrez votre email.");return;}
+    if(!password){showErr("⚠️ Entrez votre mot de passe.");return;}
+    setLoading(true);
+    try{
+      await setPersistence(auth,remember?browserLocalPersistence:browserSessionPersistence);
+      const cred=await signInWithEmailAndPassword(auth,email,password);
+      try{
+        await updateDoc(doc(db,"users",cred.user.uid),{enLigne:true,dernierVu:new Date().toISOString()});
+      }catch(e){console.warn("updateDoc ignoré:",e.message);}
+      window.location.replace("test.html");
+    }catch(err){
+      let msg="❌ Email ou mot de passe incorrect.";
+      if(err.code==="auth/too-many-requests")msg="❌ Trop de tentatives. Réessayez plus tard.";
+      if(err.code==="auth/network-request-failed")msg="❌ Erreur réseau. Vérifiez votre connexion.";
+      if(err.code==="auth/user-not-found")msg="❌ Aucun compte avec cet email.";
+      if(err.code==="auth/wrong-password")msg="❌ Mot de passe incorrect.";
+      if(err.code==="auth/invalid-email")msg="❌ Format d'email invalide.";
+      if(err.code==="auth/invalid-credential")msg="❌ Email ou mot de passe incorrect.";
+      showErr(msg);
+    }finally{setLoading(false);}
+  };
+
+  function setLoading(v){
+    document.getElementById("btnLogin").disabled=v;
+    document.getElementById("spinner").style.display=v?"block":"none";
+    document.getElementById("btnTxt").textContent=v?"Connexion...":"Se connecter";
   }
 
-  function showErr(msg, success = false) {
-    const el = document.getElementById("erreurLogin");
-    el.textContent    = msg;
-    el.style.display  = "block";
-    if (success) {
-      el.style.background = "rgba(67,233,123,0.15)";
-      el.style.border     = "1px solid rgba(67,233,123,0.3)";
-      el.style.color      = "#43e97b";
-    } else {
-      el.style.background = "rgba(228,30,63,0.15)";
-      el.style.border     = "1px solid rgba(228,30,63,0.3)";
-      el.style.color      = "#ff6b6b";
-    }
+  function showErr(msg,success=false){
+    const el=document.getElementById("erreurLogin");
+    el.textContent=msg;el.style.display="block";
+    if(success){el.style.background="rgba(67,233,123,.15)";el.style.border="1px solid rgba(67,233,123,.3)";el.style.color="#43e97b";}
+    else{el.style.background="rgba(228,30,63,.15)";el.style.border="1px solid rgba(228,30,63,.3)";el.style.color="#ff6b6b";}
   }
 
-  // ✅ Cacher l'erreur dès que l'utilisateur retape
-  document.querySelectorAll("input").forEach(inp => {
-    inp.addEventListener("input", () => {
-      document.getElementById("erreurLogin").style.display = "none";
-    });
-    // ✅ Connexion avec la touche Entrée
-    inp.addEventListener("keydown", e => {
-      if (e.key === "Enter") window.seConnecter();
-    });
+  document.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("input",()=>{document.getElementById("erreurLogin").style.display="none";});
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")window.seConnecter();});
   });
-  </script>
-  
-  <script>
-  if('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('SW enregistré'))
-        .catch(e => console.log('SW erreur:', e));
+</script>
+
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('/sw.js').catch(e=>console.log('SW erreur:',e));
     });
   }
-
 </script>
 </body>
 </html>
