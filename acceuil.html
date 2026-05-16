@@ -127,39 +127,6 @@
   <div class="link-row">Déjà un compte ? <a href="index.html">Se connecter</a></div>
 </div>
 
-<script>
-// Si déjà connecté → rediriger automatiquement vers le chat
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const _app = initializeApp({apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",authDomain:"akit-chat.firebaseapp.com",projectId:"akit-chat",storageBucket:"akit-chat.firebasestorage.app",messagingSenderId:"902366174407",appId:"1:902366174407:web:eb38057c473be0fabd32e2"});
-const _auth = getAuth(_app);
-onAuthStateChanged(_auth, user => {
-  if(user) window.location.replace("chat.html"); // ← ton fichier principal
-});
-  function checkStrength(pwd) {
-    const bar = document.getElementById("strengthBar");
-    const text = document.getElementById("strengthText");
-    if (!bar || !text) return;
-    let score = 0;
-    if (pwd.length >= 6)  score++;
-    if (pwd.length >= 10) score++;
-    if (/[A-Z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-    const levels = [
-      {w:"0%",c:"transparent",t:""},
-      {w:"20%",c:"#e41e3f",t:"Très faible"},
-      {w:"40%",c:"#ff6b35",t:"Faible"},
-      {w:"60%",c:"#f7b928",t:"Moyen"},
-      {w:"80%",c:"#43e97b",t:"Fort"},
-      {w:"100%",c:"#1877f2",t:"Très fort"},
-    ];
-    const l = levels[score] || levels[0];
-    bar.style.width = l.w; bar.style.background = l.c;
-    text.textContent = l.t; text.style.color = l.c;
-  }
-</script>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, updateProfile }
