@@ -641,6 +641,12 @@ input,textarea{font-family:var(--font)}
 .vb-info { display:flex;justify-content:space-between;align-items:center; }
 .vb-dur { font-size:11px;color:rgba(255,255,255,.55); }
 .vb-time { font-size:11px;color:rgba(255,255,255,.4); }
+  .msg-input-row {
+  display:flex;
+  gap:6px;
+  align-items:center;
+  width:100%;
+}
 </style>
 </head>
 <body>
@@ -805,14 +811,15 @@ setTimeout(step,300);
       <input class="ms-search" id="msgSrch" placeholder="🔍 Rechercher..." autocomplete="off" oninput="srchConv(this.value)"/>
       <div id="listeCv"></div>
       <div id="listeGroupes" style="display:none"></div>
+
       <div class="zone-cv" id="zoneCv">
   <div class="cv-head">
     <button class="btn-back-mini" onclick="retourCv()">‹</button>
     <div class="cv-head-nom" id="cvNom"></div>
     <span id="cvStatus" style="font-size:11px;color:#1D9E75;margin-left:4px"></span>
     <div class="cv-head-actions">
-      <button class="cv-head-btn" onclick="appelerVideoUtilisateur()" title="Appel vidéo"><i class="fas fa-video"></i></button>
-      <button class="cv-head-btn" title="Appel audio" onclick="appelerAudio()"><i class="fas fa-phone"></i></button>
+      <button class="cv-head-btn" onclick="appelerVideoUtilisateur()"><i class="fas fa-video"></i></button>
+      <button class="cv-head-btn" onclick="appelerAudio()"><i class="fas fa-phone"></i></button>
     </div>
   </div>
   <div class="disappear-toggle">
@@ -831,35 +838,36 @@ setTimeout(step,300);
     <div class="typing-dots"><span></span><span></span><span></span></div>
     <span id="typingName">écrit...</span>
   </div>
+
+  <!-- BARRE SAISIE UNIQUE -->
   <div class="msg-row">
-    <div class="msg-toolbar">
-      <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" title="Message vocal">
-        <i class="fas fa-microphone"></i>
-      </button>
+    <!-- Zone normale : photo + texte + micro -->
+    <div class="msg-input-row" id="normalInputRow">
       <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()">
         <i class="fas fa-image"></i>
       </button>
       <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
-    </div>
-    <div class="msg-input-row">
       <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off"
         oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
+      <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" style="color:var(--texte2)">
+        <i class="fas fa-microphone" id="voiceIcon"></i>
+      </button>
       <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
     </div>
-  </div>
-  <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px;margin-top:8px;overflow:hidden">
-    <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
-    <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0" id="recordTimer">0:00</span>
-    <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
-    <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
-      <i class="fas fa-trash" style="font-size:14px"></i>
-    </button>
-    <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
-      <i class="fas fa-paper-plane" style="font-size:16px"></i>
-    </button>
+
+    <!-- Zone enregistrement (cachée par défaut) -->
+    <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px">
+      <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+      <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+      <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+      <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+        <i class="fas fa-paper-plane" style="font-size:16px"></i>
+      </button>
+    </div>
   </div>
 </div>
-<!-- Barre d'enregistrement WhatsApp style — cachée par défaut -->
+      
+      <!-- Barre d'enregistrement WhatsApp style — cachée par défaut -->
 <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px;margin-top:8px;overflow:hidden">
   <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
   <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
@@ -1734,49 +1742,86 @@ function startWaveAnimation(){
   }
   draw();
 }
-window.toggleVoiceRecord=async()=>{
-  if(isRecording){arreterEnregistrement(true);return;}
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(stream);audioChunks=[];recordSec=0;wavePoints=[];
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.start();isRecording=true;
-    document.getElementById('btnVoice').style.background='#25D366';
-    const zone=document.getElementById('voiceRecordZone');zone.style.display='flex';
+window.toggleVoiceRecord = async () => {
+  if (isRecording) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    recordSec = 0;
+    wavePoints = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
+    isRecording = true;
+
+    // Cacher barre normale, montrer barre enregistrement
+    document.getElementById('normalInputRow').style.display = 'none';
+    document.getElementById('voiceRecordZone').style.display = 'flex';
+
     startWaveAnimation();
-    recordInterval=setInterval(()=>{
-      recordSec++;const m=Math.floor(recordSec/60),s=recordSec%60;
-      document.getElementById('recordTimer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
-    },1000);
-  }catch{alert('❌ Microphone non accessible');}
+    recordInterval = setInterval(() => {
+      recordSec++;
+      const m = Math.floor(recordSec / 60), s = recordSec % 60;
+      document.getElementById('recordTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    }, 1000);
+  } catch {
+    alert('❌ Microphone non accessible');
+  }
 };
-window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);const recSavedSec = recSec; isRecording=false;cancelAnimationFrame(waveAnimFrame);wavePoints=[]; document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{
-  const blob=new Blob(audioChunks,{type:'audio/webm'});
-  const file=new File([blob],'voice.webm',{type:'audio/webm'});
-  const uid=document.getElementById("cvUid").value;
-  if(!uid)return;
-  try{
-    const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);
-    const convId=[UC.id,uid].sort().join("_");
-    const dur=recSavedSec||0;
-    const m=Math.floor(dur/60),s=dur%60;
-    const durStr=`${m}:${s.toString().padStart(2,'0')}`;
-    await addDoc(collection(db,"messages",convId,"msgs"),{
-      exp:UC.id,dest:uid,type:"audio",
-      audioUrl:url,durStr,
-      contenu:"🎤 Message vocal",
-      date:serverTimestamp(),lu:false
-    });
-    await setDoc(doc(db,"lastMessages",convId),{
-      exp:UC.id,dest:uid,
-      contenu:"🎤 Message vocal",
-      date:serverTimestamp(),luDest:false
-    });
-    addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);
-  }catch(e){alert("❌ "+e.message);}
-  audioChunks=[];
+  window.arreterEnregistrement = async (send) => {
+  if (!mediaRecorder) return;
+  clearInterval(recordInterval);
+  const recSavedSec = recordSec;
+  isRecording = false;
+  cancelAnimationFrame(waveAnimFrame);
+  wavePoints = [];
+
+  // Remettre barre normale
+  document.getElementById('normalInputRow').style.display = 'flex';
+  document.getElementById('voiceRecordZone').style.display = 'none';
+
+  mediaRecorder.stream.getTracks().forEach(t => t.stop());
+
+  if (!send) {
+    mediaRecorder = null;
+    audioChunks = [];
+    return;
+  }
+
+  mediaRecorder.onstop = async () => {
+    const blob = new Blob(audioChunks, {type: 'audio/webm'});
+    const file = new File([blob], 'voice.webm', {type: 'audio/webm'});
+    const uid = document.getElementById("cvUid").value;
+    if (!uid) return;
+    try {
+      const url = await uploadCloudinary(file, `akit/audio/${UC.id}`, null, null);
+      const convId = [UC.id, uid].sort().join("_");
+      const dur = recSavedSec || 0;
+      const m = Math.floor(dur/60), s = dur % 60;
+      const durStr = `${m}:${s.toString().padStart(2,'0')}`;
+      await addDoc(collection(db,"messages",convId,"msgs"), {
+        exp: UC.id, dest: uid,
+        type: "audio",
+        audioUrl: url,
+        durStr,
+        contenu: "🎤 Message vocal",
+        date: serverTimestamp(),
+        lu: false
+      });
+      await setDoc(doc(db,"lastMessages",convId), {
+        exp: UC.id, dest: uid,
+        contenu: "🎤 Message vocal",
+        date: serverTimestamp(),
+        luDest: false
+      });
+      addNotif(uid, "message", `🎤 ${UC.prenom} vous a envoyé un message vocal`);
+    } catch(e) {
+      alert("❌ " + e.message);
+    }
+    audioChunks = [];
+  };
+  mediaRecorder.stop();
 };
-mediaRecorder.stop();};
 window.envoyerPhotoMsg=async(e)=>{
   const file=e.target.files[0];if(!file)return;
   const uid=document.getElementById("cvUid").value;
