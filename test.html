@@ -642,6 +642,7 @@ input,textarea{font-family:var(--font)}
 let pct=0;const fill=document.getElementById('splashFill'),pctEl=document.getElementById('splashPct');
 const step=()=>{pct+=Math.random()*3+1;if(pct>=100){pct=100;fill.style.width='100%';pctEl.textContent='100%';setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none';},500);},400);return;}fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';setTimeout(step,50+Math.random()*60);};
 setTimeout(step,300);
+</script>
 
 <!-- APPEL VIDEO -->
 <div id="ovVideoCall">
@@ -1562,63 +1563,6 @@ window.flipCamera=async()=>{
     document.getElementById("localVideo").style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
   }catch(e){alert("❌ "+e.message);}
 };
-
-function afficherSonnerie(data){
-  document.getElementById("callRingScreen").style.display="flex";
-  document.getElementById("callRingName").textContent=data.expNom||"Appelant";
-  const av=document.getElementById("callRingAv");
-  if(data.expAv)av.innerHTML=`<img src="${data.expAv}" style="width:100%;height:100%;object-fit:cover"/>`;
-  else av.textContent=(data.expNom?.[0]||"?").toUpperCase();
-  document.getElementById("ovVideoCall").classList.add("open");
-  window._currentCallData=data;
-}
-window.acceptCall=async()=>{
-  document.getElementById("callRingScreen").style.display="none";
-  if(window._currentCallData){
-    await updateDoc(doc(db,"appels",UC.id),{statut:"accepte"});
-  }
-  ouvrirVideoCall();
-};
-window.declineCall=async()=>{
-  document.getElementById("callRingScreen").style.display="none";
-  document.getElementById("ovVideoCall").classList.remove("open");
-  if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));
-};
-
-window.appelerAudio=()=>alert("📞 Appel audio — Fonctionnalité WebRTC complète requise côté serveur.");
-
-window.endVideoCall=async()=>{
-  if(localStream)localStream.getTracks().forEach(t=>t.stop());
-  localStream=null;clearInterval(vcInterval);
-  document.getElementById("ovVideoCall").classList.remove("open");
-  document.getElementById("vcTimer").style.display="none";document.getElementById("vcTimer").textContent="00:00";
-  document.getElementById("remoteVideo").srcObject=null;document.getElementById("localVideo").srcObject=null;
-  document.getElementById("callRingScreen").style.display="none";
-  isMuted=false;isCamOff=false;
-  document.getElementById("muteIcon").className="fas fa-microphone";
-  document.getElementById("camIcon").className="fas fa-video";
-  document.getElementById("btnMute").classList.remove("on");
-  document.getElementById("btnCam").classList.remove("off");
-  currentCallTargetUid=null;
-  if(window._currentCallData)try{await deleteDoc(doc(db,"appels",UC.id));}catch{}
-};
-window.toggleMute=()=>{if(!localStream)return;isMuted=!isMuted;localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);document.getElementById("muteIcon").className=isMuted?"fas fa-microphone-slash":"fas fa-microphone";document.getElementById("btnMute").classList.toggle("on",isMuted);};
-window.toggleCam=()=>{if(!localStream)return;isCamOff=!isCamOff;localStream.getVideoTracks().forEach(t=>t.enabled=!isCamOff);document.getElementById("camIcon").className=isCamOff?"fas fa-video-slash":"fas fa-video";document.getElementById("btnCam").classList.toggle("off",isCamOff);};
-window.flipCamera=async()=>{
-  // Retournement caméra NORMAL (front/back), PAS miroir
-  currentFacingMode=currentFacingMode==='user'?'environment':'user';
-  if(localStream)localStream.getTracks().forEach(t=>t.stop());
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:true});
-    localStream=stream;
-    const localVid=document.getElementById("localVideo");
-    localVid.srcObject=stream;
-    // Caméra arrière = pas de miroir ; frontale = miroir local seulement
-    localVid.style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
-    document.getElementById("remoteVideo").srcObject=stream;
-  }catch(e){alert("❌ Erreur : "+e.message);}
-};
-
 // ===== STORIES — 10 SECONDES =====
 const STORY_DURATION=10000; // 10 secondes
 
