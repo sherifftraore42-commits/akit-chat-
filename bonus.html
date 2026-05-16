@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/><title>Bonus</title></head>
+<body>
+<h2>Cliquez pour donner 500 coins à tous</h2>
+<button id="btn" onclick="lancer()">🚀 Lancer le bonus</button>
+<div id="log" style="margin-top:20px;font-family:monospace"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, updateDoc, doc, addDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",
+  authDomain:"akit-chat.firebaseapp.com",
+  projectId:"akit-chat",
+  storageBucket:"akit-chat.firebasestorage.app",
+  messagingSenderId:"902366174407",
+  appId:"1:902366174407:web:eb38057c473be0fabd32e2"
+});
+const db = getFirestore(app);
+const log = document.getElementById("log");
+
+window.lancer = async () => {
+  document.getElementById("btn").disabled = true;
+  document.getElementById("btn").textContent = "⏳ En cours...";
+  log.innerHTML = "";
+
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    let count = 0;
+
+    for (const d of snap.docs) {
+      const data = d.data();
+      const ancienSolde = data.akit_coin || 0;
+      const nouveauSolde = ancienSolde + 500;
+
+      await updateDoc(doc(db, "users", d.id), {
+        akit_coin: nouveauSolde
+      });
+
+      await addDoc(collection(db, "notifications"), {
+        userId: d.id,
+        type: "bonus",
+        texte: `🎁 Cadeau spécial ! +500 AKIT Coins offerts par AKIT-CHAT !`,
+        date: new Date().toISOString(),
+        lu: false
+      });
+
+      count++;
+      log.innerHTML += `✅ ${data.prenom || "?"} ${data.nom || ""} → ${nouveauSolde} coins<br>`;
+    }
+
+    log.innerHTML += `<br><b>✅ ${count} utilisateurs mis à jour !</b>`;
+    document.getElementById("btn").textContent = "✅ Terminé !";
+
+  } catch(err) {
+    log.innerHTML += `❌ Erreur : ${err.message}`;
+    document.getElementById("btn").disabled = false;
+    document.getElementById("btn").textContent = "🚀 Réessayer";
+  }
+};
+</script>
+</body>
+</html>
