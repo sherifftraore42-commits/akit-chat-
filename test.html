@@ -1319,7 +1319,7 @@ function creerPeerConnection(targetUid, isVideo){
       document.getElementById("vcTimer").style.display="block";
       vcSec=0;clearInterval(vcInterval);
       vcInterval=setInterval(()=>{vcSec++;const m=Math.floor(vcSec/60),s=vcSec%60;document.getElementById("vcTimer").textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);
-    }
+    } 
     else if(state==="disconnected"||state==="failed"||state==="closed"){
       statusEl.textContent="🔴 Déconnecté";
       setTimeout(()=>endVideoCall(),1500);
