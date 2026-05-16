@@ -46,6 +46,7 @@ input,textarea{font-family:var(--font)}
 @keyframes clignoteNav{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* ===== SIDEBAR ===== */
+  
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--blanc);border-right:0.5px solid var(--gris2);display:flex;flex-direction:column;align-items:center;padding:12px 0;transition:width .28s cubic-bezier(.4,0,.2,1);position:relative;z-index:50;overflow:hidden;flex-shrink:0}
 .sidebar.open{width:var(--sidebar-open);min-width:var(--sidebar-open)}
 .sb-toggle{width:40px;height:40px;border-radius:var(--radius);border:none;background:none;color:var(--texte2);display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
@@ -698,6 +699,10 @@ setTimeout(step,300);
   <div class="sb-divider"></div>
   <div class="sb-section">
     <div class="sb-label">Compte</div>
+    <button class="sb-item" onclick="openParrainage()">
+  <i class="fas fa-gift sb-item-i" style="color:#00FF88"></i>
+  <span class="sb-item-lbl">Inviter des amis</span>
+</button>
     <button class="sb-item" onclick="openParam()"><i class="fas fa-cog sb-item-i"></i><span class="sb-item-lbl">Paramètres</span></button>
   </div>
   <div class="sb-coin-card">
@@ -745,7 +750,10 @@ setTimeout(step,300);
     <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
     <button class="bn-btn" onclick="ouvrirVideoCall()"><i class="fas fa-video" style="color:#1D9E75"></i><span>Vidéo</span></button>
     <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
-    <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Plus</span></button>
+    <button class="bn-btn" onclick="openParrainage()">
+  <i class="fas fa-gift" style="color:#00FF88"></i>
+  <span>Inviter</span>
+</button>
   </nav>
 
   <div class="layout" id="mainLayout">
@@ -1832,6 +1840,126 @@ window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const 
     }
   },{passive:false});
 })();
+  // ===== PARRAINAGE =====
+window.openParrainage = async () => {
+  ouv("ovParrainage");
+  const lien = `https://akit-chat.vercel.app/acceuil.html?ref=${UC.id}`;
+  document.getElementById("prrLink").value = lien;
+  document.getElementById("prrCoins").textContent = (UC.akit_coin || 0).toLocaleString();
+  const filleuls = UC.filleuls || [];
+  document.getElementById("prrFilleuls").textContent = filleuls.length;
+
+  // Charger la liste des filleuls
+  if (filleuls.length > 0) {
+    const uMap = await getUsers();
+    const liste = document.getElementById("prrListeFilleuls");
+    liste.innerHTML = filleuls.map(uid => {
+      const u = uMap[uid] || {prenom:"?", nom:""};
+      const av = u.avatarUrl
+        ? `<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
+        : (u.prenom?.[0]||"?").toUpperCase();
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px;background:var(--gris);border-radius:10px;margin-bottom:6px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${av}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${u.prenom||""} ${u.nom||""}</div>
+          <div style="font-size:11px;color:var(--texte2)">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#00FF88">+500 💰</div>
+      </div>`;
+    }).join("");
+  }
+};
+
+window.copierLienParrainage = () => {
+  const lien = document.getElementById("prrLink").value;
+  navigator.clipboard.writeText(lien).then(() => {
+    alert("✅ Lien copié ! Partagez-le avec vos amis.");
+  }).catch(() => {
+    document.getElementById("prrLink").select();
+    document.execCommand("copy");
+    alert("✅ Lien copié !");
+  });
+};
+
+window.partagerWhatsApp = () => {
+  const lien = document.getElementById("prrLink").value;
+  const msg = `🚀 Rejoins-moi sur AKIT-CHAT, le réseau social africain !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n\n${lien}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+window.partagerAutre = async () => {
+  const lien = document.getElementById("prrLink").value;
+  const msg = `🚀 Rejoins-moi sur AKIT-CHAT !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n${lien}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "AKIT-CHAT", text: msg, url: lien });
+    } catch {}
+  } else {
+    window.copierLienParrainage();
+  }
+};
 </script>
+  <!-- PARRAINAGE -->
+<div class="ov" id="ovParrainage" onclick="closeSiDehors(event,'ovParrainage')">
+  <div class="modal" style="max-width:440px">
+    <div class="m-head" style="background:linear-gradient(135deg,#00FF88,#FFD700);border-radius:16px 16px 0 0">
+      <h2 style="color:#000"><i class="fas fa-gift" style="margin-right:7px"></i>Inviter des amis</h2>
+      <button class="m-close" style="background:rgba(0,0,0,.15);color:#000" onclick="ferm('ovParrainage')">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="m-body">
+
+      <!-- Stats parrainage -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)">
+          <div style="font-size:24px;font-weight:900;color:#FFD700" id="prrCoins">0</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">AKIT Coins</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)">
+          <div style="font-size:24px;font-weight:900;color:#00FF88" id="prrFilleuls">0</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Amis invités</div>
+        </div>
+      </div>
+
+      <!-- Explication -->
+      <div style="background:#f0fff8;border-radius:12px;padding:14px;margin-bottom:14px;border:0.5px solid #00FF88">
+        <div style="font-size:13px;font-weight:700;color:#000;margin-bottom:8px">🎁 Comment ça marche ?</div>
+        <div style="font-size:12px;color:#333;line-height:1.8">
+          ✅ Partagez votre lien unique<br>
+          ✅ Votre ami s'inscrit avec votre lien<br>
+          ✅ Vous recevez <b>+500 AKIT Coins</b><br>
+          ✅ Votre ami reçoit <b>+250 AKIT Coins</b>
+        </div>
+      </div>
+
+      <!-- Lien de parrainage -->
+      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:6px">Votre lien unique</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input id="prrLink" readonly style="flex:1;background:var(--gris);border:0.5px solid var(--gris2);border-radius:9px;padding:11px 14px;font-size:12px;outline:none;color:var(--texte)"/>
+        <button onclick="copierLienParrainage()" style="background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">
+          📋 Copier
+        </button>
+      </div>
+
+      <!-- Boutons partage -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <button onclick="partagerWhatsApp()" style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fab fa-whatsapp" style="font-size:18px"></i> WhatsApp
+        </button>
+        <button onclick="partagerAutre()" style="background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+          <i class="fas fa-share-alt" style="font-size:18px"></i> Partager
+        </button>
+      </div>
+
+      <!-- Liste filleuls -->
+      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:8px">Amis que vous avez invités</div>
+      <div id="prrListeFilleuls">
+        <p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucun ami invité pour l'instant</p>
+      </div>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
