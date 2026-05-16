@@ -827,10 +827,39 @@ setTimeout(step,300);
       <button class="reply-bar-close" onclick="cancelReply()">✕</button>
       </div>
         <div class="msgs-z" id="msgsZ"></div>
-        <div class="typing-indicator" id="typingIndicator">
-          <div class="typing-dots"><span></span><span></span><span></span></div>
-          <span id="typingName">écrit...</span>
-           <div class="msg-row">
+       <div class="typing-indicator" id="typingIndicator">
+  <div class="typing-dots"><span></span><span></span><span></span></div>
+  <span id="typingName">écrit...</span>
+</div>
+
+<div class="msg-row">
+  <div class="msg-toolbar">
+    <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" title="Message vocal">
+      <i class="fas fa-microphone"></i>
+    </button>
+    <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()" title="Photo">
+      <i class="fas fa-image"></i>
+    </button>
+    <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
+  </div>
+  <div class="msg-input-row">
+    <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off" 
+      oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px;margin-top:8px;overflow:hidden">
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+    <i class="fas fa-trash" style="font-size:14px"></i>
+  </button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+    <i class="fas fa-paper-plane" style="font-size:16px"></i>
+  </button>
+</div>
   <div class="msg-toolbar">
     <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" title="Message vocal"><i class="fas fa-microphone"></i></button>
     <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()" title="Photo"><i class="fas fa-image"></i></button>
@@ -1759,7 +1788,7 @@ window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterva
   }catch(e){alert("❌ "+e.message);}
   audioChunks=[];
 };
-mediaRecorder.stop();
+mediaRecorder.stop()};
 window.envoyerPhotoMsg=async(e)=>{
   const file=e.target.files[0];if(!file)return;
   const uid=document.getElementById("cvUid").value;
