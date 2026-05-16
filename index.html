@@ -156,8 +156,40 @@
 </div>
   <!-- Script splash NORMAL -->
 <script>
-(function(){const c=document.getElementById('splashStars');...})();
-let pct=0;...
+(function(){
+  const c=document.getElementById('splashStars');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;
+    c.appendChild(s);
+  }
+})();
+
+let pct=0;
+const fill=document.getElementById('splashFill');
+const pctEl=document.getElementById('splashPct');
+
+const step=()=>{
+  pct+=Math.random()*3+1;
+  if(pct>=100){
+    pct=100;
+    fill.style.width='100%';
+    pctEl.textContent='100%';
+    setTimeout(()=>{
+      document.getElementById('splashScreen').classList.add('hide');
+      setTimeout(()=>{
+        document.getElementById('splashScreen').style.display='none';
+        document.getElementById('authCheck').style.display='flex';
+      },600);
+    },400);
+    return;
+  }
+  fill.style.width=pct+'%';
+  pctEl.textContent=Math.round(pct)+'%';
+  setTimeout(step,50+Math.random()*60);
+};
+
 setTimeout(step,300);
 </script>
 <script type="module">
