@@ -155,6 +155,14 @@
 </div>
 
 <script>
+// Si déjà connecté → rediriger automatiquement vers le chat
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const _app = initializeApp({apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",authDomain:"akit-chat.firebaseapp.com",projectId:"akit-chat",storageBucket:"akit-chat.firebasestorage.app",messagingSenderId:"902366174407",appId:"1:902366174407:web:eb38057c473be0fabd32e2"});
+const _auth = getAuth(_app);
+onAuthStateChanged(_auth, user => {
+  if(user) window.location.replace("chat.html"); // ← ton fichier principal
+});
   // Générer étoiles
   (function(){
     const c=document.getElementById('splashStars');
