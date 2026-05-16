@@ -153,51 +153,6 @@
   <div class="divider">ou</div>
   <div class="link-row">Pas de compte ? <a href="acceuil.html">S'inscrire</a></div>
 </div>
-
-<script>
-// Si déjà connecté → rediriger automatiquement vers le chat
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-const _app = initializeApp({apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",authDomain:"akit-chat.firebaseapp.com",projectId:"akit-chat",storageBucket:"akit-chat.firebasestorage.app",messagingSenderId:"902366174407",appId:"1:902366174407:web:eb38057c473be0fabd32e2"});
-const _auth = getAuth(_app);
-onAuthStateChanged(_auth, user => {
-  if(user) window.location.replace("chat.html"); // ← ton fichier principal
-});
-  // Générer étoiles
-  (function(){
-    const c=document.getElementById('splashStars');
-    for(let i=0;i<60;i++){
-      const s=document.createElement('div');s.className='star';
-      s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;
-      c.appendChild(s);
-    }
-  })();
-
-  let pct=0,splashDone=false;
-  const fill=document.getElementById('splashFill');
-  const pctEl=document.getElementById('splashPct');
-  
-  function stepSplash(){
-    pct+=Math.random()*3+1;
-    if(pct>=100){
-      pct=100;fill.style.width='100%';pctEl.textContent='100%';
-      splashDone=true;
-      setTimeout(()=>{
-        document.getElementById('splashScreen').classList.add('hide');
-        setTimeout(()=>{
-          document.getElementById('splashScreen').style.display='none';
-          // Maintenant montrer auth check
-          document.getElementById('authCheck').style.display='flex';
-        },600);
-      },400);
-      return;
-    }
-    fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';
-    setTimeout(stepSplash,50+Math.random()*60);
-  }
-  setTimeout(stepSplash,300);
-</script>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
