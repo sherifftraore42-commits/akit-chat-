@@ -622,6 +622,25 @@ input,textarea{font-family:var(--font)}
   flex-shrink:0;
 }
 .btn-back-mini:hover{background:var(--gris)}
+  /* Message vocal style WhatsApp */
+.voice-bubble {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:18px;
+  min-width:220px;max-width:280px;
+}
+.voice-bubble.mine { background:#1D5C35;border-radius:18px 18px 4px 18px; }
+.voice-bubble.theirs { background:#2a2a3a;border-radius:18px 18px 18px 4px; }
+.vb-play {
+  width:38px;height:38px;border-radius:50%;
+  background:#25D366;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.vb-play i { color:#fff;font-size:14px; }
+.vb-right { display:flex;flex-direction:column;gap:5px;flex:1;min-width:0; }
+.vb-wave { width:100%;height:28px; }
+.vb-info { display:flex;justify-content:space-between;align-items:center; }
+.vb-dur { font-size:11px;color:rgba(255,255,255,.55); }
+.vb-time { font-size:11px;color:rgba(255,255,255,.4); }
 </style>
 </head>
 <body>
@@ -811,18 +830,26 @@ setTimeout(step,300);
         <div class="typing-indicator" id="typingIndicator">
           <div class="typing-dots"><span></span><span></span><span></span></div>
           <span id="typingName">écrit...</span>
-        </div>
-        <div class="msg-row">
-          <div class="msg-toolbar">
-            <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" title="Message vocal"><i class="fas fa-microphone"></i></button>
-            <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()" title="Photo"><i class="fas fa-image"></i></button>
-            <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
-          </div>
-          <div class="msg-input-row">
-            <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off" oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
-            <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
-          </div>
-        </div>
+           <div class="msg-row">
+  <div class="msg-toolbar">
+    <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" title="Message vocal"><i class="fas fa-microphone"></i></button>
+    <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()" title="Photo"><i class="fas fa-image"></i></button>
+    <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
+  </div>
+  <div class="msg-input-row">
+    <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off" oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- Barre d'enregistrement WhatsApp style — cachée par défaut -->
+<div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px;margin-top:8px;overflow:hidden">
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+</div>
           <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--blanc);border:0.5px solid var(--gris2);border-radius:28px;padding:8px 14px;min-height:52px;overflow:hidden">
   <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
   <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
@@ -1621,7 +1648,24 @@ window.openConv=async(uid,type='direct')=>{
     z.innerHTML=snap2.docs.map(d=>{
   const m=d.data();const mine=m.exp===UC.id;
   const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
-  if(m.type==="audio")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:8px;min-width:160px" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)"><div style="display:flex;align-items:center;gap:8px"><i class="fas fa-play-circle" style="font-size:22px;cursor:pointer" onclick="playAudio('${m.audioUrl||''}')"></i><span style="font-size:12px">🎤 ${m.contenu||'Message vocal'}</span></div><small>${fmtHeure(m.date)}</small></div>`;
+ if(m.type==="audio"){
+  const waveId='wv_'+d.id;
+  const dur=m.durStr||'0:00';
+  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px">
+    <div class="voice-bubble ${mine?'mine':'theirs'}">
+      <button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)">
+        <i class="fas fa-play" id="ico_${waveId}"></i>
+      </button>
+      <div class="vb-right">
+        <canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas>
+        <div class="vb-info">
+          <span class="vb-dur" id="dur_${waveId}">${dur}</span>
+          <span class="vb-time">${fmtHeure(m.date)}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
   if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
   return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
 }).join("");
@@ -1689,7 +1733,33 @@ window.toggleVoiceRecord=async()=>{
     },1000);
   }catch{alert('❌ Microphone non accessible');}
 };
-window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);isRecording=false;cancelAnimationFrame(waveAnimFrame);wavePoints=[]; document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{const blob=new Blob(audioChunks,{type:'audio/webm'});const file=new File([blob],'voice.webm',{type:'audio/webm'});const uid=document.getElementById("cvUid").value;if(!uid)return;try{const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);}catch(e){alert("❌ "+e.message);}audioChunks=[];};mediaRecorder.stop();};
+window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);const recSavedSec = recSec; isRecording=false;cancelAnimationFrame(waveAnimFrame);wavePoints=[]; document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  const file=new File([blob],'voice.webm',{type:'audio/webm'});
+  const uid=document.getElementById("cvUid").value;
+  if(!uid)return;
+  try{
+    const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);
+    const convId=[UC.id,uid].sort().join("_");
+    const dur=recSavedSec||0;
+    const m=Math.floor(dur/60),s=dur%60;
+    const durStr=`${m}:${s.toString().padStart(2,'0')}`;
+    await addDoc(collection(db,"messages",convId,"msgs"),{
+      exp:UC.id,dest:uid,type:"audio",
+      audioUrl:url,durStr,
+      contenu:"🎤 Message vocal",
+      date:serverTimestamp(),lu:false
+    });
+    await setDoc(doc(db,"lastMessages",convId),{
+      exp:UC.id,dest:uid,
+      contenu:"🎤 Message vocal",
+      date:serverTimestamp(),luDest:false
+    });
+    addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);
+  }catch(e){alert("❌ "+e.message);}
+  audioChunks=[];
+};
+mediaRecorder.stop();
 window.envoyerPhotoMsg=async(e)=>{
   const file=e.target.files[0];if(!file)return;
   const uid=document.getElementById("cvUid").value;
@@ -1863,7 +1933,61 @@ window.endSwipe=(e)=>{
 };
 window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
 window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
+const activeAudios={};
+window.playAudioWave=async(url,waveId,btn)=>{
+  if(!url){alert('❌ Audio indisponible');return;}
+  // Stopper si déjà en lecture
+  if(activeAudios[waveId]){
+    activeAudios[waveId].pause();
+    activeAudios[waveId]=null;
+    document.getElementById('ico_'+waveId).className='fas fa-play';
+    return;
+  }
+  const audio=new Audio(url);
+  activeAudios[waveId]=audio;
+  const ico=document.getElementById('ico_'+waveId);
+  ico.className='fas fa-pause';
+  // Dessiner waveform statique décorative
+  const canvas=document.getElementById(waveId);
+  drawVoiceWave(canvas,0);
+  audio.ontimeupdate=()=>{
+    if(audio.duration)drawVoiceWave(canvas,audio.currentTime/audio.duration);
+    const rem=audio.duration-audio.currentTime;
+    const durEl=document.getElementById('dur_'+waveId);
+    if(durEl&&audio.duration){const m=Math.floor(rem/60),s=Math.floor(rem%60);durEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;}
+  };
+  audio.onended=()=>{
+    ico.className='fas fa-play';
+    activeAudios[waveId]=null;
+    drawVoiceWave(canvas,0);
+  };
+  audio.play().catch(()=>alert('❌ Impossible de lire'));
+};
 
+function drawVoiceWave(canvas,progress){
+  if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  if(!rect.width)return;
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height,mid=H/2;
+  const barW=2,gap=2,total=barW+gap;
+  const count=Math.floor(W/total);
+  // Seed pseudo-aléatoire pour waveform cohérente
+  for(let i=0;i<count;i++){
+    const seed=(Math.sin(i*0.4)*0.5+0.5);
+    const amp=0.2+seed*0.75;
+    const barH=Math.max(2,amp*(H*0.9));
+    const x=i*total;
+    const played=i/count<=progress;
+    ctx.fillStyle=played?'#25D366':'rgba(255,255,255,0.35)';
+    ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,mid-barH/2,barW,barH,1);
+    else ctx.rect(x,mid-barH/2,barW,barH);
+    ctx.fill();
+  }
+}
 // ===== BLOQUER RETOUR VERS INDEX/ACCUEIL =====
 (function(){
   // Empiler plusieurs états pour absorber les retours
