@@ -202,7 +202,33 @@ input,textarea{font-family:var(--font)}
 /* ===== MODALS ===== */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px}
 .ov.open{display:flex}
-.modal{background:var(--blanc);border-radius:16px;width:100%;max-width:480px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:su .25s ease;border:0.5px solid var(--gris2)}
+.modal{
+  background:var(--blanc);
+  border-radius:16px;
+  width:100%;
+  max-width:480px;
+  max-height:88vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  animation:su .25s ease;
+  border:0.5px solid var(--gris2)
+}
+@media(max-width:640px){
+  .modal{
+    max-width:100% !important;
+    width:100% !important;
+    height:100% !important;
+    max-height:100% !important;
+    border-radius:0 !important;
+    margin:0 !important;
+  }
+  .ov{
+    align-items:stretch !important;
+    padding:0 !important;
+  }
+}
 @keyframes su{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .m-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:0.5px solid var(--gris2);flex-shrink:0}
 .m-head h2{font-size:16px;font-weight:700}
@@ -323,6 +349,33 @@ input,textarea{font-family:var(--font)}
 .msgs-z{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;min-height:160px;max-height:240px;padding:3px 0;-webkit-overflow-scrolling:touch}
 .msg-b{max-width:78%;padding:10px 13px;border-radius:14px;font-size:14px;display:flex;flex-direction:column;gap:3px;}
 .msg-b small{font-size:11px;opacity:.55}
+.msg-reply-preview{
+  background:rgba(91,76,245,.1);
+  border-left:3px solid var(--bleu);
+  border-radius:6px;
+  padding:5px 9px;
+  margin-bottom:4px;
+  font-size:11px;
+  color:var(--texte2);
+  cursor:pointer;
+}
+.msg-b{position:relative;cursor:pointer;}
+.msg-b:active{opacity:0.85;}
+.reply-bar{
+  display:none;
+  background:var(--bleu3);
+  border-left:3px solid var(--bleu);
+  border-radius:8px;
+  padding:8px 12px;
+  margin-bottom:6px;
+  font-size:12px;
+  color:var(--texte);
+  align-items:center;
+  gap:8px;
+}
+.reply-bar.show{display:flex;}
+.reply-bar-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.reply-bar-close{background:none;border:none;color:var(--texte2);font-size:16px;cursor:pointer;padding:0 4px;}
 .msg-me{align-self:flex-end;background:var(--bleu);color:#fff;border-bottom-right-radius:3px}
 .msg-th{align-self:flex-start;background:var(--gris);color:var(--texte);border-bottom-left-radius:3px}
 .msg-row{display:flex;gap:4px;margin-top:8px;border-top:0.5px solid var(--gris2);padding-top:8px;flex-direction:column}
@@ -551,6 +604,22 @@ input,textarea{font-family:var(--font)}
 @media(min-width:641px) and (max-width:900px){.sidebar{display:none}.bottom-nav{display:flex}.layout{padding:12px 12px calc(var(--bottomnav-h) + 12px)}.top-logo{display:flex}}
 @media(max-width:640px){.sidebar{display:none}.top-logo{display:none}.layout{padding:10px 10px calc(var(--bottomnav-h) + 10px)}.bottom-nav{display:flex}.modal{max-width:100%;max-height:92vh;border-radius:20px 20px 0 0}.ov{align-items:flex-end;padding:0;backdrop-filter:blur(3px)}.sv-box{width:100%;max-width:100%;border-radius:0;height:100vh;max-height:100vh}.ov#ovSV{padding:0;align-items:stretch}.p-btn{font-size:11px;gap:3px}.cb{font-size:11px}}
 @media(min-width:901px){.bottom-nav{display:none}.layout{padding:16px}}
+.btn-back-mini{
+  background:none;
+  border:none;
+  color:var(--bleu);
+  font-size:22px;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  min-width:36px;
+  min-height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.btn-back-mini:hover{background:var(--gris)}
 </style>
 </head>
 <body>
@@ -715,7 +784,7 @@ setTimeout(step,300);
       <div id="listeGroupes" style="display:none"></div>
       <div class="zone-cv" id="zoneCv">
         <div class="cv-head">
-          <button class="btn-back" onclick="retourCv()">← Retour</button>
+          <button class="btn-back-mini" onclick="retourCv()">‹</button>
           <div class="cv-head-nom" id="cvNom"></div>
           <span id="cvStatus" style="font-size:11px;color:#1D9E75;margin-left:4px"></span>
           <div class="cv-head-actions">
@@ -730,6 +799,10 @@ setTimeout(step,300);
         </div>
         <input type="hidden" id="cvUid"/>
         <input type="hidden" id="cvType" value="direct"/>
+        <div class="reply-bar" id="replyBar">
+      <span class="reply-bar-text" id="replyBarText"></span>
+      <button class="reply-bar-close" onclick="cancelReply()">✕</button>
+      </div>
         <div class="msgs-z" id="msgsZ"></div>
         <div class="typing-indicator" id="typingIndicator">
           <div class="typing-dots"><span></span><span></span><span></span></div>
@@ -1108,6 +1181,7 @@ let prevNotifCount=-1,prevMsgCount=-1;
 const POSTS_PER_PAGE=10;
 let lastPostDoc=null,allPostsLoaded=false;
 let typingTimeout=null,isDisappear=false;
+let replyMsg=null; // message en cours de réponse
 let mediaRecorder=null,audioChunks=[],recordInterval=null,recordSec=0,isRecording=false;
 const REACTIONS=['❤️','🔥','👏','😮','😍'],REACT_IDS=['heart','fire','clap','wow','love'];
 let uMapCache=null,uMapCacheTime=0;
@@ -1201,34 +1275,38 @@ function updateCoinDisplay(){
 // ===== APPEL VIDEO — CAMÉRA NORMALE (pas inversée globalement) =====
 window.ouvrirVideoCall=async()=>{
   try{
-    // Caméra frontale par défaut, flux local en miroir uniquement visuellement (CSS)
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:true});
+    const constraints={video:{facingMode:currentFacingMode,width:{ideal:1280},height:{ideal:720}},audio:true};
+    const stream=await navigator.mediaDevices.getUserMedia(constraints);
     localStream=stream;
     const localVid=document.getElementById("localVideo");
+    const remoteVid=document.getElementById("remoteVideo");
     localVid.srcObject=stream;
-    // Miroir CSS uniquement pour affichage local (normal pour les autres)
+    remoteVid.srcObject=stream;
     localVid.style.transform="scaleX(-1)";
-    document.getElementById("remoteVideo").srcObject=stream;
+    remoteVid.style.transform="none";
     document.getElementById("ovVideoCall").classList.add("open");
-    document.getElementById("vcStatusText").textContent="Caméra active · Appel en cours";
+    document.getElementById("vcStatusText").textContent="📹 Caméra active";
+    document.getElementById("callRingScreen").style.display="none";
     vcSec=0;
     document.getElementById("vcTimer").style.display="block";
     clearInterval(vcInterval);
-    vcInterval=setInterval(()=>{vcSec++;const m=Math.floor(vcSec/60),s=vcSec%60;document.getElementById("vcTimer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;},1000);
-    // Signaler l'appel au destinataire si conversation ouverte
+    vcInterval=setInterval(()=>{
+      vcSec++;
+      const m=Math.floor(vcSec/60),s=vcSec%60;
+      document.getElementById("vcTimer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    },1000);
     if(currentCallTargetUid){
-      const uMap=await getUsers();const u=uMap[currentCallTargetUid];
-      await setDoc(doc(db,"appels",currentCallTargetUid),{exp:UC.id,dest:currentCallTargetUid,expNom:`${UC.prenom} ${UC.nom}`,expAv:UC.avatarUrl||"",statut:"sonnerie",date:serverTimestamp()});
+      await setDoc(doc(db,"appels",currentCallTargetUid),{
+        exp:UC.id,dest:currentCallTargetUid,
+        expNom:`${UC.prenom} ${UC.nom}`,
+        expAv:UC.avatarUrl||"",
+        statut:"sonnerie",date:serverTimestamp()
+      });
     }
-  }catch(err){alert("❌ Impossible d'accéder à la caméra.\n"+err.message);}
+  }catch(err){
+    alert("❌ Caméra inaccessible : "+err.message+"\n\nVérifiez les permissions de votre navigateur.");
+  }
 };
-
-window.appelerVideoUtilisateur=async()=>{
-  const uid=document.getElementById("cvUid").value;
-  if(uid){currentCallTargetUid=uid;}
-  ouvrirVideoCall();
-};
-
 function afficherSonnerie(data){
   document.getElementById("callRingScreen").style.display="flex";
   document.getElementById("callRingName").textContent=data.expNom||"Appelant";
@@ -1529,7 +1607,13 @@ window.openConv=async(uid,type='direct')=>{
   unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
     const z=document.getElementById("msgsZ");
     if(snap2.empty){z.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>Commencez la conversation !</p>`;return;}
-    z.innerHTML=snap2.docs.map(d=>{const m=d.data();const mine=m.exp===UC.id;if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px"><div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl}')"><img src="${m.imageUrl}" style="width:100%;display:block"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;return `<div class="msg-b ${mine?"msg-me":"msg-th"}"><span>${m.contenu}</span><small>${fmtHeure(m.date)}</small></div>`;}).join("");
+    z.innerHTML=snap2.docs.map(d=>{
+  const m=d.data();const mine=m.exp===UC.id;
+  const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
+  if(m.type==="audio")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:8px;min-width:160px" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)"><div style="display:flex;align-items:center;gap:8px"><i class="fas fa-play-circle" style="font-size:22px;cursor:pointer" onclick="playAudio('${m.audioUrl||''}')"></i><span style="font-size:12px">🎤 ${m.contenu||'Message vocal'}</span></div><small>${fmtHeure(m.date)}</small></div>`;
+  if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
+  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
+}).join("");
     z.scrollTop=z.scrollHeight;
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
   });
@@ -1555,11 +1639,29 @@ window.openGroupConv=async(groupeId)=>{
 };
 window.toggleVoiceRecord=async()=>{if(isRecording){arreterEnregistrement(true);return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream);audioChunks=[];recordSec=0;mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);mediaRecorder.start();isRecording=true;document.getElementById("btnVoice").style.background="var(--bleu)";document.getElementById("voiceRecordZone").style.display="flex";recordInterval=setInterval(()=>{recordSec++;const m=Math.floor(recordSec/60),s=recordSec%60;document.getElementById("recordTimer").textContent=`${m}:${s.toString().padStart(2,'0')}`;},1000);}catch{alert("❌ Microphone non accessible");}};
 window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);isRecording=false;document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{const blob=new Blob(audioChunks,{type:'audio/webm'});const file=new File([blob],'voice.webm',{type:'audio/webm'});const uid=document.getElementById("cvUid").value;if(!uid)return;try{const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);}catch(e){alert("❌ "+e.message);}audioChunks=[];};mediaRecorder.stop();};
-window.envoyerPhotoMsg=async(e)=>{const file=e.target.files[0];if(!file)return;const uid=document.getElementById("cvUid").value;if(!uid)return;const compressed=await compresserImage(file,800,0.75);const url=await uploadCloudinary(compressed,`akit/msgphotos/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"image",imageUrl:url,contenu:"📷 Photo",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"📷 Photo",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`📷 ${UC.prenom} vous a envoyé une photo`);e.target.value="";};
+window.envoyerPhotoMsg=async(e)=>{
+  const file=e.target.files[0];if(!file)return;
+  const uid=document.getElementById("cvUid").value;
+  const type=document.getElementById("cvType").value;
+  if(!uid)return;
+  const compressed=await compresserImage(file,800,0.75);
+  const url=await uploadCloudinary(compressed,`akit/msgphotos/${UC.id}`,null,null);
+  const convId=type==="groupe"?`groupe_${uid}`:[UC.id,uid].sort().join("_");
+  await addDoc(collection(db,"messages",convId,"msgs"),{
+    exp:UC.id,dest:type==="groupe"?uid:uid,
+    type:"image",imageUrl:url,
+    contenu:"📷 Photo",date:serverTimestamp(),lu:false
+  });
+  if(type!=="groupe"){
+    await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"📷 Photo",date:serverTimestamp(),luDest:false});
+    addNotif(uid,"message",`📷 ${UC.prenom} vous a envoyé une photo`);
+  }
+  e.target.value="";
+};
 window.onTyping=async()=>{const uid=document.getElementById("cvUid").value;if(!uid)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:true},{merge:true});}catch{}clearTimeout(typingTimeout);typingTimeout=setTimeout(()=>stopTypingSignal(),3000);};
 async function stopTypingSignal(){const uid=document.getElementById("cvUid").value;if(!uid||!UC)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:false},{merge:true});}catch{}}
 window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
-window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text"};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
+window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
 // ===== GROUPES =====
 window.openGroupes=()=>{ouv("ovGroupes");loadGroupes();};
@@ -1581,7 +1683,21 @@ window.connecterMobileMoney=async(provider)=>{const phone=prompt(`📱 Entrez vo
 mmState[provider]={connected:true,balance:0,phone,hist:[]};// Solde initialisé à 0
 await saveMM();refreshMMDisplay();alert(`✅ Compte ${provider.toUpperCase()} connecté ! Solde : 0 FCFA\n(En production, le solde réel sera récupéré via l'API de l'opérateur)`);};
 window.mmEnvoyer=async(provider)=>{ferm("ovMobileMoney");document.getElementById("sendMoneyTitle").textContent=`💸 Envoyer via ${provider.toUpperCase()}`;window._sendProvider=provider;ouv("ovSendMoney");};
-window.mmRecevoir=(provider)=>{alert(`📲 Votre numéro ${provider.toUpperCase()} : ${mmState[provider]?.phone||'Non connecté'}\n\nCommuniquez ce numéro pour recevoir de l'argent.`);};
+window.mmRecevoir=(provider)=>{
+  if(provider==='coin'){
+    const montant=prompt("💰 Montant à déposer (FCFA) :");
+    if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide (min 100 FCFA)");return;}
+    const msg=`Bonjour, je souhaite acheter ${montant} FCFA de AKIT Coins. Mon ID: ${UC.id} - ${UC.prenom} ${UC.nom}`;
+    const omUrl=`https://om.orangemoney.com/pay?to=698083058&amount=${montant}&note=${encodeURIComponent(msg)}`;
+    const waUrl=`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`;
+    const choice=confirm(`💳 Envoyer ${parseInt(montant).toLocaleString()} FCFA au +237 698 083 058\n\nOK = WhatsApp\nAnnuler = Orange Money`);
+    if(choice)window.open(waUrl,'_blank');
+    else window.open(omUrl,'_blank');
+    alert("✅ Après paiement confirmé, vos Coins seront crédités manuellement sous 5 minutes.");
+    return;
+  }
+  alert(`📲 Votre numéro ${provider.toUpperCase()} : ${mmState[provider]?.phone||'Non connecté'}\n\nCommuniquez ce numéro pour recevoir de l'argent.`);
+};
 window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDest").value.trim();const amount=parseInt(document.getElementById("sendMoneyAmount").value);const note=document.getElementById("sendMoneyNote").value.trim();const provider=window._sendProvider||'om';if(!dest){alert("⚠️ Entrez le destinataire");return;}if(!amount||amount<100){alert("⚠️ Montant minimum : 100 FCFA");return;}if(provider!=='coin'&&!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(provider!=='coin'&&mmState[provider].balance<amount){alert(`❌ Solde insuffisant. Disponible : ${mmState[provider].balance.toLocaleString()} FCFA`);return;}if(provider==='coin'&&(UC.akit_coin||0)<amount){alert(`❌ Solde AKIT Coin insuffisant`);return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA à ${dest} via ${provider.toUpperCase()} ?\n${note?`Motif : ${note}`:""}`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="Envoi...";try{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});if(provider==='coin'){mmState.coin.balance-=amount;mmState.coin.hist.push({type:'out',label:`Envoi à ${dest}${note?' - '+note:''}`,amount,date:now});UC.akit_coin=(mmState.coin.balance);await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});}else{mmState[provider].balance-=amount;mmState[provider].hist.push({type:'out',label:`Envoi à ${dest} ${note?'('+note+')':''}`,amount,date:now});}await saveMM();updateCoinDisplay();ferm("ovSendMoney");alert(`✅ ${amount.toLocaleString()} FCFA envoyés à ${dest} avec succès !\n(En production, l'API opérateur traite la transaction réelle)`);}catch(e){alert("❌ Erreur : "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}};
 async function saveMM(){try{await setDoc(doc(db,"mobilemoney",UC.id),mmState);}catch(e){console.error("saveMM:",e);}}
 
@@ -1677,6 +1793,31 @@ window.sendClaude=async()=>{const inp=document.getElementById("clInp");const q=i
 
 window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.location.replace("index.html");};
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
+
+// Swipe pour répondre
+let swipeStartX=0,swipeData=null;
+window.startSwipe=(e,txt,mine)=>{swipeStartX=e.touches[0].clientX;swipeData={txt,mine};};
+window.endSwipe=(e)=>{
+  if(!swipeData)return;
+  const dx=e.changedTouches[0].clientX-swipeStartX;
+  // Swipe droite = répondre
+  if(dx>60){
+    replyMsg=swipeData.txt;
+    const bar=document.getElementById('replyBar');
+    document.getElementById('replyBarText').textContent='↩ '+replyMsg.substring(0,50);
+    bar.classList.add('show');
+    document.getElementById('msgInp').focus();
+  }
+  swipeData=null;
+};
+window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
+window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
+
+// Bloquer retour arrière vers index
+history.pushState(null,null,location.href);
+window.addEventListener('popstate',()=>{
+  history.pushState(null,null,location.href);
+});
 </script>
 </body>
 </html>
