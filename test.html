@@ -738,24 +738,19 @@ setTimeout(step,300);
     <div class="topbar-actions">
       <button class="tb-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span class="bdg" id="bdg_msg"></span></button>
       <button class="tb-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span class="bdg" id="bdg_notif"></span></button>
-      <button class="tb-btn" onclick="ouvrirVideoCall()" title="Appel vidéo"><i class="fas fa-video" style="color:#1D9E75"></i></button>
       <button class="tb-btn" onclick="openMobileMoney()" title="Mobile Money"><i class="fas fa-mobile-alt" style="color:var(--om-orange)"></i></button>
       <button class="tb-btn" onclick="openCoin()" title="AKIT Coin"><i class="fas fa-coins" style="color:var(--akit-yellow)"></i></button>
       <div class="av-mini" id="miniAv" onclick="openProfil()"></div>
     </div>
   </header>
 
-  <nav class="bottom-nav">
-    <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
-    <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
-    <button class="bn-btn" onclick="ouvrirVideoCall()"><i class="fas fa-video" style="color:#1D9E75"></i><span>Vidéo</span></button>
-    <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
-    <button class="bn-btn" onclick="openParrainage()">
-  <i class="fas fa-gift" style="color:#00FF88"></i>
-  <span>Inviter</span>
-</button>
-  </nav>
-
+ <nav class="bottom-nav">
+  <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
+  <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
+  <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
+  <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Paramètres</span></button>
+  <button class="bn-btn" onclick="openParrainage()"><i class="fas fa-gift" style="color:#00FF88"></i><span>Inviter</span></button>
+</nav>
   <div class="layout" id="mainLayout">
     <div class="layout-inner">
       <div class="stories-box">
