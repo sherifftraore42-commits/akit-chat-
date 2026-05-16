@@ -637,7 +637,7 @@ input,textarea{font-family:var(--font)}
   </div>
 </div>
 
-<script type="module">
+<script>
 (function(){const c=document.getElementById('splashStars');for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;c.appendChild(s);}})();
 let pct=0;const fill=document.getElementById('splashFill'),pctEl=document.getElementById('splashPct');
 const step=()=>{pct+=Math.random()*3+1;if(pct>=100){pct=100;fill.style.width='100%';pctEl.textContent='100%';setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none';},500);},400);return;}fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';setTimeout(step,50+Math.random()*60);};
@@ -655,7 +655,7 @@ setTimeout(step,300);
   <div class="call-ring" id="callRingScreen" style="display:none">
     <div class="call-ring-av" id="callRingAv">?</div>
     <div class="call-ring-name" id="callRingName">Appelant</div>
-    <div class="call-ring-sub" id="callRingType">📹 Appel vidéo entrant...</div>
+    <div class="call-ring-sub">Appel vidéo entrant...</div>
     <div class="call-ring-btns">
       <button class="call-ring-btn decline" onclick="declineCall()"><i class="fas fa-phone-slash"></i></button>
       <button class="call-ring-btn accept" onclick="acceptCall()"><i class="fas fa-phone"></i></button>
@@ -1187,18 +1187,9 @@ const REACTIONS=['❤️','🔥','👏','😮','😍'],REACT_IDS=['heart','fire'
 let uMapCache=null,uMapCacheTime=0;
 const CACHE_TTL=60000;
 let membresGroupeSelectionnes=new Set(),tousMembresGroupe=[];
-let localStream=null,remoteStream=null,peerConnection=null;
-let vcInterval=null,vcSec=0,isMuted=false,isCamOff=false,currentFacingMode='user';
-let currentCallTargetUid=null,isCallInitiator=false;
-let unsubCallSignal=null,unsubIceRemote=null;
+let localStream=null,vcInterval=null,vcSec=0,isMuted=false,isCamOff=false,currentFacingMode='user';
+let currentCallTargetUid=null;
 
-const ICE_SERVERS={iceServers:[
-  {urls:"stun:stun.l.google.com:19302"},
-  {urls:"stun:stun1.l.google.com:19302"},
-  {urls:"stun:stun2.l.google.com:19302"},
-  {urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},
-  {urls:"turn:openrelay.metered.ca:443",username:"openrelayproject",credential:"openrelayproject"},
-]};
 // Mobile Money state (local, initialisé à 0)
 const mmState={
   om:{connected:false,balance:0,phone:"",hist:[]},
@@ -1253,18 +1244,12 @@ onAuthStateChanged(auth,async fireUser=>{
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{
     setBdg("bdg_amis",snap.size);setBdg("bdg_amis_sb",snap.size);
   });
- onSnapshot(doc(db,"appels",UC.id),snap2=>{
-  if(!snap2.exists())return;
-  const d=snap2.data();
-  if(d.statut==="sonnerie"&&d.dest===UC.id&&d.offer){
-    afficherSonnerie(d);
-  }
-  if(d.statut==="termine"){
-    if(document.getElementById("ovVideoCall").classList.contains("open")){
-      endVideoCall();
-    }
-  }
-});
+  // Écouter appels entrants
+  onSnapshot(doc(db,"appels",UC.id),snap2=>{
+    if(!snap2.exists())return;
+    const d=snap2.data();
+    if(d.statut==="sonnerie"&&d.dest===UC.id){afficherSonnerie(d);}
+  });
   // Charger historique MM depuis Firestore
   const mmSnap=await getDoc(doc(db,"mobilemoney",UC.id));
   if(mmSnap.exists()){Object.assign(mmState,mmSnap.data());}
@@ -1287,282 +1272,97 @@ function updateCoinDisplay(){
   const pc=document.getElementById("prfCoinNb");if(pc)pc.textContent=nb.toLocaleString();
 }
 
-  // ===== APPEL VIDEO/AUDIO WEBRTC =====
-
-function creerPeerConnection(targetUid, isVideo){
-  if(peerConnection){peerConnection.close();peerConnection=null;}
-  peerConnection=new RTCPeerConnection(ICE_SERVERS);
-
-  // Ajouter tracks locaux
-  if(localStream)localStream.getTracks().forEach(t=>peerConnection.addTrack(t,localStream));
-
-  // Recevoir stream distant
-  remoteStream=new MediaStream();
-  document.getElementById("remoteVideo").srcObject=remoteStream;
-  peerConnection.ontrack=e=>{e.streams[0].getTracks().forEach(t=>remoteStream.addTrack(t));};
-
-  // Envoyer ICE candidates via Firestore
-  peerConnection.onicecandidate=async e=>{
-    if(e.candidate){
-      await addDoc(collection(db,`appels/${targetUid}/iceCandidates`),{
-        candidate:e.candidate.toJSON(),
-        from:UC.id,
-        date:serverTimestamp()
+// ===== APPEL VIDEO — CAMÉRA NORMALE (pas inversée globalement) =====
+window.ouvrirVideoCall=async()=>{
+  try{
+    const constraints={video:{facingMode:currentFacingMode,width:{ideal:1280},height:{ideal:720}},audio:true};
+    const stream=await navigator.mediaDevices.getUserMedia(constraints);
+    localStream=stream;
+    const localVid=document.getElementById("localVideo");
+    const remoteVid=document.getElementById("remoteVideo");
+    localVid.srcObject=stream;
+    remoteVid.srcObject=stream;
+    localVid.style.transform="scaleX(-1)";
+    remoteVid.style.transform="none";
+    document.getElementById("ovVideoCall").classList.add("open");
+    document.getElementById("vcStatusText").textContent="📹 Caméra active";
+    document.getElementById("callRingScreen").style.display="none";
+    vcSec=0;
+    document.getElementById("vcTimer").style.display="block";
+    clearInterval(vcInterval);
+    vcInterval=setInterval(()=>{
+      vcSec++;
+      const m=Math.floor(vcSec/60),s=vcSec%60;
+      document.getElementById("vcTimer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    },1000);
+    if(currentCallTargetUid){
+      await setDoc(doc(db,"appels",currentCallTargetUid),{
+        exp:UC.id,dest:currentCallTargetUid,
+        expNom:`${UC.prenom} ${UC.nom}`,
+        expAv:UC.avatarUrl||"",
+        statut:"sonnerie",date:serverTimestamp()
       });
     }
-  };
-
-  peerConnection.onconnectionstatechange=()=>{
-    const state=peerConnection?.connectionState;
-    const statusEl=document.getElementById("vcStatusText");
-    if(state==="connected"){
-      statusEl.textContent="🟢 Connecté";
-      document.getElementById("vcTimer").style.display="block";
-      vcSec=0;clearInterval(vcInterval);
-      vcInterval=setInterval(()=>{vcSec++;const m=Math.floor(vcSec/60),s=vcSec%60;document.getElementById("vcTimer").textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;},1000);
-    } 
-    else if(state==="disconnected"||state==="failed"||state==="closed"){
-      statusEl.textContent="🔴 Déconnecté";
-      setTimeout(()=>endVideoCall(),1500);
-    }
-  };
-  return peerConnection;
-}
-
-// APPELER un utilisateur
-window.ouvrirVideoCall=async(isVideo=true)=>{
-  if(!currentCallTargetUid){alert("❌ Sélectionnez un contact d'abord.");return;}
-  try{
-    const constraints=isVideo
-      ?{video:{facingMode:currentFacingMode},audio:true}
-      :{video:false,audio:true};
-    localStream=await navigator.mediaDevices.getUserMedia(constraints);
-    const localVid=document.getElementById("localVideo");
-    localVid.srcObject=localStream;
-    localVid.style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
-    document.getElementById("ovVideoCall").classList.add("open");
-    document.getElementById("callRingScreen").style.display="none";
-    document.getElementById("vcStatusText").textContent="📞 Appel en cours...";
-    document.getElementById("vcTimer").style.display="none";
-    isCallInitiator=true;
-    creerPeerConnection(currentCallTargetUid, isVideo);
-
-    // Créer offre
-    const offer=await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-
-    // Envoyer l'offre via Firestore
-    await setDoc(doc(db,"appels",currentCallTargetUid),{
-      exp:UC.id,
-      dest:currentCallTargetUid,
-      expNom:`${UC.prenom||""} ${UC.nom||""}`.trim(),
-      expAv:UC.avatarUrl||"",
-      statut:"sonnerie",
-      isVideo,
-      offer:{type:offer.type,sdp:offer.sdp},
-      date:serverTimestamp()
-    });
-
-    // Écouter la réponse
-    if(unsubCallSignal)unsubCallSignal();
-    unsubCallSignal=onSnapshot(doc(db,"appels",currentCallTargetUid),async snap=>{
-      if(!snap.exists())return;
-      const d=snap.data();
-      if(d.statut==="accepte"&&d.answer&&peerConnection){
-        if(peerConnection.signalingState==="have-local-offer"){
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(d.answer));
-          document.getElementById("vcStatusText").textContent="🔗 Connexion...";
-          // Écouter ICE candidats distants
-          ecouterICEDistants(currentCallTargetUid);
-        }
-      }
-      if(d.statut==="refuse"||d.statut==="termine"){
-        endVideoCall();
-      }
-    });
-
-    // Timeout 30s si pas de réponse
-    setTimeout(()=>{
-      if(peerConnection&&peerConnection.connectionState!=="connected"){
-        alert("📵 Pas de réponse.");
-        endVideoCall();
-      }
-    },30000);
-
   }catch(err){
-    alert("❌ Caméra/Micro inaccessible :\n"+err.message);
+    alert("❌ Caméra inaccessible : "+err.message+"\n\nVérifiez les permissions de votre navigateur.");
   }
 };
-
-// Appel audio uniquement
-window.appelerAudio=()=>{
-  if(!currentCallTargetUid){alert("❌ Sélectionnez un contact.");return;}
-  window.ouvrirVideoCall(false);
-};
-
-// Appel vidéo depuis conversation
-window.appelerVideoUtilisateur=()=>{
-  const uid=document.getElementById("cvUid").value;
-  if(uid){currentCallTargetUid=uid;}
-  window.ouvrirVideoCall(true);
-};
-
-// Écouter ICE candidates du distant
-function ecouterICEDistants(targetUid){
-  if(unsubIceRemote)unsubIceRemote();
-  const q=query(
-    collection(db,`appels/${UC.id}/iceCandidates`),
-    where("from","==",targetUid)
-  );
-  unsubIceRemote=onSnapshot(q,snap=>{
-    snap.docChanges().forEach(async change=>{
-      if(change.type==="added"&&peerConnection){
-        try{
-          await peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data().candidate));
-        }catch{}
-      }
-    });
-  });
-}
-
-// RECEVOIR un appel — sonnerie
 function afficherSonnerie(data){
   document.getElementById("callRingScreen").style.display="flex";
   document.getElementById("callRingName").textContent=data.expNom||"Appelant";
-  document.getElementById("callRingType").textContent=data.isVideo?"📹 Appel vidéo entrant...":"📞 Appel audio entrant...";
   const av=document.getElementById("callRingAv");
-  if(data.expAv)av.innerHTML=`<img src="${data.expAv}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+  if(data.expAv)av.innerHTML=`<img src="${data.expAv}" style="width:100%;height:100%;object-fit:cover"/>`;
   else av.textContent=(data.expNom?.[0]||"?").toUpperCase();
   document.getElementById("ovVideoCall").classList.add("open");
   window._currentCallData=data;
-  // Sonnerie sonore
-  jouerSonnerie();
 }
-
-let sonnerieInterval=null;
-function jouerSonnerie(){
-  arreterSonnerie();
-  sonnerieInterval=setInterval(()=>jouerSon(660),1000);
-}
-function arreterSonnerie(){
-  clearInterval(sonnerieInterval);sonnerieInterval=null;
-}
-
-// ACCEPTER appel
 window.acceptCall=async()=>{
-  arreterSonnerie();
-  const data=window._currentCallData;
-  if(!data)return;
   document.getElementById("callRingScreen").style.display="none";
-  document.getElementById("vcStatusText").textContent="🔗 Connexion...";
-  try{
-    const constraints=data.isVideo
-      ?{video:{facingMode:'user'},audio:true}
-      :{video:false,audio:true};
-    localStream=await navigator.mediaDevices.getUserMedia(constraints);
-    const localVid=document.getElementById("localVideo");
-    localVid.srcObject=localStream;
-    localVid.style.transform=data.isVideo?"scaleX(-1)":"none";
-    isCallInitiator=false;
-    currentCallTargetUid=data.exp;
-    creerPeerConnection(data.exp, data.isVideo);
-
-    // Appliquer l'offre reçue
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-
-    // Créer réponse
-    const answer=await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
-
-    // Envoyer la réponse
-    await updateDoc(doc(db,"appels",UC.id),{
-      statut:"accepte",
-      answer:{type:answer.type,sdp:answer.sdp}
-    });
-
-    // Écouter ICE candidats de l'appelant
-    ecouterICEDistants(data.exp);
-
-  }catch(err){
-    alert("❌ Erreur : "+err.message);
-    endVideoCall();
-  }
-};
-
-// REFUSER appel
-window.declineCall=async()=>{
-  arreterSonnerie();
-  document.getElementById("callRingScreen").style.display="none";
-  document.getElementById("ovVideoCall").classList.remove("open");
   if(window._currentCallData){
-    await updateDoc(doc(db,"appels",UC.id),{statut:"refuse"}).catch(()=>{});
+    await updateDoc(doc(db,"appels",UC.id),{statut:"accepte"});
   }
-  window._currentCallData=null;
+  ouvrirVideoCall();
+};
+window.declineCall=async()=>{
+  document.getElementById("callRingScreen").style.display="none";
+  document.getElementById("ovVideoCall").classList.remove("open");
+  if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));
 };
 
-// TERMINER appel
+window.appelerAudio=()=>alert("📞 Appel audio — Fonctionnalité WebRTC complète requise côté serveur.");
+
 window.endVideoCall=async()=>{
-  arreterSonnerie();
-  if(peerConnection){peerConnection.close();peerConnection=null;}
-  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
-  if(unsubCallSignal){unsubCallSignal();unsubCallSignal=null;}
-  if(unsubIceRemote){unsubIceRemote();unsubIceRemote=null;}
-  clearInterval(vcInterval);
+  if(localStream)localStream.getTracks().forEach(t=>t.stop());
+  localStream=null;clearInterval(vcInterval);
   document.getElementById("ovVideoCall").classList.remove("open");
-  document.getElementById("vcTimer").style.display="none";
-  document.getElementById("vcTimer").textContent="00:00";
-  document.getElementById("remoteVideo").srcObject=null;
-  document.getElementById("localVideo").srcObject=null;
+  document.getElementById("vcTimer").style.display="none";document.getElementById("vcTimer").textContent="00:00";
+  document.getElementById("remoteVideo").srcObject=null;document.getElementById("localVideo").srcObject=null;
   document.getElementById("callRingScreen").style.display="none";
   isMuted=false;isCamOff=false;
   document.getElementById("muteIcon").className="fas fa-microphone";
   document.getElementById("camIcon").className="fas fa-video";
   document.getElementById("btnMute").classList.remove("on");
   document.getElementById("btnCam").classList.remove("off");
-  // Signaler fin
-  if(currentCallTargetUid){
-    try{
-      await updateDoc(doc(db,"appels",currentCallTargetUid),{statut:"termine"});
-      await updateDoc(doc(db,"appels",UC.id),{statut:"termine"});
-    }catch{}
-  }
   currentCallTargetUid=null;
-  window._currentCallData=null;
+  if(window._currentCallData)try{await deleteDoc(doc(db,"appels",UC.id));}catch{}
 };
-
-window.toggleMute=()=>{
-  if(!localStream)return;
-  isMuted=!isMuted;
-  localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
-  document.getElementById("muteIcon").className=isMuted?"fas fa-microphone-slash":"fas fa-microphone";
-  document.getElementById("btnMute").classList.toggle("on",isMuted);
-};
-
-window.toggleCam=()=>{
-  if(!localStream)return;
-  isCamOff=!isCamOff;
-  localStream.getVideoTracks().forEach(t=>t.enabled=!isCamOff);
-  document.getElementById("camIcon").className=isCamOff?"fas fa-video-slash":"fas fa-video";
-  document.getElementById("btnCam").classList.toggle("off",isCamOff);
-};
-
+window.toggleMute=()=>{if(!localStream)return;isMuted=!isMuted;localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);document.getElementById("muteIcon").className=isMuted?"fas fa-microphone-slash":"fas fa-microphone";document.getElementById("btnMute").classList.toggle("on",isMuted);};
+window.toggleCam=()=>{if(!localStream)return;isCamOff=!isCamOff;localStream.getVideoTracks().forEach(t=>t.enabled=!isCamOff);document.getElementById("camIcon").className=isCamOff?"fas fa-video-slash":"fas fa-video";document.getElementById("btnCam").classList.toggle("off",isCamOff);};
 window.flipCamera=async()=>{
+  // Retournement caméra NORMAL (front/back), PAS miroir
   currentFacingMode=currentFacingMode==='user'?'environment':'user';
-  if(!localStream)return;
-  localStream.getVideoTracks().forEach(t=>t.stop());
+  if(localStream)localStream.getTracks().forEach(t=>t.stop());
   try{
-    const newStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:false});
-    const newVideoTrack=newStream.getVideoTracks()[0];
-    if(peerConnection){
-      const sender=peerConnection.getSenders().find(s=>s.track&&s.track.kind==="video");
-      if(sender)await sender.replaceTrack(newVideoTrack);
-    }
-    localStream.getVideoTracks().forEach(t=>{localStream.removeTrack(t);t.stop();});
-    localStream.addTrack(newVideoTrack);
-    document.getElementById("localVideo").srcObject=localStream;
-    document.getElementById("localVideo").style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
-  }catch(e){alert("❌ "+e.message);}
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:true});
+    localStream=stream;
+    const localVid=document.getElementById("localVideo");
+    localVid.srcObject=stream;
+    // Caméra arrière = pas de miroir ; frontale = miroir local seulement
+    localVid.style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
+    document.getElementById("remoteVideo").srcObject=stream;
+  }catch(e){alert("❌ Erreur : "+e.message);}
 };
+
 // ===== STORIES — 10 SECONDES =====
 const STORY_DURATION=10000; // 10 secondes
 
@@ -2013,11 +1813,24 @@ window.endSwipe=(e)=>{
 window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
 window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
 
-// Bloquer retour arrière vers index
-history.pushState(null,null,location.href);
-window.addEventListener('popstate',()=>{
-  history.pushState(null,null,location.href);
-});
+// ===== BLOQUER RETOUR VERS INDEX/ACCUEIL =====
+(function(){
+  // Empiler plusieurs états pour absorber les retours
+  history.pushState(null,'',location.href);
+  history.pushState(null,'',location.href);
+  history.pushState(null,'',location.href);
+
+  window.addEventListener('popstate',()=>{
+    history.pushState(null,'',location.href);
+  });
+
+  // Bloquer aussi le geste retour Android/swipe iOS
+  document.addEventListener('touchstart',e=>{
+    if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20){
+      e.preventDefault();
+    }
+  },{passive:false});
+})();
 </script>
 </body>
 </html>
