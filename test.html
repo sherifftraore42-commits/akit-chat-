@@ -823,12 +823,19 @@ setTimeout(step,300);
             <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
-        <div id="voiceRecordZone" style="display:none;background:var(--gris);border-radius:10px;padding:12px;margin-top:6px;align-items:center;gap:10px">
-          <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;animation:blink-dot .8s ease-in-out infinite"></div>
-          <span style="font-size:13px;color:var(--texte2)" id="recordTimer">0:00</span>
-          <button onclick="arreterEnregistrement(true)" style="margin-left:auto;background:var(--bleu);border:none;color:#fff;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer">✓ Envoyer</button>
-          <button onclick="arreterEnregistrement(false)" style="background:var(--gris2);border:none;color:var(--texte);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer">✕</button>
-        </div>
+          <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--blanc);border:0.5px solid var(--gris2);border-radius:28px;padding:8px 14px;min-height:52px;overflow:hidden">
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+</div>
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+</div>
       </div>
     </div>
   </div>
@@ -1641,8 +1648,48 @@ window.openGroupConv=async(groupeId)=>{
     z.scrollTop=z.scrollHeight;
   });
 };
-window.toggleVoiceRecord=async()=>{if(isRecording){arreterEnregistrement(true);return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream);audioChunks=[];recordSec=0;mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);mediaRecorder.start();isRecording=true;document.getElementById("btnVoice").style.background="var(--bleu)";document.getElementById("voiceRecordZone").style.display="flex";recordInterval=setInterval(()=>{recordSec++;const m=Math.floor(recordSec/60),s=recordSec%60;document.getElementById("recordTimer").textContent=`${m}:${s.toString().padStart(2,'0')}`;},1000);}catch{alert("❌ Microphone non accessible");}};
-window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);isRecording=false;document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{const blob=new Blob(audioChunks,{type:'audio/webm'});const file=new File([blob],'voice.webm',{type:'audio/webm'});const uid=document.getElementById("cvUid").value;if(!uid)return;try{const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);}catch(e){alert("❌ "+e.message);}audioChunks=[];};mediaRecorder.stop();};
+let waveAnimFrame=null,wavePoints=[];
+function startWaveAnimation(){
+  const canvas=document.getElementById('recWaveCanvas');if(!canvas)return;
+  const dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  const W=rect.width,H=rect.height;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const mid=H/2,barW=3,gap=2,total=barW+gap,count=Math.floor(W/total);
+    while(wavePoints.length<count)wavePoints.push(0);
+    for(let i=0;i<count;i++){
+      const amp=wavePoints[wavePoints.length-count+i]||0;
+      const barH=Math.max(3,amp*(H*0.85)),x=i*total;
+      ctx.fillStyle='#25D366';ctx.beginPath();
+      if(ctx.roundRect)ctx.roundRect(x,mid-barH/2,barW,barH,2);
+      else ctx.rect(x,mid-barH/2,barW,barH);
+      ctx.fill();
+    }
+    wavePoints.push(Math.random()*0.55+0.15);
+    if(wavePoints.length>200)wavePoints.shift();
+    waveAnimFrame=requestAnimationFrame(draw);
+  }
+  draw();
+}
+window.toggleVoiceRecord=async()=>{
+  if(isRecording){arreterEnregistrement(true);return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);audioChunks=[];recordSec=0;wavePoints=[];
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.start();isRecording=true;
+    document.getElementById('btnVoice').style.background='#25D366';
+    const zone=document.getElementById('voiceRecordZone');zone.style.display='flex';
+    startWaveAnimation();
+    recordInterval=setInterval(()=>{
+      recordSec++;const m=Math.floor(recordSec/60),s=recordSec%60;
+      document.getElementById('recordTimer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+  }catch{alert('❌ Microphone non accessible');}
+};
+window.arreterEnregistrement=async(send)=>{if(!mediaRecorder)return;clearInterval(recordInterval);isRecording=false;cancelAnimationFrame(waveAnimFrame);wavePoints=[]; document.getElementById("btnVoice").style.background="";document.getElementById("voiceRecordZone").style.display="none";mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{const blob=new Blob(audioChunks,{type:'audio/webm'});const file=new File([blob],'voice.webm',{type:'audio/webm'});const uid=document.getElementById("cvUid").value;if(!uid)return;try{const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);}catch(e){alert("❌ "+e.message);}audioChunks=[];};mediaRecorder.stop();};
 window.envoyerPhotoMsg=async(e)=>{
   const file=e.target.files[0];if(!file)return;
   const uid=document.getElementById("cvUid").value;
