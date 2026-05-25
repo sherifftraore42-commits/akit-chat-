@@ -1940,6 +1940,10 @@ window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinH
 // ===== PROFIL =====
 window.openProfil=async()=>{
   if(!UC){alert("⏳ Profil en cours de chargement, réessayez dans un instant.");return;}
+  // OUVRIR LE MODAL EN PREMIER
+  document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('actif'));
+  const bnp=document.getElementById('bnProfil');if(bnp)bnp.classList.add('actif');
+  ouv("ovProfil");
   pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");
   document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+' <span class="new-prf-check">✓</span>';
   document.getElementById("prfEmail").textContent=UC.email||"";
@@ -1953,8 +1957,7 @@ window.openProfil=async()=>{
   let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});
   document.getElementById("psAmis").textContent=cntA;
   document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);
-  updateCoinDisplay();renderPrfTab('posts',sp);document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('actif'));
-const bnp=document.getElementById('bnProfil');if(bnp)bnp.classList.add('actif');ouv("ovProfil");
+  updateCoinDisplay();renderPrfTab('posts',sp);
 };
 async function renderPrfTab(tab,spSnap){
   const content=document.getElementById("prfTabContent");
