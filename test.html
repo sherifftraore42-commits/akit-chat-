@@ -1029,7 +1029,7 @@ setTimeout(step,300);
     </div>
     <div class="m-body">
       <div class="coin-action-btns">
-        <button class="coin-action-btn send" onclick="mmEnvoyer('coin')"><i class="fas fa-paper-plane"></i> Envoyer</button>
+        <button class="coin-action-btn send" onclick="ouvrirEnvoiCoin()"><i class="fas fa-paper-plane"></i> Envoyer</button>
         <button class="coin-action-btn recv" onclick="mmRecevoir('coin')"><i class="fas fa-check"></i> Recevoir</button>
       </div>
       <div style="font-size:12px;font-weight:600;color:var(--texte2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Historique</div>
@@ -1364,7 +1364,7 @@ window.declineCall=async()=>{
   if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));
 };
 
-window.appelerAudio=()=>alert("📞 Appel audio — Fonctionnalité WebRTC complète requise côté serveur.");
+window.appelerVideoUtilisateur=()=>{if(currentCallTargetUid)ouvrirVideoCall();else alert("❌ Sélectionnez d'abord un contact.");};
 
 window.endVideoCall=async()=>{
   if(localStream)localStream.getTracks().forEach(t=>t.stop());
@@ -2091,6 +2091,15 @@ function drawVoiceWave(canvas,progress){
     }
   },{passive:false});
 })();
+
+  window.ouvrirEnvoiCoin=()=>{
+  ferm("ovCoin");
+  document.getElementById("sendMoneyTitle").textContent="💸 Envoyer des AKIT Coins";
+  window._sendProvider='coin';
+  document.getElementById("sendMoneyDest").placeholder="👤 Nom ou ID du destinataire";
+  document.getElementById("sendMoneyAmount").placeholder="💰 Montant en Coins";
+  ouv("ovSendMoney");
+};
   // ===== PARRAINAGE =====
 window.openParrainage = async () => {
   ouv("ovParrainage");
