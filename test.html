@@ -235,7 +235,7 @@ input,textarea{font-family:var(--font)}
 .m-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:0.5px solid var(--gris2);flex-shrink:0}
 .m-head h2{font-size:16px;font-weight:700}
 .m-close{background:var(--gris);border:none;width:32px;height:32px;border-radius:50%;font-size:14px;color:var(--texte2);display:flex;align-items:center;justify-content:center}
-.m-body{flex:1;overflow-y:auto;padding:14px;padding-bottom:8px;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
+.m-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 14px; }
 
 /* ===== APPEL VIDEO ===== */
 #ovVideoCall{display:none;position:fixed;inset:0;z-index:10000;background:#000;}
@@ -333,7 +333,7 @@ input,textarea{font-family:var(--font)}
 .cv-nom{font-size:14px;font-weight:600;color:var(--texte)}
 .cv-last{font-size:12px;color:var(--texte2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-bdg{background:var(--bleu);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-.zone-cv{display:none;flex-direction:column;height:100%;position:relative}
+.zone-cv{display:none;flex-direction:column;height:100%}
 .zone-cv.open{display:flex}
 .cv-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:0.5px solid var(--gris2);margin-bottom:10px}
 .btn-back{background:var(--gris);border:none;border-radius:8px;padding:9px 14px;font-size:13px;color:var(--bleu);font-weight:600;min-height:44px}
@@ -348,7 +348,8 @@ input,textarea{font-family:var(--font)}
 .typing-dots span:nth-child(2){animation-delay:.2s}
 .typing-dots span:nth-child(3){animation-delay:.4s}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
-.msgs-z{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;min-height:0;max-height:none;padding:3px 0;-webkit-overflow-scrolling:touch;} .msg-b{max-width:78%;padding:10px 13px;border-radius:14px;font-size:14px;display:flex;flex-direction:column;gap:3px;}
+.msgs-z { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; padding: 3px 0; }
+.msg-b{max-width:78%;padding:10px 13px;border-radius:14px;font-size:14px;display:flex;flex-direction:column;gap:3px;}
 .msg-b small{font-size:11px;opacity:.55}
 .msg-reply-preview{
   background:rgba(91,76,245,.1);
@@ -379,7 +380,7 @@ input,textarea{font-family:var(--font)}
 .reply-bar-close{background:none;border:none;color:var(--texte2);font-size:16px;cursor:pointer;padding:0 4px;}
 .msg-me{align-self:flex-end;background:var(--bleu);color:#fff;border-bottom-right-radius:3px}
 .msg-th{align-self:flex-start;background:var(--gris);color:var(--texte);border-bottom-left-radius:3px}
-.msg-row{display:flex;gap:8px;border-top:0.5px solid var(--gris2);padding:8px 0 0 0;flex-direction:column;margin:0;flex-shrink:0}
+.msg-row{display:flex;gap:4px;margin-top:8px;border-top:0.5px solid var(--gris2);padding-top:8px;flex-direction:column}
 .msg-input-row{display:flex;gap:8px;align-items:center}
 .msg-inp{flex:1;background:var(--gris);border:0.5px solid var(--gris2);border-radius:50px;padding:11px 16px;font-size:14px;outline:none;min-height:44px}
 .msg-inp:focus{border-color:var(--bleu)}
@@ -772,7 +773,7 @@ setTimeout(step,300);
   <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
   <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
   <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
-  <button class="bn-btn" id="bnProfil" onclick="openProfil()"><i class="fas fa-user-circle"></i><span>Profil</span></button>
+  <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Paramètres</span></button>
   <button class="bn-btn" onclick="openParrainage()"><i class="fas fa-gift" style="color:#00FF88"></i><span>Inviter</span></button>
 </nav>
   <div class="layout" id="mainLayout">
@@ -853,7 +854,34 @@ setTimeout(step,300);
       </button>
       <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
     </div>
-      <div id="voiceRecordZone" style="display:none;align-items:center;gap:6px;width:100%">
+
+    <!-- Zone enregistrement (cachée par défaut) -->
+    <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px">
+      <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+      <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+      <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+      <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+        <i class="fas fa-paper-plane" style="font-size:16px"></i>
+      </button>
+    </div>
+  </div>
+</div>
+      
+      <!-- Barre d'enregistrement WhatsApp style — cachée par défaut -->
+<div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--gris);border-radius:28px;padding:8px 14px;min-height:52px;margin-top:8px;overflow:hidden">
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+</div>
+          <div id="voiceRecordZone" style="display:none;align-items:center;gap:10px;background:var(--blanc);border:0.5px solid var(--gris2);border-radius:28px;padding:8px 14px;min-height:52px;overflow:hidden">
+  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
+  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+</div>
   <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
   <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
   <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
@@ -1029,7 +1057,7 @@ setTimeout(step,300);
     </div>
     <div class="m-body">
       <div class="coin-action-btns">
-        <button class="coin-action-btn send" onclick="ouvrirEnvoiCoin()"><i class="fas fa-paper-plane"></i> Envoyer</button>
+        <button class="coin-action-btn send" onclick="mmEnvoyer('coin')"><i class="fas fa-paper-plane"></i> Envoyer</button>
         <button class="coin-action-btn recv" onclick="mmRecevoir('coin')"><i class="fas fa-check"></i> Recevoir</button>
       </div>
       <div style="font-size:12px;font-weight:600;color:var(--texte2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Historique</div>
@@ -1364,8 +1392,7 @@ window.declineCall=async()=>{
   if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));
 };
 
-window.appelerVideoUtilisateur=()=>{if(currentCallTargetUid)ouvrirVideoCall();else alert("❌ Sélectionnez d'abord un contact.");};
-window.appelerAudio=()=>{alert("📞 Appel audio — fonctionnalité en cours de développement.");};
+window.appelerAudio=()=>alert("📞 Appel audio — Fonctionnalité WebRTC complète requise côté serveur.");
 
 window.endVideoCall=async()=>{
   if(localStream)localStream.getTracks().forEach(t=>t.stop());
@@ -1609,7 +1636,7 @@ window.sharePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap
 window.toggleFav=async id=>{const ref2=doc(db,"favs",UC.id);const snap=await getDoc(ref2);const ids=snap.exists()?(snap.data().ids||[]):[];const idx2=ids.indexOf(id);if(idx2===-1)ids.push(id);else ids.splice(idx2,1);await setDoc(ref2,{ids});};
 
 // ===== MESSAGES =====
-window.openMsg=()=>{fermTout();ouv("ovMsg");document.getElementById("msgSrch").value="";document.getElementById("zoneCv").classList.remove("open");document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("tabConv").classList.add("act");document.getElementById("tabGroups").classList.remove("act");loadConvs("");};
+window.openMsg=()=>{ouv("ovMsg");document.getElementById("msgSrch").value="";document.getElementById("zoneCv").classList.remove("open");document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("tabConv").classList.add("act");document.getElementById("tabGroups").classList.remove("act");loadConvs("");};
 window.closeMsg=()=>{ferm("ovMsg");if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();};
 
 async function loadConvs(q){
@@ -1639,20 +1666,6 @@ window.openConv=async(uid,type='direct')=>{
   document.getElementById("msgInp").value="";document.getElementById("typingIndicator").classList.remove("show");
   const convId=[UC.id,uid].sort().join("_");
   try{const lmRef=doc(db,"lastMessages",convId);const lmSnap=await getDoc(lmRef);if(lmSnap.exists()&&lmSnap.data().dest===UC.id)await updateDoc(lmRef,{luDest:true});}catch{}
-  // ── Marquer les messages comme "livré" ──
-  try {
-    const msgsRef = collection(db, "messages", convId, "msgs");
-    const msgsSnap = await getDocs(
-      query(msgsRef, where("dest", "==", UC.id), where("statut", "==", "envoye"))
-    );
-    const batch = [];
-    msgsSnap.forEach((d) => {
-      batch.push(updateDoc(doc(db, "messages", convId, "msgs", d.id), { statut: "livre" }));
-    });
-    await Promise.all(batch);
-  } catch (e) {
-    console.log("livré update:", e);
-  }
   if(unsubMsgs)unsubMsgs();
   unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
     const z=document.getElementById("msgsZ");
@@ -1679,36 +1692,9 @@ window.openConv=async(uid,type='direct')=>{
   </div>`;
 }
   if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
- // Icône statut message
-  let statutIcon = '';
-  if (mine) {
-    const st = m.statut || 'envoye';
-    if (st === 'vu')    statutIcon = '<span style="color:#53bdeb;font-size:12px">👁</span>';
-    else if (st === 'livre') statutIcon = '<span style="color:#53bdeb;font-size:12px;font-weight:700">✓✓</span>';
-    else                statutIcon = '<span style="color:rgba(255,255,255,.45);font-size:12px">✓</span>';
-  }
-
-  return `<div class="msg-b ${mine ? "msg-me" : "msg-th"}" 
-    ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" 
-    ontouchend="endSwipe(event)">
-    ${replyHtml}
-    <span>${m.contenu || ''}</span>
-    <div style="display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:1px">
-      <small style="font-size:11px;opacity:.55">${fmtHeure(m.date)}</small>
-      ${statutIcon}
-    </div>
-  </div>`;
+  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
 }).join("");
     z.scrollTop=z.scrollHeight;
-    // ── Marquer les messages reçus comme "vu" ──
-    snap2.docs.forEach(async (d) => {
-      const m = d.data();
-      if (m.dest === UC.id && m.statut !== "vu") {
-        try {
-          await updateDoc(doc(db, "messages", convId, "msgs", d.id), { statut: "vu" });
-        } catch {}
-      }
-    });
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
   });
   if(unsubTyping){unsubTyping();unsubTyping=null;}
@@ -1858,18 +1844,7 @@ window.envoyerPhotoMsg=async(e)=>{
 window.onTyping=async()=>{const uid=document.getElementById("cvUid").value;if(!uid)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:true},{merge:true});}catch{}clearTimeout(typingTimeout);typingTimeout=setTimeout(()=>stopTypingSignal(),3000);};
 async function stopTypingSignal(){const uid=document.getElementById("cvUid").value;if(!uid||!UC)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:false},{merge:true});}catch{}}
 window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
-window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");// Dans sendMsg(), remplacez msgData par :
-const msgData = {
-  exp: UC.id,
-  dest: uid,
-  contenu,
-  date: serverTimestamp(),
-  lu: false,
-  statut: 'envoye',    // 'envoye' | 'livre' | 'vu'
-  type: "text",
-  ...(replyMsg ? {replyTo: replyMsg} : {})
-};
-if (isDisappear) msgData.disparait = true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
+window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
 // ===== GROUPES =====
 window.openGroupes=()=>{ouv("ovGroupes");loadGroupes();};
@@ -1883,7 +1858,7 @@ async function loadGroupesList(){const liste=document.getElementById("listeGroup
 async function loadGroupes(){const liste=document.getElementById("listeGroupesFull");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"groupes"),where("membres","array-contains",UC.id)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:20px'>Aucun groupe. Créez-en un !</p>`;return;}liste.innerHTML=snap.docs.map(d=>{const g=d.data();const isAdmin=g.adminId===UC.id;return `<div style="background:var(--blanc);border-radius:12px;padding:14px;margin-bottom:10px;border:0.5px solid var(--gris2)"><div style="font-size:15px;font-weight:700;margin-bottom:6px">${g.nom||"Groupe"} ${isAdmin?'👑':''}</div><div style="font-size:11px;color:var(--texte2);margin-bottom:8px">${(g.membres||[]).length} membres · ${g.desc||""}</div><button onclick="openMsg();setTimeout(()=>{switchMsgTab('groups');setTimeout(()=>openGroupConv('${d.id}'),400);},200)" style="width:100%;background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">💬 Ouvrir</button></div>`;}).join("");}catch(e){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>Erreur : ${e.message}</p>`;}}
 
 // ===== MOBILE MONEY =====
-window.openMobileMoney=()=>{fermTout();ouv("ovMobileMoney");refreshMMDisplay();};
+window.openMobileMoney=()=>{ouv("ovMobileMoney");refreshMMDisplay();};
 window.switchMM=(provider,btn)=>{currentMmProvider=provider;document.querySelectorAll('.mm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.mm-form').forEach(f=>f.classList.remove('active'));document.getElementById(`mm-${provider}`).classList.add('active');refreshMMDisplay();};
 function refreshMMDisplay(){['om','mtn','mpesa'].forEach(p=>{const s=mmState[p];document.getElementById(`${p}-connect-zone`).style.display=s.connected?"none":"block";document.getElementById(`${p}-panel`).style.display=s.connected?"block":"none";if(s.connected){document.getElementById(`${p}-balance`).textContent=s.balance.toLocaleString()+" FCFA";renderMMHist(p);}});}
 function renderMMHist(p){const el=document.getElementById(`${p}-hist`);const hist=mmState[p].hist||[];if(hist.length===0){el.innerHTML=`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:8px">Aucune transaction</p>`;return;}el.innerHTML=hist.slice(-10).reverse().map(h=>`<div class="mm-hist-item"><div class="mm-hist-ico ${h.type}">${h.type==='out'?'💸':'💰'}</div><div class="mm-hist-info"><div class="mm-hist-name">${h.label}</div><div class="mm-hist-date">${h.date||""}</div></div><div class="mm-hist-amount ${h.type}">${h.type==='out'?'-':'+'}${h.amount.toLocaleString()} FCFA</div></div>`).join("");}
@@ -1910,12 +1885,12 @@ window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDes
 async function saveMM(){try{await setDoc(doc(db,"mobilemoney",UC.id),mmState);}catch(e){console.error("saveMM:",e);}}
 
 // ===== NOTIFS =====
-window.openNotif=async()=>{fermTout();ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{if(a.lu!==b.lu)return a.lu?1:-1;const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});let html="";for(const n of notifs){const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";html+=`<div class="nf-item ${n.lu?"":"unread"}"><div class="nf-ico">${ico}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`;updateDoc(doc(db,"notifications",n.id),{lu:true}).catch(()=>{});}liste.innerHTML=html;}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
+window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{if(a.lu!==b.lu)return a.lu?1:-1;const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});let html="";for(const n of notifs){const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";html+=`<div class="nf-item ${n.lu?"":"unread"}"><div class="nf-ico">${ico}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`;updateDoc(doc(db,"notifications",n.id),{lu:true}).catch(()=>{});}liste.innerHTML=html;}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
 async function addNotif(userId,type,texte){try{await addDoc(collection(db,"notifications"),{userId,type,texte,date:serverTimestamp(),lu:false});}catch{}}
 async function addNotifTous(type,texte){const uMap=await getUsers();Object.keys(uMap).forEach(id=>{if(id!==UC.id)addNotif(id,type,texte);});}
 
 // ===== AMIS =====
-window.openAmis=()=>{fermTout();ouv("ovAmis");loadAmis();};
+window.openAmis=()=>{ouv("ovAmis");loadAmis();};
 async function loadAmis(){const[uMap,sdSnap,saSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente"))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);let dmdHtml=sdSnap.empty?`<p style='color:var(--texte2);font-size:12px;padding:8px'>Aucune demande.</p>`:"";sdSnap.forEach(d=>{const a={id:d.id,...d.data()};const u=uMap[a.user_id];if(!u)return;dmdHtml+=`<div class="a-item"><div class="a-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">Demande d'ami</div></div><div class="a-btns"><button class="btn-ok" onclick="acceptAmi('${a.id}','${a.user_id}')">✓</button><button class="btn-no" onclick="refusAmi('${a.id}')">✕</button></div></div>`;});document.getElementById("listeDmd").innerHTML=dmdHtml;let amsHtml="";saSnap.forEach(d=>{const a=d.data();if(a.user_id!==UC.id&&a.ami_id!==UC.id)return;const uid=a.user_id===UC.id?a.ami_id:a.user_id;const u=uMap[uid];if(!u)return;amsHtml+=`<div class="a-item"><div class="a-av" style="position:relative">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}${u.enLigne?'<div style="position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#43e97b;border:2px solid #fff"></div>':""}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div><button class="btn-ma" onclick="msgAmi('${uid}')">💬</button></div>`;});document.getElementById("listeAms").innerHTML=amsHtml||`<p style='color:var(--texte2);font-size:12px;padding:8px'>Aucun ami.</p>`;}
 window.acceptAmi=async(did,uid)=>{await updateDoc(doc(db,"amis",did),{statut:"accepte"});addNotif(uid,"ami",`${UC.prenom} a accepté votre demande d'ami 👥`);loadAmis();};
 window.refusAmi=async did=>{await deleteDoc(doc(db,"amis",did));loadAmis();};
@@ -1924,6 +1899,7 @@ window.demandeAmi=async uid=>{const qa=query(collection(db,"amis"),where("user_i
 
 // ===== SUGGESTIONS =====
 window.openSugg=async()=>{ouv("ovSugg");const[uMap,saSnap]=await Promise.all([getUsers(),getDocs(collection(db,"amis"))]);const amisIds=new Set();saSnap.forEach(d=>{const a=d.data();if(a.user_id===UC.id)amisIds.add(a.ami_id);if(a.ami_id===UC.id)amisIds.add(a.user_id);});const sugg=Object.entries(uMap).filter(([id])=>id!==UC.id&&!amisIds.has(id)).map(([id,d])=>({id,...d}));document.getElementById("listeSugg").innerHTML=sugg.length===0?`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune suggestion.</p>`:sugg.map(u=>`<div class="sg-item"><div class="sg-av" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div class="sg-info"><div class="sg-nom" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.prenom||""} ${u.nom||""}</div><div class="sg-sub">Membre AKIT-CHAT</div></div><button class="btn-add" onclick="demandeAmi('${u.id}')">+ Ajouter</button></div>`).join("");};
+
 // ===== FAVORIS =====
 window.openFavs=async()=>{ouv("ovFavs");const[favDoc,uMap]=await Promise.all([getDoc(doc(db,"favs",UC.id)),getUsers()]);const favIds=favDoc.exists()?(favDoc.data().ids||[]):[];if(favIds.length===0){document.getElementById("listeFavs").innerHTML=`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori. Cliquez sur 🔖</p>`;return;}let html="";for(const pid of favIds){const snap=await getDoc(doc(db,"posts",pid));if(!snap.exists())continue;const p=snap.data();const u=uMap[p.userId]||{prenom:"?",nom:""};html+=`<div style="background:var(--gris);border-radius:9px;padding:11px;margin-bottom:8px;border:0.5px solid var(--gris2)"><div style="font-size:11px;color:var(--texte2);margin-bottom:3px">${u.prenom||""} ${u.nom||""} · ${fmtDate(p.date)}</div><div style="font-size:13px;color:var(--texte)">${p.texte||""}</div>${p.mediaUrl&&p.mediaType==="img"?`<img style="width:100%;max-height:100px;object-fit:cover;border-radius:7px;margin-top:5px;cursor:pointer" src="${p.mediaUrl}" onclick="openLightbox('${p.mediaUrl}')"/>`:""}<div style="font-size:11px;color:var(--texte2);margin-top:5px">❤️ ${p.likes||0} · 💬 ${(p.comments||[]).length}</div></div>`;}document.getElementById("listeFavs").innerHTML=html||`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori.</p>`;};
 
@@ -1935,15 +1911,10 @@ window.toggleDark=el=>{el.classList.toggle("on");const dark=el.classList.contain
 window.effacerDonnees=async()=>{if(!confirm("Supprimer TOUTES vos données ?"))return;const[sp,ss]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"stories"),where("userId","==",UC.id)))]);for(const d of sp.docs)await deleteDoc(doc(db,"posts",d.id));for(const d of ss.docs)await deleteDoc(doc(db,"stories",d.id));await deleteDoc(doc(db,"users",UC.id));await signOut(auth);window.location.replace("index.html");};
 
 // ===== COIN =====
-window.openCoin=()=>{fermTout();ouv("ovCoin");updateCoinDisplay();const el=document.getElementById("coinHistEl");if(!el)return;const hist=mmState.coin.hist||[];el.innerHTML=hist.length===0?`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p>`:hist.slice(-10).reverse().map(h=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--gris);margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:${h.type==='out'?'#ffebe9':'#e8f5e9'};display:flex;align-items:center;justify-content:center;font-size:16px">${h.type==='out'?'💸':'💰'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${h.label}</div><div style="font-size:11px;color:var(--texte2)">${h.date||""}</div></div><div style="font-size:14px;font-weight:700;color:${h.type==='out'?'#E24B4A':'#1D9E75'}">${h.type==='out'?'-':'+'}${h.amount?.toLocaleString()||0} A</div></div>`).join("");};
+window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinHistEl");const hist=mmState.coin.hist||[];el.innerHTML=hist.length===0?`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p>`:hist.slice(-10).reverse().map(h=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--gris);margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:${h.type==='out'?'#ffebe9':'#e8f5e9'};display:flex;align-items:center;justify-content:center;font-size:16px">${h.type==='out'?'💸':'💰'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${h.label}</div><div style="font-size:11px;color:var(--texte2)">${h.date||""}</div></div><div style="font-size:14px;font-weight:700;color:${h.type==='out'?'#E24B4A':'#1D9E75'}">${h.type==='out'?'-':'+'}${h.amount?.toLocaleString()||0} A</div></div>`).join("");ouv("ovCoin");};
 
 // ===== PROFIL =====
 window.openProfil=async()=>{
-  fermTout();
-  document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('actif'));
-  const bnp=document.getElementById('bnProfil');if(bnp)bnp.classList.add('actif');
-  ouv("ovProfil");
-  if(!UC) return;
   pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");
   document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+' <span class="new-prf-check">✓</span>';
   document.getElementById("prfEmail").textContent=UC.email||"";
@@ -1957,7 +1928,7 @@ window.openProfil=async()=>{
   let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});
   document.getElementById("psAmis").textContent=cntA;
   document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);
-  updateCoinDisplay();renderPrfTab('posts',sp);
+  updateCoinDisplay();renderPrfTab('posts',sp);ouv("ovProfil");
 };
 async function renderPrfTab(tab,spSnap){
   const content=document.getElementById("prfTabContent");
@@ -1997,8 +1968,7 @@ window.ouvrirProfilUser=async uid=>{
 
 // ===== RECHERCHE =====
 window.rechercher=async q=>{const drop=document.getElementById("srchDrop");if(!q.trim()){drop.classList.remove("open");return;}const uMap=await getUsers();const found=[];Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase()))found.push({id,...u});});if(found.length===0){drop.classList.remove("open");return;}drop.innerHTML=found.map(u=>`<div class="s-item" onclick="ouvrirProfilUser('${u.id}');fermSearch();document.getElementById('srchInp').value=''"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div><div class="s-nom">${u.prenom||""} ${u.nom||""}</div><div class="s-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div></div>`).join("");drop.classList.add("open");};
-  window.fermSearch=()=>document.getElementById("srchDrop").classList.remove("open");
-function fermTout(){document.querySelectorAll('.ov.open').forEach(el=>el.classList.remove('open'));}
+window.fermSearch=()=>document.getElementById("srchDrop").classList.remove("open");
 
 // ===== CLAUDE AI =====
 window.openClaude=()=>ouv("ovClaude");
@@ -2098,18 +2068,9 @@ function drawVoiceWave(canvas,progress){
     }
   },{passive:false});
 })();
-
-  window.ouvrirEnvoiCoin=()=>{
-  ferm("ovCoin");
-  document.getElementById("sendMoneyTitle").textContent="💸 Envoyer des AKIT Coins";
-  window._sendProvider='coin';
-  document.getElementById("sendMoneyDest").placeholder="👤 Nom ou ID du destinataire";
-  document.getElementById("sendMoneyAmount").placeholder="💰 Montant en Coins";
-  ouv("ovSendMoney");
-};
   // ===== PARRAINAGE =====
 window.openParrainage = async () => {
-  fermTout();ouv("ovParrainage");
+  ouv("ovParrainage");
   const lien = `https://akit-chat.vercel.app/acceuil.html?ref=${UC.id}`;
   document.getElementById("prrLink").value = lien;
   document.getElementById("prrCoins").textContent = (UC.akit_coin || 0).toLocaleString();
