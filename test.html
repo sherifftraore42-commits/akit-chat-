@@ -772,7 +772,7 @@ setTimeout(step,300);
   <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
   <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
   <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
-  <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Paramètres</span></button>
+  <button class="bn-btn" id="bnProfil" onclick="openProfil()"><i class="fas fa-user-circle"></i><span>Profil</span></button>
   <button class="bn-btn" onclick="openParrainage()"><i class="fas fa-gift" style="color:#00FF88"></i><span>Inviter</span></button>
 </nav>
   <div class="layout" id="mainLayout">
@@ -1365,6 +1365,7 @@ window.declineCall=async()=>{
 };
 
 window.appelerVideoUtilisateur=()=>{if(currentCallTargetUid)ouvrirVideoCall();else alert("❌ Sélectionnez d'abord un contact.");};
+window.appelerAudio=()=>{alert("📞 Appel audio — fonctionnalité en cours de développement.");};
 
 window.endVideoCall=async()=>{
   if(localStream)localStream.getTracks().forEach(t=>t.stop());
@@ -1938,6 +1939,7 @@ window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinH
 
 // ===== PROFIL =====
 window.openProfil=async()=>{
+  if(!UC){alert("⏳ Profil en cours de chargement, réessayez dans un instant.");return;}
   pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");
   document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+' <span class="new-prf-check">✓</span>';
   document.getElementById("prfEmail").textContent=UC.email||"";
@@ -1951,7 +1953,8 @@ window.openProfil=async()=>{
   let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});
   document.getElementById("psAmis").textContent=cntA;
   document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);
-  updateCoinDisplay();renderPrfTab('posts',sp);ouv("ovProfil");
+  updateCoinDisplay();renderPrfTab('posts',sp);document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('actif'));
+const bnp=document.getElementById('bnProfil');if(bnp)bnp.classList.add('actif');ouv("ovProfil");
 };
 async function renderPrfTab(tab,spSnap){
   const content=document.getElementById("prfTabContent");
