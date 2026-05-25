@@ -1638,6 +1638,20 @@ window.openConv=async(uid,type='direct')=>{
   document.getElementById("msgInp").value="";document.getElementById("typingIndicator").classList.remove("show");
   const convId=[UC.id,uid].sort().join("_");
   try{const lmRef=doc(db,"lastMessages",convId);const lmSnap=await getDoc(lmRef);if(lmSnap.exists()&&lmSnap.data().dest===UC.id)await updateDoc(lmRef,{luDest:true});}catch{}
+  // ── Marquer les messages comme "livré" ──
+  try {
+    const msgsRef = collection(db, "messages", convId, "msgs");
+    const msgsSnap = await getDocs(
+      query(msgsRef, where("dest", "==", UC.id), where("statut", "==", "envoye"))
+    );
+    const batch = [];
+    msgsSnap.forEach((d) => {
+      batch.push(updateDoc(doc(db, "messages", convId, "msgs", d.id), { statut: "livre" }));
+    });
+    await Promise.all(batch);
+  } catch (e) {
+    console.log("livré update:", e);
+  }
   if(unsubMsgs)unsubMsgs();
   unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
     const z=document.getElementById("msgsZ");
@@ -1664,9 +1678,36 @@ window.openConv=async(uid,type='direct')=>{
   </div>`;
 }
   if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
-  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
+ // Icône statut message
+  let statutIcon = '';
+  if (mine) {
+    const st = m.statut || 'envoye';
+    if (st === 'vu')    statutIcon = '<span style="color:#53bdeb;font-size:12px">👁</span>';
+    else if (st === 'livre') statutIcon = '<span style="color:#53bdeb;font-size:12px;font-weight:700">✓✓</span>';
+    else                statutIcon = '<span style="color:rgba(255,255,255,.45);font-size:12px">✓</span>';
+  }
+
+  return `<div class="msg-b ${mine ? "msg-me" : "msg-th"}" 
+    ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" 
+    ontouchend="endSwipe(event)">
+    ${replyHtml}
+    <span>${m.contenu || ''}</span>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:3px;margin-top:1px">
+      <small style="font-size:11px;opacity:.55">${fmtHeure(m.date)}</small>
+      ${statutIcon}
+    </div>
+  </div>`;
 }).join("");
     z.scrollTop=z.scrollHeight;
+    // ── Marquer les messages reçus comme "vu" ──
+    snap2.docs.forEach(async (d) => {
+      const m = d.data();
+      if (m.dest === UC.id && m.statut !== "vu") {
+        try {
+          await updateDoc(doc(db, "messages", convId, "msgs", d.id), { statut: "vu" });
+        } catch {}
+      }
+    });
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
   });
   if(unsubTyping){unsubTyping();unsubTyping=null;}
@@ -1816,7 +1857,18 @@ window.envoyerPhotoMsg=async(e)=>{
 window.onTyping=async()=>{const uid=document.getElementById("cvUid").value;if(!uid)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:true},{merge:true});}catch{}clearTimeout(typingTimeout);typingTimeout=setTimeout(()=>stopTypingSignal(),3000);};
 async function stopTypingSignal(){const uid=document.getElementById("cvUid").value;if(!uid||!UC)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:false},{merge:true});}catch{}}
 window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
-window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
+window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");// Dans sendMsg(), remplacez msgData par :
+const msgData = {
+  exp: UC.id,
+  dest: uid,
+  contenu,
+  date: serverTimestamp(),
+  lu: false,
+  statut: 'envoye',    // 'envoye' | 'livre' | 'vu'
+  type: "text",
+  ...(replyMsg ? {replyTo: replyMsg} : {})
+};
+if (isDisappear) msgData.disparait = true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
 // ===== GROUPES =====
 window.openGroupes=()=>{ouv("ovGroupes");loadGroupes();};
@@ -1871,7 +1923,6 @@ window.demandeAmi=async uid=>{const qa=query(collection(db,"amis"),where("user_i
 
 // ===== SUGGESTIONS =====
 window.openSugg=async()=>{ouv("ovSugg");const[uMap,saSnap]=await Promise.all([getUsers(),getDocs(collection(db,"amis"))]);const amisIds=new Set();saSnap.forEach(d=>{const a=d.data();if(a.user_id===UC.id)amisIds.add(a.ami_id);if(a.ami_id===UC.id)amisIds.add(a.user_id);});const sugg=Object.entries(uMap).filter(([id])=>id!==UC.id&&!amisIds.has(id)).map(([id,d])=>({id,...d}));document.getElementById("listeSugg").innerHTML=sugg.length===0?`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune suggestion.</p>`:sugg.map(u=>`<div class="sg-item"><div class="sg-av" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div class="sg-info"><div class="sg-nom" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.prenom||""} ${u.nom||""}</div><div class="sg-sub">Membre AKIT-CHAT</div></div><button class="btn-add" onclick="demandeAmi('${u.id}')">+ Ajouter</button></div>`).join("");};
-
 // ===== FAVORIS =====
 window.openFavs=async()=>{ouv("ovFavs");const[favDoc,uMap]=await Promise.all([getDoc(doc(db,"favs",UC.id)),getUsers()]);const favIds=favDoc.exists()?(favDoc.data().ids||[]):[];if(favIds.length===0){document.getElementById("listeFavs").innerHTML=`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori. Cliquez sur 🔖</p>`;return;}let html="";for(const pid of favIds){const snap=await getDoc(doc(db,"posts",pid));if(!snap.exists())continue;const p=snap.data();const u=uMap[p.userId]||{prenom:"?",nom:""};html+=`<div style="background:var(--gris);border-radius:9px;padding:11px;margin-bottom:8px;border:0.5px solid var(--gris2)"><div style="font-size:11px;color:var(--texte2);margin-bottom:3px">${u.prenom||""} ${u.nom||""} · ${fmtDate(p.date)}</div><div style="font-size:13px;color:var(--texte)">${p.texte||""}</div>${p.mediaUrl&&p.mediaType==="img"?`<img style="width:100%;max-height:100px;object-fit:cover;border-radius:7px;margin-top:5px;cursor:pointer" src="${p.mediaUrl}" onclick="openLightbox('${p.mediaUrl}')"/>`:""}<div style="font-size:11px;color:var(--texte2);margin-top:5px">❤️ ${p.likes||0} · 💬 ${(p.comments||[]).length}</div></div>`;}document.getElementById("listeFavs").innerHTML=html||`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori.</p>`;};
 
