@@ -701,6 +701,75 @@ input,textarea{font-family:var(--font)}
 </div>
 
 <script type="module">
+  // ===== MUSIQUE STORY =====
+window.selectGenre=(btn,genre)=>{
+  storyMusicGenre=genre;
+  storyMusicFile=null;
+  document.getElementById("stMusicLabel").textContent="🎵 "+genre;
+  document.getElementById("btnStopMusic").style.display="inline-flex";
+  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
+    b.style.background=b===btn?"var(--bleu)":"var(--gris)";
+    b.style.color=b===btn?"#fff":"var(--texte)";
+    b.style.borderColor=b===btn?"var(--bleu)":"var(--gris2)";
+  });
+  // Pas de lecteur pour les genres prédéfinis
+  document.getElementById("stMusicPlayer").style.display="none";
+};
+
+window.chargerMusiqueStory=(e)=>{
+  const file=e.target.files[0];if(!file)return;
+  storyMusicFile=file;storyMusicGenre=null;
+  document.getElementById("stMusicLabel").textContent=file.name;
+  document.getElementById("btnStopMusic").style.display="inline-flex";
+  const audio=document.getElementById("stMusicAudio");
+  audio.src=URL.createObjectURL(file);
+  audio.ontimeupdate=()=>{
+    const prog=audio.duration?(audio.currentTime/audio.duration*100):0;
+    document.getElementById("stMusicProg").style.width=prog+"%";
+    const m=Math.floor(audio.currentTime/60),s=Math.floor(audio.currentTime%60);
+    document.getElementById("stMusicTime").textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  };
+  audio.onended=()=>{
+    document.getElementById("icoPlayMusic").className="fas fa-play";
+    document.getElementById("stMusicProg").style.width="0%";
+  };
+  document.getElementById("stMusicName").textContent=file.name.replace(/\.[^/.]+$/,"");
+  const player=document.getElementById("stMusicPlayer");
+  player.style.display="flex";
+  // Réinitialiser sélection genres
+  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
+    b.style.background="var(--gris)";b.style.color="var(--texte)";b.style.borderColor="var(--gris2)";
+  });
+  e.target.value="";
+};
+
+window.togglePlayMusic=()=>{
+  const audio=document.getElementById("stMusicAudio");
+  const ico=document.getElementById("icoPlayMusic");
+  if(audio.paused){audio.play();ico.className="fas fa-pause";}
+  else{audio.pause();ico.className="fas fa-play";}
+};
+
+window.stopMusiqueStory=()=>{
+  storyMusicFile=null;storyMusicGenre=null;
+  const audio=document.getElementById("stMusicAudio");
+  audio.pause();audio.src="";
+  document.getElementById("stMusicLabel").textContent="Aucun fichier";
+  document.getElementById("btnStopMusic").style.display="none";
+  document.getElementById("stMusicPlayer").style.display="none";
+  document.getElementById("icoPlayMusic").className="fas fa-play";
+  document.getElementById("stMusicProg").style.width="0%";
+  document.getElementById("stMusicTime").textContent="0:00";
+  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
+    b.style.background="var(--gris)";b.style.color="var(--texte)";b.style.borderColor="var(--gris2)";
+  });
+  document.getElementById("inpStoryMusic").value="";
+};
+
+// Compteur description
+document.getElementById("stDesc").addEventListener("input",function(){
+  document.getElementById("stDescCount").textContent=this.value.length;
+});
 (function(){const c=document.getElementById('splashStars');for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;c.appendChild(s);}})();
 let pct=0;const fill=document.getElementById('splashFill'),pctEl=document.getElementById('splashPct');
 const step=()=>{pct+=Math.random()*3+1;if(pct>=100){pct=100;fill.style.width='100%';pctEl.textContent='100%';setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none';},500);},400);return;}fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';setTimeout(step,50+Math.random()*60);};
@@ -1172,11 +1241,69 @@ setTimeout(step,300);
   <div class="modal">
     <div class="m-head"><h2>📸 Nouvelle Story</h2><button class="m-close" onclick="ferm('ovAddS')"><i class="fas fa-times"></i></button></div>
     <div class="m-body">
-      <div class="drop-z" onclick="document.getElementById('inpStory').click()"><div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div><img class="prev-img" id="stPrev" src="" alt=""/></div>
+
+      <!-- Zone photo -->
+      <div class="drop-z" onclick="document.getElementById('inpStory').click()">
+        <div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div>
+        <img class="prev-img" id="stPrev" src="" alt=""/>
+      </div>
       <input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/>
       <div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div>
       <div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div>
-      <div class="m-actions"><button class="btn-can" onclick="ferm('ovAddS')">Annuler</button><button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier</button></div>
+
+      <!-- MUSIQUE -->
+      <div style="margin-top:12px;border:0.5px solid var(--gris2);border-radius:10px;overflow:hidden">
+        <div style="padding:10px 12px;background:var(--gris);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--gris2)">
+          <i class="fas fa-music" style="color:var(--bleu);font-size:15px"></i>
+          <span style="font-size:13px;font-weight:700;color:var(--texte);flex:1">🎵 Ajouter de la musique</span>
+          <span style="font-size:11px;color:var(--texte2)">optionnel</span>
+        </div>
+        <!-- Genres prédéfinis -->
+        <div style="display:flex;gap:6px;padding:10px 12px;overflow-x:auto;scrollbar-width:none">
+          <button onclick="selectGenre(this,'Afrobeat')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎸 Afrobeat</button>
+          <button onclick="selectGenre(this,'Coupé-décalé')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">💃 Coupé-décalé</button>
+          <button onclick="selectGenre(this,'Gospel')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🙏 Gospel</button>
+          <button onclick="selectGenre(this,'Hip-Hop')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎤 Hip-Hop</button>
+          <button onclick="selectGenre(this,'Bikutsi')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🥁 Bikutsi</button>
+          <button onclick="selectGenre(this,'Makossa')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎷 Makossa</button>
+        </div>
+        <!-- Upload fichier audio -->
+        <div style="padding:0 12px 10px;display:flex;align-items:center;gap:8px">
+          <button onclick="document.getElementById('inpStoryMusic').click()" style="background:var(--bleu3);color:var(--bleu);border:0.5px solid var(--bleu);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;min-height:36px"><i class="fas fa-upload" style="font-size:12px"></i> Importer un fichier</button>
+          <input type="file" id="inpStoryMusic" accept="audio/*" style="display:none" onchange="chargerMusiqueStory(event)"/>
+          <span id="stMusicLabel" style="font-size:12px;color:var(--texte2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Aucun fichier</span>
+          <button id="btnStopMusic" onclick="stopMusiqueStory()" style="display:none;background:none;border:none;color:#E24B4A;cursor:pointer;font-size:14px;padding:4px"><i class="fas fa-times"></i></button>
+        </div>
+        <!-- Lecteur audio preview -->
+        <div id="stMusicPlayer" style="display:none;padding:8px 12px 12px;border-top:0.5px solid var(--gris2);display:none;align-items:center;gap:8px">
+          <button onclick="togglePlayMusic()" id="btnPlayMusic" style="width:34px;height:34px;border-radius:50%;background:var(--bleu);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-play" id="icoPlayMusic"></i></button>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:var(--texte)" id="stMusicName">Musique</div>
+            <div style="height:3px;background:var(--gris2);border-radius:2px;margin-top:5px;overflow:hidden"><div id="stMusicProg" style="height:100%;width:0%;background:var(--bleu);border-radius:2px;transition:width .5s"></div></div>
+          </div>
+          <span id="stMusicTime" style="font-size:11px;color:var(--texte2)">0:00</span>
+        </div>
+        <audio id="stMusicAudio" style="display:none" preload="metadata"></audio>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div style="margin-top:12px;border:0.5px solid var(--gris2);border-radius:10px;overflow:hidden">
+        <div style="padding:10px 12px;background:var(--gris);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--gris2)">
+          <i class="fas fa-pencil-alt" style="color:var(--bleu);font-size:14px"></i>
+          <span style="font-size:13px;font-weight:700;color:var(--texte);flex:1">✍️ Ajouter une description</span>
+          <span style="font-size:11px;color:var(--texte2)">optionnel</span>
+        </div>
+        <textarea id="stDesc" placeholder="Décrivez votre story, ajoutez des hashtags..." style="width:100%;border:none;outline:none;padding:11px 12px;font-size:13px;resize:none;min-height:70px;background:var(--blanc);color:var(--texte);font-family:var(--font);box-sizing:border-box" rows="3" maxlength="200"></textarea>
+        <div style="padding:4px 12px 8px;font-size:11px;color:var(--texte2);text-align:right">
+          <span id="stDescCount">0</span>/200
+        </div>
+      </div>
+
+      <div class="m-actions">
+        <button class="btn-can" onclick="ferm('ovAddS')">Annuler</button>
+        <button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>📤 Publier</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1260,6 +1387,7 @@ function uploadCloudinary(file,folder,progressEl,fillEl){return new Promise((res
 // ===== ÉTAT =====
 let UC=null,svData=[],svIdx=0,svTimer=null,svProg=0,svPaused=false;
 let postFile=null,postType=null,storyFile=null;
+let storyMusicFile=null, storyMusicGenre=null, storyAudioEl=null;
 let pendAvFile=null,pendCoverFile=null;
 let unsubPosts=null,unsubMsgs=null,unsubTyping=null;
 let prevNotifCount=-1,prevMsgCount=-1;
@@ -1472,16 +1600,56 @@ async function renderStories(){
     row.appendChild(card);
   });
 }
-window.scrollS=d=>document.getElementById("sRow").scrollBy({left:d*200,behavior:"smooth"});
-window.openAddStory=()=>{storyFile=null;document.getElementById("stPrev").style.display="none";document.getElementById("dropCont").style.display="block";document.getElementById("btnPostSt").disabled=true;document.getElementById("inpStory").value="";ouv("ovAddS");};
+window.openAddStory=()=>{
+  storyFile=null;storyMusicFile=null;storyMusicGenre=null;
+  document.getElementById("stPrev").style.display="none";
+  document.getElementById("dropCont").style.display="block";
+  document.getElementById("btnPostSt").disabled=true;
+  document.getElementById("inpStory").value="";
+  document.getElementById("stDesc").value="";
+  document.getElementById("stDescCount").textContent="0";
+  stopMusiqueStory();
+  ouv("ovAddS");
+};
 window.prevStory=async e=>{const file=e.target.files[0];if(!file)return;document.getElementById("stPrev").src=URL.createObjectURL(file);document.getElementById("stPrev").style.display="block";document.getElementById("dropCont").style.display="none";document.getElementById("stCompInfo").classList.add("show");document.getElementById("btnPostSt").disabled=true;storyFile=await compresserStory(file);document.getElementById("stCompInfo").classList.remove("show");document.getElementById("btnPostSt").disabled=false;};
-window.posterStory=async()=>{if(!storyFile)return;const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";try{const imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));await addDoc(collection(db,"stories"),{userId:UC.id,imgUrl,date:serverTimestamp(),vues:0,vuPar:[],comments:[],reactions:{},likes:[],likedBy:[]});storyFile=null;ferm("ovAddS");renderStories();addNotifTous("story",`${UC.prenom} a publié une nouvelle story 📸`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
+window.posterStory=async()=>{if(!storyFile)return;const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";try{const imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));// Uploader le fichier audio si présent
+let musicUrl=null;
+if(storyMusicFile){
+  musicUrl=await uploadCloudinary(storyMusicFile,`akit/story_music/${UC.id}`,null,null);
+}
+
+await addDoc(collection(db,"stories"),{
+  userId:UC.id,
+  imgUrl,
+  date:serverTimestamp(),
+  vues:0,
+  vuPar:[],
+  comments:[],
+  reactions:{},
+  likes:[],
+  likedBy:[],
+  description:document.getElementById("stDesc").value.trim()||"",
+  musique:musicUrl||null,
+  musiqueGenre:storyMusicGenre||null,
+});;storyFile=null;ferm("ovAddS");renderStories();addNotifTous("story",`${UC.prenom} a publié une nouvelle story 📸`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 
 // SV — pause/reprise pour commentaires
 function openSV(stories,idx){svData=stories;svIdx=idx;svPaused=false;affSV();ouv("ovSV");demarSV();}
 async function affSV(){
   const s=svData[svIdx];
   document.getElementById("svImg").src=s.imgUrl||"";
+  // Description
+let svDescEl=document.getElementById("svDescEl");
+if(!svDescEl){svDescEl=document.createElement("div");svDescEl.id="svDescEl";svDescEl.style.cssText="position:absolute;bottom:155px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;z-index:10;padding:0 14px;text-shadow:0 1px 4px rgba(0,0,0,.8)";document.querySelector(".sv-box").appendChild(svDescEl);}
+svDescEl.textContent=s.description||"";
+
+// Musique auto-play
+const oldAudio=document.getElementById("svMusicAudio");if(oldAudio){oldAudio.pause();oldAudio.remove();}
+if(s.musique){
+  const a=document.createElement("audio");a.id="svMusicAudio";a.src=s.musique;a.loop=true;a.volume=0.4;a.autoplay=true;document.body.appendChild(a);
+}else if(s.musiqueGenre){
+  // Afficher juste le badge genre
+}
   const dt=s.date?.toDate?s.date.toDate():new Date(s.date);
   document.getElementById("svTm").textContent=isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   document.getElementById("svCC").textContent=(s.comments||[]).length;
@@ -1540,7 +1708,7 @@ function demarSV(){
 }
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(svIdx>0){svIdx--;affSV();demarSV();}};
-window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories();};
+window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories(); const svAudio=document.getElementById("svMusicAudio");if(svAudio){svAudio.pause();svAudio.remove();}};
 window.toggleSvC=()=>{
   const panel=document.getElementById("svCPanel");
   panel.classList.toggle("open");
