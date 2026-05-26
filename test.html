@@ -647,6 +647,42 @@ input,textarea{font-family:var(--font)}
   align-items:center;
   width:100%;
 }
+  /* ===== SWIPE GAUCHE POUR RÉPONDRE ===== */
+.msg-b { transition: transform 0.15s ease; }
+.reply-hint {
+  position: fixed; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bleu); color: #fff; display: flex;
+  align-items: center; justify-content: center; font-size: 14px;
+  opacity: 0; pointer-events: none; z-index: 500;
+  transition: opacity 0.15s; box-shadow: 0 2px 8px rgba(91,76,245,.4);
+}
+.reply-hint.show { opacity: 1; }
+
+/* ===== PHOTO AVEC LÉGENDE STYLE FACEBOOK ===== */
+.pm-caption-wrap {
+  display: none; position: relative; margin-bottom: 10px;
+  border-radius: 9px; overflow: hidden; border: 0.5px solid var(--gris2);
+}
+.pm-caption-wrap.sh { display: block; }
+.pm-caption-img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+.pm-caption-inp {
+  width: 100%; border: none; border-top: 0.5px solid var(--gris2);
+  background: var(--blanc); padding: 11px 14px; font-size: 14px;
+  font-family: var(--font); outline: none; resize: none;
+  min-height: 55px; color: var(--texte);
+}
+.pm-caption-inp::placeholder { color: var(--texte2); }
+.pm-caption-header {
+  display: none; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--gris);
+  border-bottom: 0.5px solid var(--gris2);
+}
+.pm-caption-header.sh { display: flex; }
+.pm-caption-header span { font-size: 12px; color: var(--texte2); flex: 1; }
+.pm-caption-del {
+  background: none; border: none; color: #E24B4A;
+  font-size: 18px; cursor: pointer; padding: 4px;
+}
 </style>
 </head>
 <body>
@@ -1150,8 +1186,22 @@ setTimeout(step,300);
   <div class="modal">
     <div class="m-head"><h2>✍️ Nouvelle publication</h2><button class="m-close" onclick="ferm('ovComp')"><i class="fas fa-times"></i></button></div>
     <div class="m-body">
-      <textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea>
-      <img class="pm-prev" id="pmImg" src="" alt=""/><video class="pv-prev" id="pmVid" controls></video>
+    <textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea>
+
+<!-- PHOTO AVEC LÉGENDE STYLE FACEBOOK -->
+<div class="pm-caption-header" id="pmCaptionHeader">
+  <i class="fas fa-image" style="color:var(--bleu);font-size:16px"></i>
+  <span>Photo sélectionnée — ajoutez une légende ci-dessous</span>
+  <button class="pm-caption-del" onclick="supprimerPhoto()" title="Supprimer la photo">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+<div class="pm-caption-wrap" id="pmCaptionWrap">
+  <img class="pm-caption-img" id="pmImg" src="" alt=""/>
+  <textarea class="pm-caption-inp" id="pmCaption"
+    placeholder="✍️ Ajouter une légende à votre photo (optionnel)..." rows="2"></textarea>
+</div>
+<video class="pv-prev" id="pmVid" controls></video>
       <div class="cm-btns">
         <button class="cm-btn" onclick="document.getElementById('inpPhoto').click()"><i class="fas fa-image" style="color:#1D9E75"></i> Photo</button>
         <button class="cm-btn" onclick="document.getElementById('inpVideo').click()"><i class="fas fa-video" style="color:#E24B4A"></i> Vidéo</button>
@@ -1598,9 +1648,57 @@ function buildPostHtml(p,uMap,favs){
 
 window.toggleWhoPanel=id=>{const el=document.getElementById(id);if(el)el.classList.toggle("open");};
 window.toggleCmts=id=>document.getElementById(`cmts_${id}`)?.classList.toggle("open");
-window.openComposer=type=>{postFile=null;postType=null;document.getElementById("postTxt").value="";document.getElementById("pmImg").classList.remove("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("inpPhoto").value="";document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
-window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{postFile=file;const el=document.getElementById("pmVid");el.src=URL.createObjectURL(file);el.classList.add("sh");document.getElementById("pmImg").classList.remove("sh");}};
-window.publierPost=async()=>{const texte=document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
+window.openComposer=type=>{
+  postFile=null;postType=null;
+  document.getElementById("postTxt").value="";
+  document.getElementById("postTxt").style.display="";
+  document.getElementById("pmCaptionWrap").classList.remove("sh");
+  document.getElementById("pmCaptionHeader").classList.remove("sh");
+  document.getElementById("pmCaption").value="";
+  document.getElementById("pmImg").src="";
+  document.getElementById("pmVid").classList.remove("sh");
+  document.getElementById("inpPhoto").value="";
+  document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
+window.prevPostMedia=async(e,type)=>{
+  const file=e.target.files[0];if(!file)return;
+  postType=type;
+  if(type==="img"){
+    // Afficher header + wrap caption, cacher textarea principal
+    document.getElementById("pmCaptionWrap").classList.add("sh");
+    document.getElementById("pmCaptionHeader").classList.add("sh");
+    document.getElementById("postTxt").style.display="none";
+    document.getElementById("pmVid").classList.remove("sh");
+    document.getElementById("pmImg").src=URL.createObjectURL(file);
+    document.getElementById("postCompInfo").classList.add("show");
+    postFile=await compresserPost(file);
+    document.getElementById("postCompInfo").classList.remove("show");
+    document.getElementById("pmImg").src=URL.createObjectURL(postFile);
+  }else{
+    postFile=file;
+    document.getElementById("pmCaptionWrap").classList.remove("sh");
+    document.getElementById("pmCaptionHeader").classList.remove("sh");
+    document.getElementById("postTxt").style.display="";
+    const el=document.getElementById("pmVid");
+    el.src=URL.createObjectURL(file);
+    el.classList.add("sh");
+  }
+};
+
+// Supprimer photo sélectionnée
+window.supprimerPhoto=()=>{
+  postFile=null;postType=null;
+  document.getElementById("pmCaptionWrap").classList.remove("sh");
+  document.getElementById("pmCaptionHeader").classList.remove("sh");
+  document.getElementById("pmCaption").value="";
+  document.getElementById("pmImg").src="";
+  document.getElementById("postTxt").style.display="";
+  document.getElementById("inpPhoto").value="";
+};
+window.publierPost=async()=>{
+  // Si photo : prendre la légende, sinon le texte normal
+  const texte = postType==="img"
+    ? document.getElementById("pmCaption").value.trim()
+    : document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 window.delPost=async id=>{if(!confirm("Supprimer ?"))return;await deleteDoc(doc(db,"posts",id));};
 window.likePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const liked=(p.likedBy||[]).includes(UC.id);if(liked)await updateDoc(doc(db,"posts",id),{likedBy:(p.likedBy||[]).filter(x=>x!==UC.id),likes:Math.max(0,(p.likes||1)-1)});else{await updateDoc(doc(db,"posts",id),{likedBy:[...(p.likedBy||[]),UC.id],likes:(p.likes||0)+1});if(p.userId!==UC.id)addNotif(p.userId,"like",`${UC.prenom} a aimé votre publication ❤️`);}};
 window.sendCmt=async id=>{const inp=document.getElementById(`ci_${id}`);const texte=inp.value.trim();if(!texte)return;const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();await updateDoc(doc(db,"posts",id),{comments:[...(p.comments||[]),{userId:UC.id,userPrenom:UC.prenom,texte,time:"À l'instant"}]});if(p.userId!==UC.id)addNotif(p.userId,"comment",`${UC.prenom} a commenté votre publication 💬`);inp.value="";};
@@ -1950,20 +2048,50 @@ window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.l
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
 
 // Swipe pour répondre
-let swipeStartX=0,swipeData=null;
-window.startSwipe=(e,txt,mine)=>{swipeStartX=e.touches[0].clientX;swipeData={txt,mine};};
+let swipeStartX=0,swipeData=null,swipeEl=null;
+
+window.startSwipe=(e,txt,mine)=>{
+  swipeStartX=e.touches[0].clientX;
+  swipeData={txt,mine};
+  swipeEl=e.currentTarget;
+};
+
+// Mouvement en temps réel — message glisse à gauche
+document.addEventListener('touchmove',e=>{
+  if(!swipeData||!swipeEl)return;
+  const dx=e.touches[0].clientX-swipeStartX;
+  if(dx<0&&dx>-90){
+    swipeEl.style.transform=`translateX(${dx}px)`;
+    swipeEl.style.transition='none';
+    // Afficher icône réponse
+    const hint=document.getElementById('replyHint');
+    if(hint){
+      hint.style.left=(swipeEl.getBoundingClientRect().right-50)+'px';
+      hint.style.top=(swipeEl.getBoundingClientRect().top + swipeEl.offsetHeight/2 - 16)+'px';
+      hint.classList.toggle('show',dx<-40);
+    }
+  }
+},{passive:true});
+
 window.endSwipe=(e)=>{
   if(!swipeData)return;
   const dx=e.changedTouches[0].clientX-swipeStartX;
-  // Swipe droite = répondre
-  if(dx>60){
+  // Remettre en place avec animation
+  if(swipeEl){swipeEl.style.transform='';swipeEl.style.transition='transform .2s ease';}
+  const hint=document.getElementById('replyHint');
+  if(hint)hint.classList.remove('show');
+
+  // ← SWIPE GAUCHE = répondre (style WhatsApp)
+  if(dx < -60){
     replyMsg=swipeData.txt;
     const bar=document.getElementById('replyBar');
     document.getElementById('replyBarText').textContent='↩ '+replyMsg.substring(0,50);
     bar.classList.add('show');
     document.getElementById('msgInp').focus();
+    // Vibration haptic sur mobile
+    if(navigator.vibrate)navigator.vibrate(40);
   }
-  swipeData=null;
+  swipeData=null;swipeEl=null;
 };
 window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
 window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
@@ -2161,5 +2289,7 @@ window.partagerAutre = async () => {
     </div>
   </div>
 </div>
+  <!-- INDICATEUR SWIPE RÉPONDRE -->
+<div class="reply-hint" id="replyHint"><i class="fas fa-reply"></i></div>
 </body>
 </html>
