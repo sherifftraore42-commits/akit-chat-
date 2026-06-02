@@ -1425,7 +1425,22 @@ window.ouv=ouv;window.ferm=ferm;
 window.closeSiDehors=(e,id)=>{if(e.target===document.getElementById(id))ferm(id);};
 function fmtDate(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString("fr-FR")+" · "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtHeure(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);return isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function setBdg(id,nb){const el=document.getElementById(id);if(!el)return;el.textContent=nb>0?nb:"";nb>0?el.classList.add("on"):el.classList.remove("on");}
+function setBdg(id, nb) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (nb > 0) {
+    el.textContent = nb;
+    el.classList.add("on");
+    el.style.display = "flex";
+  } else {
+    el.textContent = "";
+    el.classList.remove("on");
+    // Pour les sb-bdg, cacher complètement
+    if (el.classList.contains("sb-bdg")) {
+      el.style.display = "none";
+    }
+  }
+}
 function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
 function animerReaction(emoji){const pop=document.createElement("div");pop.className="react-pop";pop.textContent=emoji;pop.style.left=Math.random()*60+20+"%";pop.style.bottom="80px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);}
 
@@ -1456,7 +1471,7 @@ onAuthStateChanged(auth,async fireUser=>{
     prevMsgCount=unread;
   });
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{
-    setBdg("bdg_amis",snap.size);setBdg("bdg_amis_sb",snap.size);
+    setBdg("bdg_amis_sb",snap.size);
   });
   // Écouter appels entrants
   onSnapshot(doc(db,"appels",UC.id),snap2=>{
@@ -1982,29 +1997,38 @@ function startWaveAnimation(){
   draw();
 }
 window.toggleVoiceRecord = async () => {
-  if (isRecording) return;
+  if (isRecording) {
+    // Si déjà en cours → arrêter
+    await arreterEnregistrement(true);
+    return;
+  }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({audio: true});
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
     recordSec = 0;
     wavePoints = [];
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.start();
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+    };
+    mediaRecorder.start(100); // collecte toutes les 100ms
     isRecording = true;
 
-    // Cacher barre normale, montrer barre enregistrement
     document.getElementById('normalInputRow').style.display = 'none';
     document.getElementById('voiceRecordZone').style.display = 'flex';
 
     startWaveAnimation();
+
     recordInterval = setInterval(() => {
       recordSec++;
       const m = Math.floor(recordSec / 60), s = recordSec % 60;
-      document.getElementById('recordTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+      const el = document.getElementById('recordTimer');
+      if (el) el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
     }, 1000);
-  } catch {
-    alert('❌ Microphone non accessible');
+
+  } catch(e) {
+    isRecording = false;
+    alert('❌ Microphone non accessible : ' + e.message);
   }
 };
   window.arreterEnregistrement = async (send) => {
