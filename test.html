@@ -647,42 +647,6 @@ input,textarea{font-family:var(--font)}
   align-items:center;
   width:100%;
 }
-  /* ===== SWIPE GAUCHE POUR RÉPONDRE ===== */
-.msg-b { transition: transform 0.15s ease; }
-.reply-hint {
-  position: fixed; width: 32px; height: 32px; border-radius: 50%;
-  background: var(--bleu); color: #fff; display: flex;
-  align-items: center; justify-content: center; font-size: 14px;
-  opacity: 0; pointer-events: none; z-index: 500;
-  transition: opacity 0.15s; box-shadow: 0 2px 8px rgba(91,76,245,.4);
-}
-.reply-hint.show { opacity: 1; }
-
-/* ===== PHOTO AVEC LÉGENDE STYLE FACEBOOK ===== */
-.pm-caption-wrap {
-  display: none; position: relative; margin-bottom: 10px;
-  border-radius: 9px; overflow: hidden; border: 0.5px solid var(--gris2);
-}
-.pm-caption-wrap.sh { display: block; }
-.pm-caption-img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
-.pm-caption-inp {
-  width: 100%; border: none; border-top: 0.5px solid var(--gris2);
-  background: var(--blanc); padding: 11px 14px; font-size: 14px;
-  font-family: var(--font); outline: none; resize: none;
-  min-height: 55px; color: var(--texte);
-}
-.pm-caption-inp::placeholder { color: var(--texte2); }
-.pm-caption-header {
-  display: none; align-items: center; gap: 10px;
-  padding: 10px 14px; background: var(--gris);
-  border-bottom: 0.5px solid var(--gris2);
-}
-.pm-caption-header.sh { display: flex; }
-.pm-caption-header span { font-size: 12px; color: var(--texte2); flex: 1; }
-.pm-caption-del {
-  background: none; border: none; color: #E24B4A;
-  font-size: 18px; cursor: pointer; padding: 4px;
-}
 </style>
 </head>
 <body>
@@ -701,75 +665,6 @@ input,textarea{font-family:var(--font)}
 </div>
 
 <script type="module">
-  // ===== MUSIQUE STORY =====
-window.selectGenre=(btn,genre)=>{
-  storyMusicGenre=genre;
-  storyMusicFile=null;
-  document.getElementById("stMusicLabel").textContent="🎵 "+genre;
-  document.getElementById("btnStopMusic").style.display="inline-flex";
-  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
-    b.style.background=b===btn?"var(--bleu)":"var(--gris)";
-    b.style.color=b===btn?"#fff":"var(--texte)";
-    b.style.borderColor=b===btn?"var(--bleu)":"var(--gris2)";
-  });
-  // Pas de lecteur pour les genres prédéfinis
-  document.getElementById("stMusicPlayer").style.display="none";
-};
-
-window.chargerMusiqueStory=(e)=>{
-  const file=e.target.files[0];if(!file)return;
-  storyMusicFile=file;storyMusicGenre=null;
-  document.getElementById("stMusicLabel").textContent=file.name;
-  document.getElementById("btnStopMusic").style.display="inline-flex";
-  const audio=document.getElementById("stMusicAudio");
-  audio.src=URL.createObjectURL(file);
-  audio.ontimeupdate=()=>{
-    const prog=audio.duration?(audio.currentTime/audio.duration*100):0;
-    document.getElementById("stMusicProg").style.width=prog+"%";
-    const m=Math.floor(audio.currentTime/60),s=Math.floor(audio.currentTime%60);
-    document.getElementById("stMusicTime").textContent=`${m}:${s.toString().padStart(2,'0')}`;
-  };
-  audio.onended=()=>{
-    document.getElementById("icoPlayMusic").className="fas fa-play";
-    document.getElementById("stMusicProg").style.width="0%";
-  };
-  document.getElementById("stMusicName").textContent=file.name.replace(/\.[^/.]+$/,"");
-  const player=document.getElementById("stMusicPlayer");
-  player.style.display="flex";
-  // Réinitialiser sélection genres
-  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
-    b.style.background="var(--gris)";b.style.color="var(--texte)";b.style.borderColor="var(--gris2)";
-  });
-  e.target.value="";
-};
-
-window.togglePlayMusic=()=>{
-  const audio=document.getElementById("stMusicAudio");
-  const ico=document.getElementById("icoPlayMusic");
-  if(audio.paused){audio.play();ico.className="fas fa-pause";}
-  else{audio.pause();ico.className="fas fa-play";}
-};
-
-window.stopMusiqueStory=()=>{
-  storyMusicFile=null;storyMusicGenre=null;
-  const audio=document.getElementById("stMusicAudio");
-  audio.pause();audio.src="";
-  document.getElementById("stMusicLabel").textContent="Aucun fichier";
-  document.getElementById("btnStopMusic").style.display="none";
-  document.getElementById("stMusicPlayer").style.display="none";
-  document.getElementById("icoPlayMusic").className="fas fa-play";
-  document.getElementById("stMusicProg").style.width="0%";
-  document.getElementById("stMusicTime").textContent="0:00";
-  document.querySelectorAll("#ovAddS button[onclick^='selectGenre']").forEach(b=>{
-    b.style.background="var(--gris)";b.style.color="var(--texte)";b.style.borderColor="var(--gris2)";
-  });
-  document.getElementById("inpStoryMusic").value="";
-};
-
-// Compteur description
-document.getElementById("stDesc").addEventListener("input",function(){
-  document.getElementById("stDescCount").textContent=this.value.length;
-});
 (function(){const c=document.getElementById('splashStars');for(let i=0;i<60;i++){const s=document.createElement('div');s.className='star';s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*3}s;--op:${.3+Math.random()*.7}`;c.appendChild(s);}})();
 let pct=0;const fill=document.getElementById('splashFill'),pctEl=document.getElementById('splashPct');
 const step=()=>{pct+=Math.random()*3+1;if(pct>=100){pct=100;fill.style.width='100%';pctEl.textContent='100%';setTimeout(()=>{document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none';},500);},400);return;}fill.style.width=pct+'%';pctEl.textContent=Math.round(pct)+'%';setTimeout(step,50+Math.random()*60);};
@@ -959,7 +854,6 @@ setTimeout(step,300);
       </button>
       <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
     </div>
-  <div id="voiceRecordZone" style="display:none;align-items:center;gap:8px;padding:4px 0">
   <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
   <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
   <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
@@ -1242,69 +1136,11 @@ setTimeout(step,300);
   <div class="modal">
     <div class="m-head"><h2>📸 Nouvelle Story</h2><button class="m-close" onclick="ferm('ovAddS')"><i class="fas fa-times"></i></button></div>
     <div class="m-body">
-
-      <!-- Zone photo -->
-      <div class="drop-z" onclick="document.getElementById('inpStory').click()">
-        <div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div>
-        <img class="prev-img" id="stPrev" src="" alt=""/>
-      </div>
+      <div class="drop-z" onclick="document.getElementById('inpStory').click()"><div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div><img class="prev-img" id="stPrev" src="" alt=""/></div>
       <input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/>
       <div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div>
       <div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div>
-
-      <!-- MUSIQUE -->
-      <div style="margin-top:12px;border:0.5px solid var(--gris2);border-radius:10px;overflow:hidden">
-        <div style="padding:10px 12px;background:var(--gris);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--gris2)">
-          <i class="fas fa-music" style="color:var(--bleu);font-size:15px"></i>
-          <span style="font-size:13px;font-weight:700;color:var(--texte);flex:1">🎵 Ajouter de la musique</span>
-          <span style="font-size:11px;color:var(--texte2)">optionnel</span>
-        </div>
-        <!-- Genres prédéfinis -->
-        <div style="display:flex;gap:6px;padding:10px 12px;overflow-x:auto;scrollbar-width:none">
-          <button onclick="selectGenre(this,'Afrobeat')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎸 Afrobeat</button>
-          <button onclick="selectGenre(this,'Coupé-décalé')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">💃 Coupé-décalé</button>
-          <button onclick="selectGenre(this,'Gospel')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🙏 Gospel</button>
-          <button onclick="selectGenre(this,'Hip-Hop')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎤 Hip-Hop</button>
-          <button onclick="selectGenre(this,'Bikutsi')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🥁 Bikutsi</button>
-          <button onclick="selectGenre(this,'Makossa')" style="flex:0 0 auto;background:var(--gris);border:0.5px solid var(--gris2);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);color:var(--texte)">🎷 Makossa</button>
-        </div>
-        <!-- Upload fichier audio -->
-        <div style="padding:0 12px 10px;display:flex;align-items:center;gap:8px">
-          <button onclick="document.getElementById('inpStoryMusic').click()" style="background:var(--bleu3);color:var(--bleu);border:0.5px solid var(--bleu);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;min-height:36px"><i class="fas fa-upload" style="font-size:12px"></i> Importer un fichier</button>
-          <input type="file" id="inpStoryMusic" accept="audio/*" style="display:none" onchange="chargerMusiqueStory(event)"/>
-          <span id="stMusicLabel" style="font-size:12px;color:var(--texte2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Aucun fichier</span>
-          <button id="btnStopMusic" onclick="stopMusiqueStory()" style="display:none;background:none;border:none;color:#E24B4A;cursor:pointer;font-size:14px;padding:4px"><i class="fas fa-times"></i></button>
-        </div>
-        <!-- Lecteur audio preview -->
-        <div id="stMusicPlayer" style="display:none;padding:8px 12px 12px;border-top:0.5px solid var(--gris2);display:none;align-items:center;gap:8px">
-          <button onclick="togglePlayMusic()" id="btnPlayMusic" style="width:34px;height:34px;border-radius:50%;background:var(--bleu);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-play" id="icoPlayMusic"></i></button>
-          <div style="flex:1">
-            <div style="font-size:12px;font-weight:600;color:var(--texte)" id="stMusicName">Musique</div>
-            <div style="height:3px;background:var(--gris2);border-radius:2px;margin-top:5px;overflow:hidden"><div id="stMusicProg" style="height:100%;width:0%;background:var(--bleu);border-radius:2px;transition:width .5s"></div></div>
-          </div>
-          <span id="stMusicTime" style="font-size:11px;color:var(--texte2)">0:00</span>
-        </div>
-        <audio id="stMusicAudio" style="display:none" preload="metadata"></audio>
-      </div>
-
-      <!-- DESCRIPTION -->
-      <div style="margin-top:12px;border:0.5px solid var(--gris2);border-radius:10px;overflow:hidden">
-        <div style="padding:10px 12px;background:var(--gris);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--gris2)">
-          <i class="fas fa-pencil-alt" style="color:var(--bleu);font-size:14px"></i>
-          <span style="font-size:13px;font-weight:700;color:var(--texte);flex:1">✍️ Ajouter une description</span>
-          <span style="font-size:11px;color:var(--texte2)">optionnel</span>
-        </div>
-        <textarea id="stDesc" placeholder="Décrivez votre story, ajoutez des hashtags..." style="width:100%;border:none;outline:none;padding:11px 12px;font-size:13px;resize:none;min-height:70px;background:var(--blanc);color:var(--texte);font-family:var(--font);box-sizing:border-box" rows="3" maxlength="200"></textarea>
-        <div style="padding:4px 12px 8px;font-size:11px;color:var(--texte2);text-align:right">
-          <span id="stDescCount">0</span>/200
-        </div>
-      </div>
-
-      <div class="m-actions">
-        <button class="btn-can" onclick="ferm('ovAddS')">Annuler</button>
-        <button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>📤 Publier</button>
-      </div>
-
+      <div class="m-actions"><button class="btn-can" onclick="ferm('ovAddS')">Annuler</button><button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier</button></div>
     </div>
   </div>
 </div>
@@ -1314,22 +1150,8 @@ setTimeout(step,300);
   <div class="modal">
     <div class="m-head"><h2>✍️ Nouvelle publication</h2><button class="m-close" onclick="ferm('ovComp')"><i class="fas fa-times"></i></button></div>
     <div class="m-body">
-    <textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea>
-
-<!-- PHOTO AVEC LÉGENDE STYLE FACEBOOK -->
-<div class="pm-caption-header" id="pmCaptionHeader">
-  <i class="fas fa-image" style="color:var(--bleu);font-size:16px"></i>
-  <span>Photo sélectionnée — ajoutez une légende ci-dessous</span>
-  <button class="pm-caption-del" onclick="supprimerPhoto()" title="Supprimer la photo">
-    <i class="fas fa-times"></i>
-  </button>
-</div>
-<div class="pm-caption-wrap" id="pmCaptionWrap">
-  <img class="pm-caption-img" id="pmImg" src="" alt=""/>
-  <textarea class="pm-caption-inp" id="pmCaption"
-    placeholder="✍️ Ajouter une légende à votre photo (optionnel)..." rows="2"></textarea>
-</div>
-<video class="pv-prev" id="pmVid" controls></video>
+      <textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea>
+      <img class="pm-prev" id="pmImg" src="" alt=""/><video class="pv-prev" id="pmVid" controls></video>
       <div class="cm-btns">
         <button class="cm-btn" onclick="document.getElementById('inpPhoto').click()"><i class="fas fa-image" style="color:#1D9E75"></i> Photo</button>
         <button class="cm-btn" onclick="document.getElementById('inpVideo').click()"><i class="fas fa-video" style="color:#E24B4A"></i> Vidéo</button>
@@ -1388,7 +1210,6 @@ function uploadCloudinary(file,folder,progressEl,fillEl){return new Promise((res
 // ===== ÉTAT =====
 let UC=null,svData=[],svIdx=0,svTimer=null,svProg=0,svPaused=false;
 let postFile=null,postType=null,storyFile=null;
-let storyMusicFile=null, storyMusicGenre=null, storyAudioEl=null;
 let pendAvFile=null,pendCoverFile=null;
 let unsubPosts=null,unsubMsgs=null,unsubTyping=null;
 let prevNotifCount=-1,prevMsgCount=-1;
@@ -1425,20 +1246,7 @@ window.ouv=ouv;window.ferm=ferm;
 window.closeSiDehors=(e,id)=>{if(e.target===document.getElementById(id))ferm(id);};
 function fmtDate(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString("fr-FR")+" · "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtHeure(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);return isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function setBdg(id, nb) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (nb > 0) {
-    el.textContent = nb;
-    // Forcer display avec !important via style
-    el.setAttribute('style', 'display:flex !important');
-    el.classList.add("on");
-  } else {
-    el.textContent = "";
-    el.removeAttribute('style');
-    el.classList.remove("on");
-  }
-}
+function setBdg(id,nb){const el=document.getElementById(id);if(!el)return;el.textContent=nb>0?nb:"";nb>0?el.classList.add("on"):el.classList.remove("on");}
 function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
 function animerReaction(emoji){const pop=document.createElement("div");pop.className="react-pop";pop.textContent=emoji;pop.style.left=Math.random()*60+20+"%";pop.style.bottom="80px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);}
 
@@ -1469,7 +1277,7 @@ onAuthStateChanged(auth,async fireUser=>{
     prevMsgCount=unread;
   });
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{
-    setBdg("bdg_amis_sb",snap.size);
+    setBdg("bdg_amis",snap.size);setBdg("bdg_amis_sb",snap.size);
   });
   // Écouter appels entrants
   onSnapshot(doc(db,"appels",UC.id),snap2=>{
@@ -1614,56 +1422,16 @@ async function renderStories(){
     row.appendChild(card);
   });
 }
-window.openAddStory=()=>{
-  storyFile=null;storyMusicFile=null;storyMusicGenre=null;
-  document.getElementById("stPrev").style.display="none";
-  document.getElementById("dropCont").style.display="block";
-  document.getElementById("btnPostSt").disabled=true;
-  document.getElementById("inpStory").value="";
-  document.getElementById("stDesc").value="";
-  document.getElementById("stDescCount").textContent="0";
-  stopMusiqueStory();
-  ouv("ovAddS");
-};
+window.scrollS=d=>document.getElementById("sRow").scrollBy({left:d*200,behavior:"smooth"});
+window.openAddStory=()=>{storyFile=null;document.getElementById("stPrev").style.display="none";document.getElementById("dropCont").style.display="block";document.getElementById("btnPostSt").disabled=true;document.getElementById("inpStory").value="";ouv("ovAddS");};
 window.prevStory=async e=>{const file=e.target.files[0];if(!file)return;document.getElementById("stPrev").src=URL.createObjectURL(file);document.getElementById("stPrev").style.display="block";document.getElementById("dropCont").style.display="none";document.getElementById("stCompInfo").classList.add("show");document.getElementById("btnPostSt").disabled=true;storyFile=await compresserStory(file);document.getElementById("stCompInfo").classList.remove("show");document.getElementById("btnPostSt").disabled=false;};
-window.posterStory=async()=>{if(!storyFile)return;const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";try{const imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));// Uploader le fichier audio si présent
-let musicUrl=null;
-if(storyMusicFile){
-  musicUrl=await uploadCloudinary(storyMusicFile,`akit/story_music/${UC.id}`,null,null);
-}
-
-await addDoc(collection(db,"stories"),{
-  userId:UC.id,
-  imgUrl,
-  date:serverTimestamp(),
-  vues:0,
-  vuPar:[],
-  comments:[],
-  reactions:{},
-  likes:[],
-  likedBy:[],
-  description:document.getElementById("stDesc").value.trim()||"",
-  musique:musicUrl||null,
-  musiqueGenre:storyMusicGenre||null,
-});;storyFile=null;ferm("ovAddS");renderStories();addNotifTous("story",`${UC.prenom} a publié une nouvelle story 📸`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
+window.posterStory=async()=>{if(!storyFile)return;const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";try{const imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));await addDoc(collection(db,"stories"),{userId:UC.id,imgUrl,date:serverTimestamp(),vues:0,vuPar:[],comments:[],reactions:{},likes:[],likedBy:[]});storyFile=null;ferm("ovAddS");renderStories();addNotifTous("story",`${UC.prenom} a publié une nouvelle story 📸`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 
 // SV — pause/reprise pour commentaires
 function openSV(stories,idx){svData=stories;svIdx=idx;svPaused=false;affSV();ouv("ovSV");demarSV();}
 async function affSV(){
   const s=svData[svIdx];
   document.getElementById("svImg").src=s.imgUrl||"";
-  // Description
-let svDescEl=document.getElementById("svDescEl");
-if(!svDescEl){svDescEl=document.createElement("div");svDescEl.id="svDescEl";svDescEl.style.cssText="position:absolute;bottom:155px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:600;z-index:10;padding:0 14px;text-shadow:0 1px 4px rgba(0,0,0,.8)";document.querySelector(".sv-box").appendChild(svDescEl);}
-svDescEl.textContent=s.description||"";
-
-// Musique auto-play
-const oldAudio=document.getElementById("svMusicAudio");if(oldAudio){oldAudio.pause();oldAudio.remove();}
-if(s.musique){
-  const a=document.createElement("audio");a.id="svMusicAudio";a.src=s.musique;a.loop=true;a.volume=0.4;a.autoplay=true;document.body.appendChild(a);
-}else if(s.musiqueGenre){
-  // Afficher juste le badge genre
-}
   const dt=s.date?.toDate?s.date.toDate():new Date(s.date);
   document.getElementById("svTm").textContent=isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   document.getElementById("svCC").textContent=(s.comments||[]).length;
@@ -1722,7 +1490,7 @@ function demarSV(){
 }
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(svIdx>0){svIdx--;affSV();demarSV();}};
-window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories(); const svAudio=document.getElementById("svMusicAudio");if(svAudio){svAudio.pause();svAudio.remove();}};
+window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories();};
 window.toggleSvC=()=>{
   const panel=document.getElementById("svCPanel");
   panel.classList.toggle("open");
@@ -1830,57 +1598,9 @@ function buildPostHtml(p,uMap,favs){
 
 window.toggleWhoPanel=id=>{const el=document.getElementById(id);if(el)el.classList.toggle("open");};
 window.toggleCmts=id=>document.getElementById(`cmts_${id}`)?.classList.toggle("open");
-window.openComposer=type=>{
-  postFile=null;postType=null;
-  document.getElementById("postTxt").value="";
-  document.getElementById("postTxt").style.display="";
-  document.getElementById("pmCaptionWrap").classList.remove("sh");
-  document.getElementById("pmCaptionHeader").classList.remove("sh");
-  document.getElementById("pmCaption").value="";
-  document.getElementById("pmImg").src="";
-  document.getElementById("pmVid").classList.remove("sh");
-  document.getElementById("inpPhoto").value="";
-  document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
-window.prevPostMedia=async(e,type)=>{
-  const file=e.target.files[0];if(!file)return;
-  postType=type;
-  if(type==="img"){
-    // Afficher header + wrap caption, cacher textarea principal
-    document.getElementById("pmCaptionWrap").classList.add("sh");
-    document.getElementById("pmCaptionHeader").classList.add("sh");
-    document.getElementById("postTxt").style.display="none";
-    document.getElementById("pmVid").classList.remove("sh");
-    document.getElementById("pmImg").src=URL.createObjectURL(file);
-    document.getElementById("postCompInfo").classList.add("show");
-    postFile=await compresserPost(file);
-    document.getElementById("postCompInfo").classList.remove("show");
-    document.getElementById("pmImg").src=URL.createObjectURL(postFile);
-  }else{
-    postFile=file;
-    document.getElementById("pmCaptionWrap").classList.remove("sh");
-    document.getElementById("pmCaptionHeader").classList.remove("sh");
-    document.getElementById("postTxt").style.display="";
-    const el=document.getElementById("pmVid");
-    el.src=URL.createObjectURL(file);
-    el.classList.add("sh");
-  }
-};
-
-// Supprimer photo sélectionnée
-window.supprimerPhoto=()=>{
-  postFile=null;postType=null;
-  document.getElementById("pmCaptionWrap").classList.remove("sh");
-  document.getElementById("pmCaptionHeader").classList.remove("sh");
-  document.getElementById("pmCaption").value="";
-  document.getElementById("pmImg").src="";
-  document.getElementById("postTxt").style.display="";
-  document.getElementById("inpPhoto").value="";
-};
-window.publierPost=async()=>{
-  // Si photo : prendre la légende, sinon le texte normal
-  const texte = postType==="img"
-    ? document.getElementById("pmCaption").value.trim()
-    : document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
+window.openComposer=type=>{postFile=null;postType=null;document.getElementById("postTxt").value="";document.getElementById("pmImg").classList.remove("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("inpPhoto").value="";document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
+window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{postFile=file;const el=document.getElementById("pmVid");el.src=URL.createObjectURL(file);el.classList.add("sh");document.getElementById("pmImg").classList.remove("sh");}};
+window.publierPost=async()=>{const texte=document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 window.delPost=async id=>{if(!confirm("Supprimer ?"))return;await deleteDoc(doc(db,"posts",id));};
 window.likePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const liked=(p.likedBy||[]).includes(UC.id);if(liked)await updateDoc(doc(db,"posts",id),{likedBy:(p.likedBy||[]).filter(x=>x!==UC.id),likes:Math.max(0,(p.likes||1)-1)});else{await updateDoc(doc(db,"posts",id),{likedBy:[...(p.likedBy||[]),UC.id],likes:(p.likes||0)+1});if(p.userId!==UC.id)addNotif(p.userId,"like",`${UC.prenom} a aimé votre publication ❤️`);}};
 window.sendCmt=async id=>{const inp=document.getElementById(`ci_${id}`);const texte=inp.value.trim();if(!texte)return;const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();await updateDoc(doc(db,"posts",id),{comments:[...(p.comments||[]),{userId:UC.id,userPrenom:UC.prenom,texte,time:"À l'instant"}]});if(p.userId!==UC.id)addNotif(p.userId,"comment",`${UC.prenom} a commenté votre publication 💬`);inp.value="";};
@@ -1995,38 +1715,29 @@ function startWaveAnimation(){
   draw();
 }
 window.toggleVoiceRecord = async () => {
-  if (isRecording) {
-    // Si déjà en cours → arrêter
-    await arreterEnregistrement(true);
-    return;
-  }
+  if (isRecording) return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({audio: true});
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
     recordSec = 0;
     wavePoints = [];
-    mediaRecorder.ondataavailable = e => {
-      if (e.data.size > 0) audioChunks.push(e.data);
-    };
-    mediaRecorder.start(100); // collecte toutes les 100ms
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
     isRecording = true;
 
+    // Cacher barre normale, montrer barre enregistrement
     document.getElementById('normalInputRow').style.display = 'none';
     document.getElementById('voiceRecordZone').style.display = 'flex';
 
     startWaveAnimation();
-
     recordInterval = setInterval(() => {
       recordSec++;
       const m = Math.floor(recordSec / 60), s = recordSec % 60;
-      const el = document.getElementById('recordTimer');
-      if (el) el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+      document.getElementById('recordTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
     }, 1000);
-
-  } catch(e) {
-    isRecording = false;
-    alert('❌ Microphone non accessible : ' + e.message);
+  } catch {
+    alert('❌ Microphone non accessible');
   }
 };
   window.arreterEnregistrement = async (send) => {
@@ -2239,50 +1950,20 @@ window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.l
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
 
 // Swipe pour répondre
-let swipeStartX=0,swipeData=null,swipeEl=null;
-
-window.startSwipe=(e,txt,mine)=>{
-  swipeStartX=e.touches[0].clientX;
-  swipeData={txt,mine};
-  swipeEl=e.currentTarget;
-};
-
-// Mouvement en temps réel — message glisse à gauche
-document.addEventListener('touchmove',e=>{
-  if(!swipeData||!swipeEl)return;
-  const dx=e.touches[0].clientX-swipeStartX;
-  if(dx<0&&dx>-90){
-    swipeEl.style.transform=`translateX(${dx}px)`;
-    swipeEl.style.transition='none';
-    // Afficher icône réponse
-    const hint=document.getElementById('replyHint');
-    if(hint){
-      hint.style.left=(swipeEl.getBoundingClientRect().right-50)+'px';
-      hint.style.top=(swipeEl.getBoundingClientRect().top + swipeEl.offsetHeight/2 - 16)+'px';
-      hint.classList.toggle('show',dx<-40);
-    }
-  }
-},{passive:true});
-
+let swipeStartX=0,swipeData=null;
+window.startSwipe=(e,txt,mine)=>{swipeStartX=e.touches[0].clientX;swipeData={txt,mine};};
 window.endSwipe=(e)=>{
   if(!swipeData)return;
   const dx=e.changedTouches[0].clientX-swipeStartX;
-  // Remettre en place avec animation
-  if(swipeEl){swipeEl.style.transform='';swipeEl.style.transition='transform .2s ease';}
-  const hint=document.getElementById('replyHint');
-  if(hint)hint.classList.remove('show');
-
-  // ← SWIPE GAUCHE = répondre (style WhatsApp)
-  if(dx < -60){
+  // Swipe droite = répondre
+  if(dx>60){
     replyMsg=swipeData.txt;
     const bar=document.getElementById('replyBar');
     document.getElementById('replyBarText').textContent='↩ '+replyMsg.substring(0,50);
     bar.classList.add('show');
     document.getElementById('msgInp').focus();
-    // Vibration haptic sur mobile
-    if(navigator.vibrate)navigator.vibrate(40);
   }
-  swipeData=null;swipeEl=null;
+  swipeData=null;
 };
 window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
 window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
@@ -2480,7 +2161,5 @@ window.partagerAutre = async () => {
     </div>
   </div>
 </div>
-  <!-- INDICATEUR SWIPE RÉPONDRE -->
-<div class="reply-hint" id="replyHint"><i class="fas fa-reply"></i></div>
 </body>
 </html>
