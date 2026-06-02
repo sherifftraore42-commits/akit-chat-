@@ -1430,15 +1430,13 @@ function setBdg(id, nb) {
   if (!el) return;
   if (nb > 0) {
     el.textContent = nb;
+    // Forcer display avec !important via style
+    el.setAttribute('style', 'display:flex !important');
     el.classList.add("on");
-    el.style.display = "flex";
   } else {
     el.textContent = "";
+    el.removeAttribute('style');
     el.classList.remove("on");
-    // Pour les sb-bdg, cacher complètement
-    if (el.classList.contains("sb-bdg")) {
-      el.style.display = "none";
-    }
   }
 }
 function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
