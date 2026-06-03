@@ -1358,7 +1358,7 @@ window.openConv=async(uid,type='direct')=>{
   const uMap=await getUsers();const u=uMap[uid];if(!u)return;
   currentCallTargetUid=uid;
   document.getElementById("cvNom").textContent=`${u.prenom||""} ${u.nom||""}`;
-  document.getElementById("cvStatus").textContent=u.enLigne?"🟢":"";
+  document.getElementById("cvStatus").textContent=u.enLigne?"":"";
   document.getElementById("cvUid").value=uid;document.getElementById("cvType").value=type;
   document.getElementById("listeCv").style.display="none";document.getElementById("listeGroupes").style.display="none";
   document.getElementById("zoneCv").classList.add("open");
