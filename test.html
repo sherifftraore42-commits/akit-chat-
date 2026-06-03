@@ -840,28 +840,34 @@ setTimeout(step,300);
   </div>
 
   <!-- BARRE SAISIE UNIQUE -->
-  <div class="msg-row">
-    <!-- Zone normale : photo + texte + micro -->
-    <div class="msg-input-row" id="normalInputRow">
-      <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()">
-        <i class="fas fa-image"></i>
-      </button>
-      <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
-      <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off"
-        oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
-      <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" style="color:var(--texte2)">
-        <i class="fas fa-microphone" id="voiceIcon"></i>
-      </button>
-      <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
-    </div>
-  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
-  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
-  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
-  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
-  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
+ <!-- BARRE SAISIE UNIQUE -->
+<div class="msg-row">
+  <!-- Zone normale -->
+  <div class="msg-input-row" id="normalInputRow">
+    <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()">
+      <i class="fas fa-image"></i>
+    </button>
+    <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
+    <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off"
+      oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" style="color:var(--texte2)">
+      <i class="fas fa-microphone" id="voiceIcon"></i>
+    </button>
+    <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+  <!-- Zone enregistrement vocal — masquée par défaut -->
+  <div class="msg-input-row" id="voiceRecordZone" style="display:none;gap:8px;align-items:center;width:100%">
+    <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
+    <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
+    <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
+    <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+      <i class="fas fa-trash" style="font-size:14px"></i>
+    </button>
+    <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
+      <i class="fas fa-paper-plane" style="font-size:16px"></i>
+    </button>
+  </div>
 </div>
-      </div>
-    </div>
   </div>
 </div>
 
