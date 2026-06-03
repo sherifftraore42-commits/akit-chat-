@@ -202,8 +202,8 @@ input,textarea{font-family:var(--font)}
 .btn-more{width:100%;background:var(--blanc);border:0.5px solid var(--gris2);border-radius:var(--radius);padding:13px;font-size:14px;font-weight:600;color:var(--bleu);cursor:pointer;box-shadow:var(--ombre)}
 
 /* ===== MODALS ===== */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px;visibility:hidden;pointer-events:none;opacity:0;transition:opacity .2s}
-.ov.open{visibility:visible;pointer-events:all;opacity:1}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px}
+.ov.open{display:flex}
 .modal{
   background:var(--blanc);
   border-radius:16px;
@@ -1246,8 +1246,18 @@ async function getUsers(){const now=Date.now();if(uMapCache&&(now-uMapCacheTime)
 window.toggleSidebar=()=>document.getElementById("sidebar").classList.toggle("open");
 window.openLightbox=url=>{document.getElementById("lightboxImg").src=url;document.getElementById("lightbox").classList.add("open");};
 window.closeLightbox=()=>{document.getElementById("lightbox").classList.remove("open");};
-function ouv(id){document.getElementById(id).classList.add("open");}
-function ferm(id){document.getElementById(id).classList.remove("open");}
+function ouv(id){
+  const el=document.getElementById(id);
+  el.style.display='flex';
+  el.style.alignItems='center';
+  el.style.justifyContent='center';
+  requestAnimationFrame(()=>el.classList.add("open"));
+}
+function ferm(id){
+  const el=document.getElementById(id);
+  el.classList.remove("open");
+  setTimeout(()=>{if(!el.classList.contains("open"))el.style.display='none';},250);
+}
 window.ouv=ouv;window.ferm=ferm;
 window.closeSiDehors=(e,id)=>{if(e.target===document.getElementById(id))ferm(id);};
 function fmtDate(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString("fr-FR")+" · "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
