@@ -46,7 +46,6 @@ input,textarea{font-family:var(--font)}
 @keyframes clignoteNav{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* ===== SIDEBAR ===== */
-  
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--blanc);border-right:0.5px solid var(--gris2);display:flex;flex-direction:column;align-items:center;padding:12px 0;transition:width .28s cubic-bezier(.4,0,.2,1);position:relative;z-index:50;overflow:hidden;flex-shrink:0}
 .sidebar.open{width:var(--sidebar-open);min-width:var(--sidebar-open)}
 .sb-toggle{width:40px;height:40px;border-radius:var(--radius);border:none;background:none;color:var(--texte2);display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
@@ -168,8 +167,6 @@ input,textarea{font-family:var(--font)}
 .p-text{padding:0 14px 10px;font-size:14px;line-height:1.55;color:var(--texte)}
 .p-media{cursor:pointer;position:relative;overflow:hidden}
 .p-media img,.p-media video{width:100%;max-height:420px;object-fit:cover;display:block}
-
-/* LIKES/COMMENTS panel */
 .p-stats{display:flex;justify-content:space-between;padding:6px 14px;font-size:11px;color:var(--texte2);border-top:0.5px solid var(--gris2)}
 .p-stats-detail{padding:4px 14px 6px;border-bottom:0.5px solid var(--gris2);display:flex;gap:12px;flex-wrap:wrap}
 .p-stat-link{font-size:11px;color:var(--bleu);cursor:pointer;display:flex;align-items:center;gap:4px;background:none;border:none;font-family:var(--font);}
@@ -179,7 +176,6 @@ input,textarea{font-family:var(--font)}
 .who-chip{display:inline-flex;align-items:center;gap:5px;background:var(--blanc);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--texte);margin:3px 3px 0 0;border:0.5px solid var(--gris2);cursor:pointer}
 .who-chip img{width:18px;height:18px;border-radius:50%;object-fit:cover}
 .who-chip .who-av{width:18px;height:18px;border-radius:50%;background:var(--bleu);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-
 .p-actions{display:flex;padding:3px 5px;border-top:0.5px solid var(--gris2)}
 .p-btn{flex:1;background:none;border:none;border-radius:9px;padding:9px 4px;display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:600;color:var(--texte2);transition:all .2s;min-height:44px}
 .p-btn:hover{background:var(--gris)}
@@ -204,32 +200,10 @@ input,textarea{font-family:var(--font)}
 /* ===== MODALS ===== */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px}
 .ov.open{display:flex}
-.modal{
-  background:var(--blanc);
-  border-radius:16px;
-  width:100%;
-  max-width:480px;
-  max-height:88vh;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-  animation:su .25s ease;
-  border:0.5px solid var(--gris2)
-}
+.modal{background:var(--blanc);border-radius:16px;width:100%;max-width:480px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:su .25s ease;border:0.5px solid var(--gris2)}
 @media(max-width:640px){
-  .modal{
-    max-width:100% !important;
-    width:100% !important;
-    height:100% !important;
-    max-height:100% !important;
-    border-radius:0 !important;
-    margin:0 !important;
-  }
-  .ov{
-    align-items:stretch !important;
-    padding:0 !important;
-  }
+  .modal{max-width:100% !important;width:100% !important;height:100% !important;max-height:100% !important;border-radius:0 !important;margin:0 !important;}
+  .ov{align-items:stretch !important;padding:0 !important;}
 }
 @keyframes su{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .m-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:0.5px solid var(--gris2);flex-shrink:0}
@@ -244,7 +218,6 @@ input,textarea{font-family:var(--font)}
 #remoteVideo{width:100%;height:100%;object-fit:cover;}
 .vc-local{position:absolute;top:16px;right:16px;width:100px;height:140px;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.3);background:#111;z-index:2;box-shadow:0 4px 20px rgba(0,0,0,.5);}
 #localVideo{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
-/* NOTE: miroir uniquement pour vue locale, remote normal */
 #remoteVideo{transform:none;}
 .vc-status{position:absolute;top:16px;left:16px;z-index:3;color:#fff;font-size:14px;font-weight:600;}
 .vc-status-dot{width:8px;height:8px;border-radius:50%;background:#00e676;display:inline-block;margin-right:6px;animation:blink-dot 1s ease-in-out infinite;}
@@ -258,7 +231,6 @@ input,textarea{font-family:var(--font)}
 .vc-btn.cam{background:rgba(255,255,255,.2);color:#fff;}
 .vc-btn.cam.off{background:#E24B4A;}
 .vc-btn.flip{background:rgba(255,255,255,.2);color:#fff;}
-/* Sonnerie d'appel */
 .call-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:4;text-align:center;color:#fff}
 .call-ring-av{width:100px;height:100px;border-radius:50%;background:var(--bleu);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;font-weight:700;animation:ringPulse 1.5s ease-in-out infinite;overflow:hidden}
 .call-ring-av img{width:100%;height:100%;object-fit:cover}
@@ -270,7 +242,7 @@ input,textarea{font-family:var(--font)}
 .call-ring-btn.accept{background:#43e97b;color:#fff;animation:ringPulse 1s ease-in-out infinite}
 .call-ring-btn.decline{background:#E24B4A;color:#fff}
 
-/* ===== STORY VIEWER — amélioré ===== */
+/* ===== STORY VIEWER ===== */
 .sv-box{background:#000;border-radius:16px;width:320px;max-width:95vw;height:75vh;max-height:600px;position:relative;overflow:hidden}
 .sv-pr{position:absolute;top:9px;left:9px;right:9px;display:flex;gap:3px;z-index:10}
 .sp-s{flex:1;height:3px;background:rgba(255,255,255,.3);border-radius:3px;overflow:hidden}
@@ -284,16 +256,12 @@ input,textarea{font-family:var(--font)}
 .sv-img{width:100%;height:100%;object-fit:cover;display:block}
 .sv-l,.sv-r{position:absolute;top:0;height:100%;width:30%;z-index:5;cursor:pointer}
 .sv-l{left:0}.sv-r{right:0}
-
-/* Réactions story */
 .sv-reactions{position:absolute;bottom:55px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:10;padding:0 10px;}
 .sv-react-btn{background:rgba(0,0,0,.45);border:none;border-radius:50px;padding:6px 12px;font-size:18px;cursor:pointer;transition:transform .2s;display:flex;align-items:center;gap:4px;color:#fff;}
 .sv-react-btn:active{transform:scale(1.3)}
 .sv-react-btn.reacted{background:rgba(255,255,255,.25);transform:scale(1.1)}
 .sv-react-count{font-size:11px;font-weight:700;color:#fff;min-width:14px}
 .sv-cbt{position:absolute;bottom:13px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);border:none;color:#fff;border-radius:50px;padding:8px 18px;font-size:12px;font-weight:600;z-index:10;white-space:nowrap;cursor:pointer;min-height:40px}
-
-/* Vues uniquement créateur */
 .sv-vu{position:absolute;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;border-radius:50px;padding:5px 14px;font-size:11px;z-index:10;white-space:nowrap;display:none;cursor:pointer}
 .sv-vu.show{display:block}
 .sv-vu-list{position:absolute;bottom:155px;left:8px;right:8px;background:rgba(0,0,0,.8);border-radius:12px;padding:10px;z-index:11;display:none;max-height:160px;overflow-y:auto}
@@ -302,8 +270,6 @@ input,textarea{font-family:var(--font)}
 .sv-vu-item:last-child{border-bottom:none}
 .sv-vu-av{width:26px;height:26px;border-radius:50%;background:var(--bleu);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
 .sv-vu-av img{width:100%;height:100%;object-fit:cover}
-
-/* Panel commentaires story — STOP pendant rédaction */
 .sv-cp{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,.93);border-top:0.5px solid rgba(255,255,255,.1);border-radius:0 0 16px 16px;max-height:55%;display:none;flex-direction:column;z-index:20}
 .sv-cp.open{display:flex}
 .sv-cl{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
@@ -336,7 +302,8 @@ input,textarea{font-family:var(--font)}
 .zone-cv{display:none;flex-direction:column;height:100%}
 .zone-cv.open{display:flex}
 .cv-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:0.5px solid var(--gris2);margin-bottom:10px}
-.btn-back{background:var(--gris);border:none;border-radius:8px;padding:9px 14px;font-size:13px;color:var(--bleu);font-weight:600;min-height:44px}
+.btn-back-mini{background:none;border:none;color:var(--bleu);font-size:22px;padding:6px 10px;border-radius:8px;cursor:pointer;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-back-mini:hover{background:var(--gris)}
 .cv-head-nom{font-size:14px;font-weight:700;flex:1;color:var(--texte)}
 .cv-head-actions{display:flex;gap:6px}
 .cv-head-btn{width:34px;height:34px;border-radius:50%;background:var(--gris);border:none;color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
@@ -351,43 +318,100 @@ input,textarea{font-family:var(--font)}
 .msgs-z{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;min-height:160px;max-height:240px;padding:3px 0;-webkit-overflow-scrolling:touch}
 .msg-b{max-width:78%;padding:10px 13px;border-radius:14px;font-size:14px;display:flex;flex-direction:column;gap:3px;}
 .msg-b small{font-size:11px;opacity:.55}
-.msg-reply-preview{
-  background:rgba(91,76,245,.1);
-  border-left:3px solid var(--bleu);
-  border-radius:6px;
-  padding:5px 9px;
-  margin-bottom:4px;
-  font-size:11px;
-  color:var(--texte2);
-  cursor:pointer;
-}
+.msg-reply-preview{background:rgba(91,76,245,.1);border-left:3px solid var(--bleu);border-radius:6px;padding:5px 9px;margin-bottom:4px;font-size:11px;color:var(--texte2);cursor:pointer;}
 .msg-b{position:relative;cursor:pointer;}
 .msg-b:active{opacity:0.85;}
-.reply-bar{
-  display:none;
-  background:var(--bleu3);
-  border-left:3px solid var(--bleu);
-  border-radius:8px;
-  padding:8px 12px;
-  margin-bottom:6px;
-  font-size:12px;
-  color:var(--texte);
-  align-items:center;
-  gap:8px;
-}
+.reply-bar{display:none;background:var(--bleu3);border-left:3px solid var(--bleu);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:var(--texte);align-items:center;gap:8px;}
 .reply-bar.show{display:flex;}
 .reply-bar-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .reply-bar-close{background:none;border:none;color:var(--texte2);font-size:16px;cursor:pointer;padding:0 4px;}
 .msg-me{align-self:flex-end;background:var(--bleu);color:#fff;border-bottom-right-radius:3px}
 .msg-th{align-self:flex-start;background:var(--gris);color:var(--texte);border-bottom-left-radius:3px}
-.msg-row{display:flex;gap:4px;margin-top:8px;border-top:0.5px solid var(--gris2);padding-top:8px;flex-direction:column}
-.msg-input-row{display:flex;gap:8px;align-items:center}
+
+/* ===================================================
+   BARRE SAISIE MESSAGE — CORRIGÉ VOCAL
+   ================================================= */
+.msg-row{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:8px;
+  border-top:0.5px solid var(--gris2);
+  padding-top:8px;
+  flex-shrink:0;
+}
+
+/* Zone normale : toujours présente, cachée quand enregistrement */
+.msg-input-row{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  width:100%;
+}
+
+/* Zone enregistrement : cachée par défaut, visible pendant enregistrement */
+.voice-record-zone{
+  display:none;  /* caché par défaut */
+  align-items:center;
+  gap:8px;
+  width:100%;
+  background:rgba(37,211,102,.06);
+  border:1px solid rgba(37,211,102,.3);
+  border-radius:50px;
+  padding:6px 10px;
+}
+.voice-record-zone.show{
+  display:flex;  /* visible pendant enregistrement */
+}
+
+/* Quand on enregistre, on cache la zone normale */
+.msg-input-row.hidden{
+  display:none;
+}
+
+.rec-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#E24B4A;flex-shrink:0;
+  animation:blink-dot .8s ease-in-out infinite;
+}
+.rec-timer{
+  font-size:14px;font-weight:600;color:var(--texte);
+  min-width:36px;flex-shrink:0;
+  font-variant-numeric:tabular-nums;
+}
+#recWaveCanvas{
+  flex:1;height:36px;display:block;
+}
+.rec-trash{
+  width:36px;height:36px;border-radius:50%;
+  background:none;border:0.5px solid var(--gris2);
+  color:var(--texte2);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0;
+}
+.rec-send{
+  width:40px;height:40px;border-radius:50%;
+  background:#25D366;border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+}
+
 .msg-inp{flex:1;background:var(--gris);border:0.5px solid var(--gris2);border-radius:50px;padding:11px 16px;font-size:14px;outline:none;min-height:44px}
 .msg-inp:focus{border-color:var(--bleu)}
 .msg-snd{background:var(--bleu);border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .msg-tool-btn{width:36px;height:36px;border-radius:50%;background:none;border:none;color:var(--texte2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;}
 .msg-tool-btn:hover{background:var(--gris)}
-.msg-toolbar{display:flex;gap:4px;align-items:center}
+
+/* Message vocal style WhatsApp */
+.voice-bubble{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:18px;min-width:220px;max-width:280px;}
+.voice-bubble.mine{background:#1D5C35;border-radius:18px 18px 4px 18px;}
+.voice-bubble.theirs{background:#2a2a3a;border-radius:18px 18px 18px 4px;}
+.vb-play{width:38px;height:38px;border-radius:50%;background:#25D366;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vb-play i{color:#fff;font-size:14px;}
+.vb-right{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0;}
+.vb-wave{width:100%;height:28px;}
+.vb-info{display:flex;justify-content:space-between;align-items:center;}
+.vb-dur{font-size:11px;color:rgba(255,255,255,.55);}
+.vb-time{font-size:11px;color:rgba(255,255,255,.4);}
 
 /* ===== PROFIL ===== */
 .new-prf-wrap{background:var(--dark);min-height:100%}
@@ -606,47 +630,6 @@ input,textarea{font-family:var(--font)}
 @media(min-width:641px) and (max-width:900px){.sidebar{display:none}.bottom-nav{display:flex}.layout{padding:12px 12px calc(var(--bottomnav-h) + 12px)}.top-logo{display:flex}}
 @media(max-width:640px){.sidebar{display:none}.top-logo{display:none}.layout{padding:10px 10px calc(var(--bottomnav-h) + 10px)}.bottom-nav{display:flex}.modal{max-width:100%;max-height:92vh;border-radius:20px 20px 0 0}.ov{align-items:flex-end;padding:0;backdrop-filter:blur(3px)}.sv-box{width:100%;max-width:100%;border-radius:0;height:100vh;max-height:100vh}.ov#ovSV{padding:0;align-items:stretch}.p-btn{font-size:11px;gap:3px}.cb{font-size:11px}}
 @media(min-width:901px){.bottom-nav{display:none}.layout{padding:16px}}
-.btn-back-mini{
-  background:none;
-  border:none;
-  color:var(--bleu);
-  font-size:22px;
-  padding:6px 10px;
-  border-radius:8px;
-  cursor:pointer;
-  min-width:36px;
-  min-height:36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-}
-.btn-back-mini:hover{background:var(--gris)}
-  /* Message vocal style WhatsApp */
-.voice-bubble {
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-radius:18px;
-  min-width:220px;max-width:280px;
-}
-.voice-bubble.mine { background:#1D5C35;border-radius:18px 18px 4px 18px; }
-.voice-bubble.theirs { background:#2a2a3a;border-radius:18px 18px 18px 4px; }
-.vb-play {
-  width:38px;height:38px;border-radius:50%;
-  background:#25D366;border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.vb-play i { color:#fff;font-size:14px; }
-.vb-right { display:flex;flex-direction:column;gap:5px;flex:1;min-width:0; }
-.vb-wave { width:100%;height:28px; }
-.vb-info { display:flex;justify-content:space-between;align-items:center; }
-.vb-dur { font-size:11px;color:rgba(255,255,255,.55); }
-.vb-time { font-size:11px;color:rgba(255,255,255,.4); }
-  .msg-input-row {
-  display:flex;
-  gap:6px;
-  align-items:center;
-  width:100%;
-}
 </style>
 </head>
 <body>
@@ -674,11 +657,9 @@ setTimeout(step,300);
 <!-- APPEL VIDEO -->
 <div id="ovVideoCall">
   <div class="vc-remote"><video id="remoteVideo" autoplay playsinline muted></video></div>
-  <!-- Caméra locale inversée (miroir) — NORMAL pour l'autre -->
   <div class="vc-local"><video id="localVideo" autoplay playsinline muted></video></div>
   <div class="vc-status"><span class="vc-status-dot"></span><span id="vcStatusText">Connexion...</span></div>
   <div class="vc-timer" id="vcTimer" style="display:none">00:00</div>
-  <!-- Écran sonnerie entrant -->
   <div class="call-ring" id="callRingScreen" style="display:none">
     <div class="call-ring-av" id="callRingAv">?</div>
     <div class="call-ring-name" id="callRingName">Appelant</div>
@@ -724,10 +705,7 @@ setTimeout(step,300);
   <div class="sb-divider"></div>
   <div class="sb-section">
     <div class="sb-label">Compte</div>
-    <button class="sb-item" onclick="openParrainage()">
-  <i class="fas fa-gift sb-item-i" style="color:#00FF88"></i>
-  <span class="sb-item-lbl">Inviter des amis</span>
-</button>
+    <button class="sb-item" onclick="openParrainage()"><i class="fas fa-gift sb-item-i" style="color:#00FF88"></i><span class="sb-item-lbl">Inviter des amis</span></button>
     <button class="sb-item" onclick="openParam()"><i class="fas fa-cog sb-item-i"></i><span class="sb-item-lbl">Paramètres</span></button>
   </div>
   <div class="sb-coin-card">
@@ -769,13 +747,14 @@ setTimeout(step,300);
     </div>
   </header>
 
- <nav class="bottom-nav">
-  <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
-  <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
-  <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
-  <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Paramètres</span></button>
-  <button class="bn-btn" onclick="openParrainage()"><i class="fas fa-gift" style="color:#00FF88"></i><span>Inviter</span></button>
-</nav>
+  <nav class="bottom-nav">
+    <button class="bn-btn actif" onclick="scrollTop()"><i class="fas fa-home"></i><span>Accueil</span></button>
+    <button class="bn-btn" onclick="openMsg()" style="position:relative"><i class="fas fa-comment-dots"></i><span>Messages</span><span class="bdg" id="bdg_msg2"></span></button>
+    <button class="bn-btn" onclick="openNotif()" style="position:relative"><i class="fas fa-bell"></i><span>Notifs</span><span class="bdg" id="bdg_notif2"></span></button>
+    <button class="bn-btn" onclick="openParam()"><i class="fas fa-cog"></i><span>Paramètres</span></button>
+    <button class="bn-btn" onclick="openParrainage()"><i class="fas fa-gift" style="color:#00FF88"></i><span>Inviter</span></button>
+  </nav>
+
   <div class="layout" id="mainLayout">
     <div class="layout-inner">
       <div class="stories-box">
@@ -799,10 +778,13 @@ setTimeout(step,300);
   </div>
 </div>
 
-<!-- MESSAGES -->
+<!-- ===== MESSAGES MODAL ===== -->
 <div class="ov" id="ovMsg" onclick="closeSiDehors(event,'ovMsg')">
   <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-comment-dots" style="color:var(--bleu);margin-right:7px"></i>Messages</h2><button class="m-close" onclick="closeMsg()"><i class="fas fa-times"></i></button></div>
+    <div class="m-head">
+      <h2><i class="fas fa-comment-dots" style="color:var(--bleu);margin-right:7px"></i>Messages</h2>
+      <button class="m-close" onclick="closeMsg()"><i class="fas fa-times"></i></button>
+    </div>
     <div class="m-body">
       <div class="msg-tabs">
         <button class="msg-tab act" id="tabConv" onclick="switchMsgTab('conv')">💬 Conversations</button>
@@ -812,55 +794,78 @@ setTimeout(step,300);
       <div id="listeCv"></div>
       <div id="listeGroupes" style="display:none"></div>
 
+      <!-- ZONE CONVERSATION -->
       <div class="zone-cv" id="zoneCv">
-  <div class="cv-head">
-    <button class="btn-back-mini" onclick="retourCv()">‹</button>
-    <div class="cv-head-nom" id="cvNom"></div>
-    <span id="cvStatus" style="font-size:11px;color:#1D9E75;margin-left:4px"></span>
-    <div class="cv-head-actions">
-      <button class="cv-head-btn" onclick="appelerVideoUtilisateur()"><i class="fas fa-video"></i></button>
-      <button class="cv-head-btn" onclick="appelerAudio()"><i class="fas fa-phone"></i></button>
-    </div>
-  </div>
-  <div class="disappear-toggle">
-    <i class="fas fa-clock" style="color:var(--bleu);font-size:14px"></i>
-    <span>Messages éphémères (30s)</span>
-    <div class="tgl-sm" id="tglDisappear" onclick="toggleDisappear(this)"></div>
-  </div>
-  <input type="hidden" id="cvUid"/>
-  <input type="hidden" id="cvType" value="direct"/>
-  <div class="reply-bar" id="replyBar">
-    <span class="reply-bar-text" id="replyBarText"></span>
-    <button class="reply-bar-close" onclick="cancelReply()">✕</button>
-  </div>
-  <div class="msgs-z" id="msgsZ"></div>
-  <div class="typing-indicator" id="typingIndicator">
-    <div class="typing-dots"><span></span><span></span><span></span></div>
-    <span id="typingName">écrit...</span>
-  </div>
+        <div class="cv-head">
+          <button class="btn-back-mini" onclick="retourCv()">‹</button>
+          <div class="cv-head-nom" id="cvNom"></div>
+          <span id="cvStatus" style="font-size:11px;color:#1D9E75;margin-left:4px"></span>
+          <div class="cv-head-actions">
+            <button class="cv-head-btn" onclick="appelerVideoUtilisateur()"><i class="fas fa-video"></i></button>
+            <button class="cv-head-btn" onclick="appelerAudio()"><i class="fas fa-phone"></i></button>
+          </div>
+        </div>
 
-  <!-- BARRE SAISIE UNIQUE -->
-  <div class="msg-row">
-    <!-- Zone normale : photo + texte + micro -->
-    <div class="msg-input-row" id="normalInputRow">
-      <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()">
-        <i class="fas fa-image"></i>
-      </button>
-      <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
-      <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off"
-        oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
-      <button class="msg-tool-btn" id="btnVoice" onclick="toggleVoiceRecord()" style="color:var(--texte2)">
-        <i class="fas fa-microphone" id="voiceIcon"></i>
-      </button>
-      <button class="msg-snd" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
-    </div>
-  <div style="width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;animation:blink-dot .8s ease-in-out infinite"></div>
-  <span style="font-size:14px;font-weight:600;color:var(--texte);min-width:42px;flex-shrink:0;font-variant-numeric:tabular-nums" id="recordTimer">0:00</span>
-  <canvas id="recWaveCanvas" style="flex:1;height:36px"></canvas>
-  <button onclick="arreterEnregistrement(false)" style="width:36px;height:36px;border-radius:50%;background:none;border:0.5px solid var(--gris2);color:var(--texte2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-trash" style="font-size:14px"></i></button>
-  <button onclick="arreterEnregistrement(true)" style="width:40px;height:40px;border-radius:50%;background:#25D366;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0"><i class="fas fa-paper-plane" style="font-size:16px"></i></button>
-</div>
-      </div>
+        <div class="disappear-toggle">
+          <i class="fas fa-clock" style="color:var(--bleu);font-size:14px"></i>
+          <span>Messages éphémères (30s)</span>
+          <div class="tgl-sm" id="tglDisappear" onclick="toggleDisappear(this)"></div>
+        </div>
+
+        <input type="hidden" id="cvUid"/>
+        <input type="hidden" id="cvType" value="direct"/>
+
+        <div class="reply-bar" id="replyBar">
+          <span class="reply-bar-text" id="replyBarText"></span>
+          <button class="reply-bar-close" onclick="cancelReply()">✕</button>
+        </div>
+
+        <div class="msgs-z" id="msgsZ"></div>
+
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+          <span id="typingName">écrit...</span>
+        </div>
+
+        <!-- =============================================
+             BARRE SAISIE — CORRIGÉE
+             Deux zones dans le même conteneur .msg-row :
+             1) .msg-input-row  → mode normal (visible)
+             2) .voice-record-zone → mode enregistrement (caché)
+             ============================================= -->
+        <div class="msg-row">
+
+          <!-- Zone normale -->
+          <div class="msg-input-row" id="normalInputRow">
+            <button class="msg-tool-btn" onclick="document.getElementById('inpMsgPhoto').click()">
+              <i class="fas fa-image"></i>
+            </button>
+            <input type="file" id="inpMsgPhoto" accept="image/*" style="display:none" onchange="envoyerPhotoMsg(event)"/>
+            <input class="msg-inp" id="msgInp" placeholder="Écrire..." autocomplete="off"
+              oninput="onTyping()" onkeydown="if(event.key==='Enter')sendMsg()"/>
+            <button class="msg-tool-btn" onclick="toggleVoiceRecord()" title="Message vocal">
+              <i class="fas fa-microphone" style="color:var(--texte2)"></i>
+            </button>
+            <button class="msg-snd" onclick="sendMsg()">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+
+          <!-- Zone enregistrement vocal (cachée par défaut) -->
+          <div class="voice-record-zone" id="voiceRecordZone">
+            <div class="rec-dot"></div>
+            <span class="rec-timer" id="recordTimer">0:00</span>
+            <canvas id="recWaveCanvas"></canvas>
+            <button class="rec-trash" onclick="arreterEnregistrement(false)" title="Annuler">
+              <i class="fas fa-trash" style="font-size:14px"></i>
+            </button>
+            <button class="rec-send" onclick="arreterEnregistrement(true)" title="Envoyer">
+              <i class="fas fa-paper-plane" style="font-size:16px"></i>
+            </button>
+          </div>
+
+        </div><!-- fin .msg-row -->
+      </div><!-- fin .zone-cv -->
     </div>
   </div>
 </div>
@@ -883,45 +888,27 @@ setTimeout(step,300);
 
 <!-- NOTIFS -->
 <div class="ov" id="ovNotif" onclick="closeSiDehors(event,'ovNotif')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-bell" style="color:var(--bleu);margin-right:7px"></i>Notifications</h2><button class="m-close" onclick="ferm('ovNotif')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body" id="listeNotif"></div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-bell" style="color:var(--bleu);margin-right:7px"></i>Notifications</h2><button class="m-close" onclick="ferm('ovNotif')"><i class="fas fa-times"></i></button></div><div class="m-body" id="listeNotif"></div></div>
 </div>
 
 <!-- AMIS -->
 <div class="ov" id="ovAmis" onclick="closeSiDehors(event,'ovAmis')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-user-friends" style="color:var(--bleu);margin-right:7px"></i>Ami(e)s</h2><button class="m-close" onclick="ferm('ovAmis')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body"><div style="margin-bottom:14px"><h4 style="font-size:12px;color:var(--texte2);margin-bottom:8px">Demandes reçues</h4><div id="listeDmd"></div></div><div><h4 style="font-size:12px;color:var(--texte2);margin-bottom:8px">Mes amis</h4><div id="listeAms"></div></div></div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-user-friends" style="color:var(--bleu);margin-right:7px"></i>Ami(e)s</h2><button class="m-close" onclick="ferm('ovAmis')"><i class="fas fa-times"></i></button></div><div class="m-body"><div style="margin-bottom:14px"><h4 style="font-size:12px;color:var(--texte2);margin-bottom:8px">Demandes reçues</h4><div id="listeDmd"></div></div><div><h4 style="font-size:12px;color:var(--texte2);margin-bottom:8px">Mes amis</h4><div id="listeAms"></div></div></div></div>
 </div>
 
 <!-- SUGGESTIONS -->
 <div class="ov" id="ovSugg" onclick="closeSiDehors(event,'ovSugg')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-star" style="color:var(--bleu);margin-right:7px"></i>Suggestions</h2><button class="m-close" onclick="ferm('ovSugg')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body" id="listeSugg"></div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-star" style="color:var(--bleu);margin-right:7px"></i>Suggestions</h2><button class="m-close" onclick="ferm('ovSugg')"><i class="fas fa-times"></i></button></div><div class="m-body" id="listeSugg"></div></div>
 </div>
 
 <!-- FAVORIS -->
 <div class="ov" id="ovFavs" onclick="closeSiDehors(event,'ovFavs')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-bookmark" style="color:var(--bleu);margin-right:7px"></i>Favoris</h2><button class="m-close" onclick="ferm('ovFavs')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body" id="listeFavs"></div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-bookmark" style="color:var(--bleu);margin-right:7px"></i>Favoris</h2><button class="m-close" onclick="ferm('ovFavs')"><i class="fas fa-times"></i></button></div><div class="m-body" id="listeFavs"></div></div>
 </div>
 
 <!-- GROUPES -->
 <div class="ov" id="ovGroupes" onclick="closeSiDehors(event,'ovGroupes')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-users" style="color:var(--bleu);margin-right:7px"></i>Groupes</h2><button class="m-close" onclick="ferm('ovGroupes')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <button class="btn-sv" onclick="ouvrirCreerGroupe()" style="margin-bottom:14px"><i class="fas fa-plus"></i> Créer un groupe</button>
-      <div id="listeGroupesFull"></div>
-    </div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-users" style="color:var(--bleu);margin-right:7px"></i>Groupes</h2><button class="m-close" onclick="ferm('ovGroupes')"><i class="fas fa-times"></i></button></div><div class="m-body"><button class="btn-sv" onclick="ouvrirCreerGroupe()" style="margin-bottom:14px"><i class="fas fa-plus"></i> Créer un groupe</button><div id="listeGroupesFull"></div></div></div>
 </div>
 
 <!-- MOBILE MONEY -->
@@ -934,169 +921,48 @@ setTimeout(step,300);
         <button class="mm-tab mtn" onclick="switchMM('mtn',this)">🟡 MTN Money</button>
         <button class="mm-tab mpesa" onclick="switchMM('mpesa',this)">🟢 M-Pesa</button>
       </div>
-
-      <!-- Orange Money -->
       <div class="mm-form active" id="mm-om">
         <div class="mm-logo om">🟠 Orange Money</div>
-        <div id="om-connect-zone">
-          <div class="mm-connect-card">
-            <div style="font-size:36px;margin-bottom:8px">📱</div>
-            <p>Connectez votre compte Orange Money pour envoyer et recevoir de l'argent directement depuis AKIT-CHAT</p>
-            <button class="mm-connect-btn" onclick="connecterMobileMoney('om')">🔗 Connecter Orange Money</button>
-          </div>
-        </div>
-        <div id="om-panel" style="display:none">
-          <div class="mm-balance"><div class="mm-balance-nb" id="om-balance">0 FCFA</div><div class="mm-balance-lb">Solde Orange Money</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-            <button class="coin-action-btn send" onclick="mmEnvoyer('om')"><i class="fas fa-paper-plane"></i> Envoyer</button>
-            <button class="coin-action-btn recv" style="background:rgba(255,102,0,.1);color:var(--om-orange);border:0.5px solid rgba(255,102,0,.3)" onclick="mmRecevoir('om')"><i class="fas fa-download"></i> Recevoir</button>
-          </div>
-          <div class="mm-hist"><h4>Historique</h4><div id="om-hist"></div></div>
-        </div>
+        <div id="om-connect-zone"><div class="mm-connect-card"><div style="font-size:36px;margin-bottom:8px">📱</div><p>Connectez votre compte Orange Money</p><button class="mm-connect-btn" onclick="connecterMobileMoney('om')">🔗 Connecter Orange Money</button></div></div>
+        <div id="om-panel" style="display:none"><div class="mm-balance"><div class="mm-balance-nb" id="om-balance">0 FCFA</div><div class="mm-balance-lb">Solde Orange Money</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><button class="coin-action-btn send" onclick="mmEnvoyer('om')"><i class="fas fa-paper-plane"></i> Envoyer</button><button class="coin-action-btn recv" style="background:rgba(255,102,0,.1);color:var(--om-orange);border:0.5px solid rgba(255,102,0,.3)" onclick="mmRecevoir('om')"><i class="fas fa-download"></i> Recevoir</button></div><div class="mm-hist"><h4>Historique</h4><div id="om-hist"></div></div></div>
       </div>
-
-      <!-- MTN Money -->
       <div class="mm-form" id="mm-mtn">
         <div class="mm-logo mtn">🟡 MTN Mobile Money</div>
-        <div id="mtn-connect-zone">
-          <div class="mm-connect-card">
-            <div style="font-size:36px;margin-bottom:8px">📱</div>
-            <p>Connectez votre compte MTN MoMo pour transférer de l'argent facilement</p>
-            <button class="mm-connect-btn" style="background:#c79b00" onclick="connecterMobileMoney('mtn')">🔗 Connecter MTN MoMo</button>
-          </div>
-        </div>
-        <div id="mtn-panel" style="display:none">
-          <div class="mm-balance"><div class="mm-balance-nb" id="mtn-balance">0 FCFA</div><div class="mm-balance-lb">Solde MTN MoMo</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-            <button class="coin-action-btn send" style="background:var(--mtn-yellow);color:#333" onclick="mmEnvoyer('mtn')"><i class="fas fa-paper-plane"></i> Envoyer</button>
-            <button class="coin-action-btn recv" style="background:rgba(255,204,0,.1);color:#c79b00;border:0.5px solid rgba(255,204,0,.3)" onclick="mmRecevoir('mtn')"><i class="fas fa-download"></i> Recevoir</button>
-          </div>
-          <div class="mm-hist"><h4>Historique</h4><div id="mtn-hist"></div></div>
-        </div>
+        <div id="mtn-connect-zone"><div class="mm-connect-card"><div style="font-size:36px;margin-bottom:8px">📱</div><p>Connectez votre compte MTN MoMo</p><button class="mm-connect-btn" style="background:#c79b00" onclick="connecterMobileMoney('mtn')">🔗 Connecter MTN MoMo</button></div></div>
+        <div id="mtn-panel" style="display:none"><div class="mm-balance"><div class="mm-balance-nb" id="mtn-balance">0 FCFA</div><div class="mm-balance-lb">Solde MTN MoMo</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><button class="coin-action-btn send" style="background:var(--mtn-yellow);color:#333" onclick="mmEnvoyer('mtn')"><i class="fas fa-paper-plane"></i> Envoyer</button><button class="coin-action-btn recv" style="background:rgba(255,204,0,.1);color:#c79b00;border:0.5px solid rgba(255,204,0,.3)" onclick="mmRecevoir('mtn')"><i class="fas fa-download"></i> Recevoir</button></div><div class="mm-hist"><h4>Historique</h4><div id="mtn-hist"></div></div></div>
       </div>
-
-      <!-- M-Pesa -->
       <div class="mm-form" id="mm-mpesa">
         <div class="mm-logo mpesa">🟢 M-Pesa</div>
-        <div id="mpesa-connect-zone">
-          <div class="mm-connect-card">
-            <div style="font-size:36px;margin-bottom:8px">📱</div>
-            <p>Connectez votre compte M-Pesa pour des transferts rapides</p>
-            <button class="mm-connect-btn" style="background:#00a651" onclick="connecterMobileMoney('mpesa')">🔗 Connecter M-Pesa</button>
-          </div>
-        </div>
-        <div id="mpesa-panel" style="display:none">
-          <div class="mm-balance"><div class="mm-balance-nb" id="mpesa-balance">0 FCFA</div><div class="mm-balance-lb">Solde M-Pesa</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-            <button class="coin-action-btn send" style="background:#00a651" onclick="mmEnvoyer('mpesa')"><i class="fas fa-paper-plane"></i> Envoyer</button>
-            <button class="coin-action-btn recv" style="background:rgba(0,166,81,.1);color:#00a651;border:0.5px solid rgba(0,166,81,.3)" onclick="mmRecevoir('mpesa')"><i class="fas fa-download"></i> Recevoir</button>
-          </div>
-          <div class="mm-hist"><h4>Historique</h4><div id="mpesa-hist"></div></div>
-        </div>
+        <div id="mpesa-connect-zone"><div class="mm-connect-card"><div style="font-size:36px;margin-bottom:8px">📱</div><p>Connectez votre compte M-Pesa</p><button class="mm-connect-btn" style="background:#00a651" onclick="connecterMobileMoney('mpesa')">🔗 Connecter M-Pesa</button></div></div>
+        <div id="mpesa-panel" style="display:none"><div class="mm-balance"><div class="mm-balance-nb" id="mpesa-balance">0 FCFA</div><div class="mm-balance-lb">Solde M-Pesa</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><button class="coin-action-btn send" style="background:#00a651" onclick="mmEnvoyer('mpesa')"><i class="fas fa-paper-plane"></i> Envoyer</button><button class="coin-action-btn recv" style="background:rgba(0,166,81,.1);color:#00a651;border:0.5px solid rgba(0,166,81,.3)" onclick="mmRecevoir('mpesa')"><i class="fas fa-download"></i> Recevoir</button></div><div class="mm-hist"><h4>Historique</h4><div id="mpesa-hist"></div></div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL ENVOYER ARGENT -->
+<!-- ENVOYER ARGENT -->
 <div class="ov" id="ovSendMoney" onclick="closeSiDehors(event,'ovSendMoney')">
-  <div class="modal" style="max-width:400px">
-    <div class="m-head"><h2 id="sendMoneyTitle">💸 Envoyer de l'argent</h2><button class="m-close" onclick="ferm('ovSendMoney')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <input class="p-inp" id="sendMoneyDest" placeholder="📱 Numéro ou nom du destinataire"/>
-      <input class="p-inp" id="sendMoneyAmount" type="number" placeholder="💰 Montant (FCFA)" min="100"/>
-      <input class="p-inp" id="sendMoneyNote" placeholder="📝 Motif (optionnel)"/>
-      <div style="background:var(--gris);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--texte2)">
-        <div>⚡ Transfert instantané</div>
-        <div>🔒 Transaction sécurisée</div>
-        <div>📧 Confirmation par SMS</div>
-      </div>
-      <button class="btn-sv" id="btnConfirmSend" onclick="confirmerEnvoi()"><i class="fas fa-paper-plane"></i> Envoyer maintenant</button>
-      <button class="btn-sv red" onclick="ferm('ovSendMoney')">Annuler</button>
-    </div>
-  </div>
+  <div class="modal" style="max-width:400px"><div class="m-head"><h2 id="sendMoneyTitle">💸 Envoyer de l'argent</h2><button class="m-close" onclick="ferm('ovSendMoney')"><i class="fas fa-times"></i></button></div><div class="m-body"><input class="p-inp" id="sendMoneyDest" placeholder="📱 Numéro ou nom du destinataire"/><input class="p-inp" id="sendMoneyAmount" type="number" placeholder="💰 Montant (FCFA)" min="100"/><input class="p-inp" id="sendMoneyNote" placeholder="📝 Motif (optionnel)"/><div style="background:var(--gris);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--texte2)"><div>⚡ Transfert instantané</div><div>🔒 Transaction sécurisée</div><div>📧 Confirmation par SMS</div></div><button class="btn-sv" id="btnConfirmSend" onclick="confirmerEnvoi()"><i class="fas fa-paper-plane"></i> Envoyer maintenant</button><button class="btn-sv red" onclick="ferm('ovSendMoney')">Annuler</button></div></div>
 </div>
 
 <!-- AKIT COIN -->
 <div class="ov" id="ovCoin" onclick="closeSiDehors(event,'ovCoin')">
-  <div class="modal" style="max-width:420px">
-    <div class="m-head" style="padding:0;border:none;flex-shrink:0">
-      <div class="coin-modal-head" style="width:100%;border-radius:16px 16px 0 0">
-        <div class="coin-modal-logo"><i class="fas fa-bolt"></i> AKIT COIN</div>
-        <div class="coin-modal-amount">A <span id="coinAmount">0</span></div>
-        <div class="coin-modal-fcfa">FCFA disponibles</div>
-      </div>
-    </div>
-    <div class="m-body">
-      <div class="coin-action-btns">
-        <button class="coin-action-btn send" onclick="mmEnvoyer('coin')"><i class="fas fa-paper-plane"></i> Envoyer</button>
-        <button class="coin-action-btn recv" onclick="mmRecevoir('coin')"><i class="fas fa-check"></i> Recevoir</button>
-      </div>
-      <div style="font-size:12px;font-weight:600;color:var(--texte2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Historique</div>
-      <div id="coinHistEl"><p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p></div>
-    </div>
-    <div style="padding:12px 14px;border-top:0.5px solid var(--gris2);">
-      <button onclick="ferm('ovCoin')" style="width:100%;background:var(--gris);border:none;border-radius:9px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Fermer</button>
-    </div>
-  </div>
+  <div class="modal" style="max-width:420px"><div class="m-head" style="padding:0;border:none;flex-shrink:0"><div class="coin-modal-head" style="width:100%;border-radius:16px 16px 0 0"><div class="coin-modal-logo"><i class="fas fa-bolt"></i> AKIT COIN</div><div class="coin-modal-amount">A <span id="coinAmount">0</span></div><div class="coin-modal-fcfa">FCFA disponibles</div></div></div><div class="m-body"><div class="coin-action-btns"><button class="coin-action-btn send" onclick="mmEnvoyer('coin')"><i class="fas fa-paper-plane"></i> Envoyer</button><button class="coin-action-btn recv" onclick="mmRecevoir('coin')"><i class="fas fa-check"></i> Recevoir</button></div><div style="font-size:12px;font-weight:600;color:var(--texte2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Historique</div><div id="coinHistEl"><p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p></div></div><div style="padding:12px 14px;border-top:0.5px solid var(--gris2);"><button onclick="ferm('ovCoin')" style="width:100%;background:var(--gris);border:none;border-radius:9px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Fermer</button></div></div>
 </div>
 
 <!-- PARAMETRES -->
 <div class="ov" id="ovParam" onclick="closeSiDehors(event,'ovParam')">
-  <div class="modal">
-    <div class="m-head"><h2><i class="fas fa-cog" style="color:var(--bleu);margin-right:7px"></i>Paramètres</h2><button class="m-close" onclick="ferm('ovParam')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <div class="ps"><h4>Modifier mon profil</h4><input class="p-inp" id="pp" placeholder="Prénom"/><input class="p-inp" id="pn" placeholder="Nom"/><input class="p-inp" id="pe" placeholder="Email" type="email"/><input class="p-inp" id="pt" placeholder="Téléphone"/><input class="p-inp" id="pbio" placeholder="Bio"/><button class="btn-sv" onclick="saveProfil()">✅ Sauvegarder</button></div>
-      <div class="ps"><h4>Apparence</h4><div class="br-row"><i class="fas fa-sun" style="color:var(--texte2)"></i><input type="range" class="br-sl" id="brSlider" min="40" max="100" value="100" oninput="setBright(this.value)"/><span id="brVal">100%</span></div><div class="p-row"><span class="p-lbl">🌙 Mode sombre</span><div class="tgl" id="tglDark" onclick="toggleDark(this)"></div></div></div>
-      <div class="ps"><h4>Compte</h4><button class="btn-sv red" onclick="effacerDonnees()">🗑️ Effacer mes données</button><button class="btn-sv red" onclick="seDeco()">🚪 Se déconnecter</button></div>
-    </div>
-  </div>
+  <div class="modal"><div class="m-head"><h2><i class="fas fa-cog" style="color:var(--bleu);margin-right:7px"></i>Paramètres</h2><button class="m-close" onclick="ferm('ovParam')"><i class="fas fa-times"></i></button></div><div class="m-body"><div class="ps"><h4>Modifier mon profil</h4><input class="p-inp" id="pp" placeholder="Prénom"/><input class="p-inp" id="pn" placeholder="Nom"/><input class="p-inp" id="pe" placeholder="Email" type="email"/><input class="p-inp" id="pt" placeholder="Téléphone"/><input class="p-inp" id="pbio" placeholder="Bio"/><button class="btn-sv" onclick="saveProfil()">✅ Sauvegarder</button></div><div class="ps"><h4>Apparence</h4><div class="br-row"><i class="fas fa-sun" style="color:var(--texte2)"></i><input type="range" class="br-sl" id="brSlider" min="40" max="100" value="100" oninput="setBright(this.value)"/><span id="brVal">100%</span></div><div class="p-row"><span class="p-lbl">🌙 Mode sombre</span><div class="tgl" id="tglDark" onclick="toggleDark(this)"></div></div></div><div class="ps"><h4>Compte</h4><button class="btn-sv red" onclick="effacerDonnees()">🗑️ Effacer mes données</button><button class="btn-sv red" onclick="seDeco()">🚪 Se déconnecter</button></div></div></div>
 </div>
 
 <!-- PROFIL -->
 <div class="ov" id="ovProfil" onclick="closeSiDehors(event,'ovProfil')">
-  <div class="modal" style="max-width:520px">
-    <div class="m-head"><h2><i class="fas fa-user" style="color:var(--bleu);margin-right:7px"></i>Mon Profil</h2><button class="m-close" onclick="ferm('ovProfil')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body" style="padding:0;background:var(--dark)">
-      <div class="confirm-bar" id="cfBar"><span>Sauvegarder les modifications ?</span><div class="cb-btns"><button class="btn-cf" onclick="confirmChgs()">✅ Oui</button><button class="btn-cl" onclick="cancelChgs()">✕ Non</button></div></div>
-      <div class="new-prf-cover" id="prfCover"><img id="prfCoverImg" src="" alt="" style="display:none"/><button class="new-prf-cover-btn" onclick="document.getElementById('inpCover').click()">📷 Couverture</button></div>
-      <div class="new-prf-head">
-        <div class="new-prf-av-wrap">
-          <div class="new-prf-av" onclick="document.getElementById('inpAv').click()"><div id="prfAvEl" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700"><svg viewBox="0 0 100 100" style="width:100%;height:100%;fill:rgba(255,255,255,.9)"><circle cx="50" cy="35" r="20"/><ellipse cx="50" cy="80" rx="30" ry="20"/></svg></div><div class="new-prf-av-edit"><i class="fas fa-camera"></i></div></div>
-          <button class="new-prf-edit-btn" onclick="openParam();ferm('ovProfil')"><i class="fas fa-pen" style="font-size:12px"></i> Modifier</button>
-        </div>
-        <div class="new-prf-name" id="prfNom">Chargement... <span class="new-prf-check">✓</span></div>
-        <div class="new-prf-location" id="prfLocation">Cameroun 🌍</div>
-        <div id="prfEmail" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px"></div>
-        <div class="new-prf-bio" id="prfBio">Designer & Développeur · AKIT-CHAT</div>
-        <div class="new-prf-stats"><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psPosts">0</div><div class="new-prf-stat-lb">Posts</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAmis">0</div><div class="new-prf-stat-lb">Amis</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAbonnes">0</div><div class="new-prf-stat-lb">Abonnés</div></div></div>
-        <div class="new-prf-coin"><i class="fas fa-bolt"></i><div><div class="new-prf-coin-nb" style="font-size:16px;font-weight:800;color:var(--akit-yellow)">A <span id="prfCoinNb">0</span></div><div style="font-size:11px;color:rgba(255,255,255,.4)">AKIT Coin</div></div><button onclick="openCoin();ferm('ovProfil')" style="margin-left:auto;background:rgba(255,215,0,.15);border:0.5px solid rgba(255,215,0,.3);color:var(--akit-yellow);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">Gérer</button></div>
-        <div class="new-prf-tabs"><div class="new-prf-tab act" onclick="switchPrfTab('posts',this)">Publications</div><div class="new-prf-tab" onclick="switchPrfTab('photos',this)">Photos</div><div class="new-prf-tab" onclick="switchPrfTab('amis',this)">Amis</div><div class="new-prf-tab" onclick="switchPrfTab('apropos',this)">À propos</div></div>
-      </div>
-      <div id="prfTabContent"></div>
-    </div>
-  </div>
+  <div class="modal" style="max-width:520px"><div class="m-head"><h2><i class="fas fa-user" style="color:var(--bleu);margin-right:7px"></i>Mon Profil</h2><button class="m-close" onclick="ferm('ovProfil')"><i class="fas fa-times"></i></button></div><div class="m-body" style="padding:0;background:var(--dark)"><div class="confirm-bar" id="cfBar"><span>Sauvegarder les modifications ?</span><div class="cb-btns"><button class="btn-cf" onclick="confirmChgs()">✅ Oui</button><button class="btn-cl" onclick="cancelChgs()">✕ Non</button></div></div><div class="new-prf-cover" id="prfCover"><img id="prfCoverImg" src="" alt="" style="display:none"/><button class="new-prf-cover-btn" onclick="document.getElementById('inpCover').click()">📷 Couverture</button></div><div class="new-prf-head"><div class="new-prf-av-wrap"><div class="new-prf-av" onclick="document.getElementById('inpAv').click()"><div id="prfAvEl" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700"><svg viewBox="0 0 100 100" style="width:100%;height:100%;fill:rgba(255,255,255,.9)"><circle cx="50" cy="35" r="20"/><ellipse cx="50" cy="80" rx="30" ry="20"/></svg></div><div class="new-prf-av-edit"><i class="fas fa-camera"></i></div></div><button class="new-prf-edit-btn" onclick="openParam();ferm('ovProfil')"><i class="fas fa-pen" style="font-size:12px"></i> Modifier</button></div><div class="new-prf-name" id="prfNom">Chargement... <span class="new-prf-check">✓</span></div><div class="new-prf-location" id="prfLocation">Cameroun 🌍</div><div id="prfEmail" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px"></div><div class="new-prf-bio" id="prfBio">Designer & Développeur · AKIT-CHAT</div><div class="new-prf-stats"><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psPosts">0</div><div class="new-prf-stat-lb">Posts</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAmis">0</div><div class="new-prf-stat-lb">Amis</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAbonnes">0</div><div class="new-prf-stat-lb">Abonnés</div></div></div><div class="new-prf-coin"><i class="fas fa-bolt"></i><div><div class="new-prf-coin-nb" style="font-size:16px;font-weight:800;color:var(--akit-yellow)">A <span id="prfCoinNb">0</span></div><div style="font-size:11px;color:rgba(255,255,255,.4)">AKIT Coin</div></div><button onclick="openCoin();ferm('ovProfil')" style="margin-left:auto;background:rgba(255,215,0,.15);border:0.5px solid rgba(255,215,0,.3);color:var(--akit-yellow);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">Gérer</button></div><div class="new-prf-tabs"><div class="new-prf-tab act" onclick="switchPrfTab('posts',this)">Publications</div><div class="new-prf-tab" onclick="switchPrfTab('photos',this)">Photos</div><div class="new-prf-tab" onclick="switchPrfTab('amis',this)">Amis</div><div class="new-prf-tab" onclick="switchPrfTab('apropos',this)">À propos</div></div></div><div id="prfTabContent"></div></div></div>
 </div>
 
 <!-- PROFIL AUTRE UTILISATEUR -->
 <div class="ov" id="ovUserProfil" onclick="closeSiDehors(event,'ovUserProfil')">
-  <div class="modal" style="max-width:520px">
-    <div class="m-head"><h2><i class="fas fa-user-circle" style="color:var(--bleu);margin-right:7px"></i><span id="upTitle">Profil</span></h2><button class="m-close" onclick="ferm('ovUserProfil')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body" style="padding:0;background:var(--dark)">
-      <div class="new-prf-cover" id="upCover" style="height:130px"></div>
-      <div class="new-prf-head">
-        <div class="new-prf-av-wrap">
-          <div class="new-prf-av" id="upAvEl" style="cursor:default"></div>
-          <div style="display:flex;gap:8px"><button class="btn-user-msg" id="upBtnMsg"><i class="fas fa-comment-dots"></i> Message</button><button class="btn-user-add" id="upBtnAdd"><i class="fas fa-user-plus"></i> Ajouter</button></div>
-        </div>
-        <div class="new-prf-name" id="upNom">Utilisateur <span class="new-prf-check">✓</span></div>
-        <div id="upOnline" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px"></div>
-        <div class="new-prf-bio" id="upBio">Membre AKIT-CHAT</div>
-        <div class="new-prf-stats"><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upPosts">0</div><div class="new-prf-stat-lb">Posts</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upAmis">0</div><div class="new-prf-stat-lb">Amis</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upAbonnes">0</div><div class="new-prf-stat-lb">Abonnés</div></div></div>
-      </div>
-      <div class="new-prf-grid" id="upPostsList"></div>
-    </div>
-  </div>
+  <div class="modal" style="max-width:520px"><div class="m-head"><h2><i class="fas fa-user-circle" style="color:var(--bleu);margin-right:7px"></i><span id="upTitle">Profil</span></h2><button class="m-close" onclick="ferm('ovUserProfil')"><i class="fas fa-times"></i></button></div><div class="m-body" style="padding:0;background:var(--dark)"><div class="new-prf-cover" id="upCover" style="height:130px"></div><div class="new-prf-head"><div class="new-prf-av-wrap"><div class="new-prf-av" id="upAvEl" style="cursor:default"></div><div style="display:flex;gap:8px"><button class="btn-user-msg" id="upBtnMsg"><i class="fas fa-comment-dots"></i> Message</button><button class="btn-user-add" id="upBtnAdd"><i class="fas fa-user-plus"></i> Ajouter</button></div></div><div class="new-prf-name" id="upNom">Utilisateur <span class="new-prf-check">✓</span></div><div id="upOnline" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px"></div><div class="new-prf-bio" id="upBio">Membre AKIT-CHAT</div><div class="new-prf-stats"><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upPosts">0</div><div class="new-prf-stat-lb">Posts</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upAmis">0</div><div class="new-prf-stat-lb">Amis</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="upAbonnes">0</div><div class="new-prf-stat-lb">Abonnés</div></div></div></div><div class="new-prf-grid" id="upPostsList"></div></div></div>
 </div>
 
 <!-- STORY VIEWER -->
@@ -1108,7 +974,6 @@ setTimeout(step,300);
     <div class="sv-l" onclick="svP()"></div><div class="sv-r" onclick="svN()"></div>
     <div class="sv-vu" id="svVu" onclick="toggleVuList()"></div>
     <div class="sv-vu-list" id="svVuList"></div>
-    <!-- Réactions story (likes + commentaires comme les posts) -->
     <div class="sv-reactions" id="svReactions">
       <button class="sv-react-btn" id="btn_react_heart" onclick="reagirStory('❤️')">❤️ <span class="sv-react-count" id="cnt_heart">0</span></button>
       <button class="sv-react-btn" id="btn_react_fire" onclick="reagirStory('🔥')">🔥 <span class="sv-react-count" id="cnt_fire">0</span></button>
@@ -1117,14 +982,10 @@ setTimeout(step,300);
       <button class="sv-react-btn" id="btn_react_love" onclick="reagirStory('😍')">😍 <span class="sv-react-count" id="cnt_love">0</span></button>
     </div>
     <button class="sv-cbt" onclick="toggleSvC()">💬 <span id="svCC">0</span> commentaire(s)</button>
-    <!-- Panel commentaires — PAUSE story pendant rédaction -->
     <div class="sv-cp" id="svCPanel">
       <div class="sv-cl" id="svCList"></div>
       <div class="sv-cr">
-        <input class="sv-ci2" id="svCInp" placeholder="Commenter (la story s'arrête)..."
-          onfocus="pauseStory()"
-          onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()"
-          onkeydown="if(event.key==='Enter')sendSvC()"/>
+        <input class="sv-ci2" id="svCInp" placeholder="Commenter (la story s'arrête)..." onfocus="pauseStory()" onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()" onkeydown="if(event.key==='Enter')sendSvC()"/>
         <button class="sv-cs" onclick="sendSvC()"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
@@ -1133,51 +994,43 @@ setTimeout(step,300);
 
 <!-- ADD STORY -->
 <div class="ov" id="ovAddS" onclick="closeSiDehors(event,'ovAddS')">
-  <div class="modal">
-    <div class="m-head"><h2>📸 Nouvelle Story</h2><button class="m-close" onclick="ferm('ovAddS')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <div class="drop-z" onclick="document.getElementById('inpStory').click()"><div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div><img class="prev-img" id="stPrev" src="" alt=""/></div>
-      <input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/>
-      <div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div>
-      <div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div>
-      <div class="m-actions"><button class="btn-can" onclick="ferm('ovAddS')">Annuler</button><button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier</button></div>
-    </div>
-  </div>
+  <div class="modal"><div class="m-head"><h2>📸 Nouvelle Story</h2><button class="m-close" onclick="ferm('ovAddS')"><i class="fas fa-times"></i></button></div><div class="m-body"><div class="drop-z" onclick="document.getElementById('inpStory').click()"><div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div><img class="prev-img" id="stPrev" src="" alt=""/></div><input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/><div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div><div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div><div class="m-actions"><button class="btn-can" onclick="ferm('ovAddS')">Annuler</button><button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier</button></div></div></div>
 </div>
 
 <!-- COMPOSER POST -->
 <div class="ov" id="ovComp" onclick="closeSiDehors(event,'ovComp')">
-  <div class="modal">
-    <div class="m-head"><h2>✍️ Nouvelle publication</h2><button class="m-close" onclick="ferm('ovComp')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea>
-      <img class="pm-prev" id="pmImg" src="" alt=""/><video class="pv-prev" id="pmVid" controls></video>
-      <div class="cm-btns">
-        <button class="cm-btn" onclick="document.getElementById('inpPhoto').click()"><i class="fas fa-image" style="color:#1D9E75"></i> Photo</button>
-        <button class="cm-btn" onclick="document.getElementById('inpVideo').click()"><i class="fas fa-video" style="color:#E24B4A"></i> Vidéo</button>
-      </div>
-      <input type="file" id="inpPhoto" accept="image/*" style="display:none" onchange="prevPostMedia(event,'img')"/>
-      <input type="file" id="inpVideo" accept="video/*" style="display:none" onchange="prevPostMedia(event,'vid')"/>
-      <div class="compress-info" id="postCompInfo">🗜️ Compression en cours...</div>
-      <div class="upload-bar" id="postUpBar"><div class="upload-bar-fill" id="postUpFill"></div></div>
-      <div class="m-actions"><button class="btn-can" onclick="ferm('ovComp')">Annuler</button><button class="btn-pst" id="btnPub" onclick="publierPost()">Publier</button></div>
-    </div>
-  </div>
+  <div class="modal"><div class="m-head"><h2>✍️ Nouvelle publication</h2><button class="m-close" onclick="ferm('ovComp')"><i class="fas fa-times"></i></button></div><div class="m-body"><textarea class="post-ta" id="postTxt" placeholder="Partagez quelque chose..."></textarea><img class="pm-prev" id="pmImg" src="" alt=""/><video class="pv-prev" id="pmVid" controls></video><div class="cm-btns"><button class="cm-btn" onclick="document.getElementById('inpPhoto').click()"><i class="fas fa-image" style="color:#1D9E75"></i> Photo</button><button class="cm-btn" onclick="document.getElementById('inpVideo').click()"><i class="fas fa-video" style="color:#E24B4A"></i> Vidéo</button></div><input type="file" id="inpPhoto" accept="image/*" style="display:none" onchange="prevPostMedia(event,'img')"/><input type="file" id="inpVideo" accept="video/*" style="display:none" onchange="prevPostMedia(event,'vid')"/><div class="compress-info" id="postCompInfo">🗜️ Compression en cours...</div><div class="upload-bar" id="postUpBar"><div class="upload-bar-fill" id="postUpFill"></div></div><div class="m-actions"><button class="btn-can" onclick="ferm('ovComp')">Annuler</button><button class="btn-pst" id="btnPub" onclick="publierPost()">Publier</button></div></div></div>
 </div>
 
 <!-- CLAUDE AI -->
 <div class="ov" id="ovClaude" onclick="closeSiDehors(event,'ovClaude')">
-  <div class="modal" style="max-width:480px">
-    <div class="m-head" style="background:linear-gradient(135deg,#7c3aed,var(--bleu));border-radius:16px 16px 0 0"><h2 style="color:#fff"><i class="fas fa-robot" style="margin-right:7px"></i>Claud-akit IA</h2><button class="m-close" style="background:rgba(255,255,255,.2);color:#fff" onclick="ferm('ovClaude')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body"><div class="cl-chat"><div class="cl-msgs" id="clMsgs"><div class="cl-msg a">👋 Bonjour ! Je suis Claud-akit. Comment puis-je vous aider ?</div></div><div class="cl-row"><input class="cl-inp" id="clInp" placeholder="Votre question..." autocomplete="off" onkeydown="if(event.key==='Enter')sendClaude()"/><button class="cl-snd" onclick="sendClaude()"><i class="fas fa-paper-plane"></i></button></div></div></div>
-  </div>
+  <div class="modal" style="max-width:480px"><div class="m-head" style="background:linear-gradient(135deg,#7c3aed,var(--bleu));border-radius:16px 16px 0 0"><h2 style="color:#fff"><i class="fas fa-robot" style="margin-right:7px"></i>Claud-akit IA</h2><button class="m-close" style="background:rgba(255,255,255,.2);color:#fff" onclick="ferm('ovClaude')"><i class="fas fa-times"></i></button></div><div class="m-body"><div class="cl-chat"><div class="cl-msgs" id="clMsgs"><div class="cl-msg a">👋 Bonjour ! Je suis Claud-akit. Comment puis-je vous aider ?</div></div><div class="cl-row"><input class="cl-inp" id="clInp" placeholder="Votre question..." autocomplete="off" onkeydown="if(event.key==='Enter')sendClaude()"/><button class="cl-snd" onclick="sendClaude()"><i class="fas fa-paper-plane"></i></button></div></div></div></div>
 </div>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <div class="lightbox-inner" onclick="event.stopPropagation()">
-    <button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
-    <img id="lightboxImg" src="" alt=""/>
+  <div class="lightbox-inner" onclick="event.stopPropagation()"><button class="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button><img id="lightboxImg" src="" alt=""/></div>
+</div>
+
+<!-- PARRAINAGE -->
+<div class="ov" id="ovParrainage" onclick="closeSiDehors(event,'ovParrainage')">
+  <div class="modal" style="max-width:440px">
+    <div class="m-head" style="background:linear-gradient(135deg,#00FF88,#FFD700);border-radius:16px 16px 0 0"><h2 style="color:#000"><i class="fas fa-gift" style="margin-right:7px"></i>Inviter des amis</h2><button class="m-close" style="background:rgba(0,0,0,.15);color:#000" onclick="ferm('ovParrainage')"><i class="fas fa-times"></i></button></div>
+    <div class="m-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)"><div style="font-size:24px;font-weight:900;color:#FFD700" id="prrCoins">0</div><div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">AKIT Coins</div></div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)"><div style="font-size:24px;font-weight:900;color:#00FF88" id="prrFilleuls">0</div><div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Amis invités</div></div>
+      </div>
+      <div style="background:#f0fff8;border-radius:12px;padding:14px;margin-bottom:14px;border:0.5px solid #00FF88"><div style="font-size:13px;font-weight:700;color:#000;margin-bottom:8px">🎁 Comment ça marche ?</div><div style="font-size:12px;color:#333;line-height:1.8">✅ Partagez votre lien unique<br>✅ Votre ami s'inscrit avec votre lien<br>✅ Vous recevez <b>+500 AKIT Coins</b><br>✅ Votre ami reçoit <b>+250 AKIT Coins</b></div></div>
+      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:6px">Votre lien unique</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px"><input id="prrLink" readonly style="flex:1;background:var(--gris);border:0.5px solid var(--gris2);border-radius:9px;padding:11px 14px;font-size:12px;outline:none;color:var(--texte)"/><button onclick="copierLienParrainage()" style="background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">📋 Copier</button></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <button onclick="partagerWhatsApp()" style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fab fa-whatsapp" style="font-size:18px"></i> WhatsApp</button>
+        <button onclick="partagerAutre()" style="background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-share-alt" style="font-size:18px"></i> Partager</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:8px">Amis que vous avez invités</div>
+      <div id="prrListeFilleuls"><p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucun ami invité pour l'instant</p></div>
+    </div>
   </div>
 </div>
 
@@ -1216,8 +1069,10 @@ let prevNotifCount=-1,prevMsgCount=-1;
 const POSTS_PER_PAGE=10;
 let lastPostDoc=null,allPostsLoaded=false;
 let typingTimeout=null,isDisappear=false;
-let replyMsg=null; // message en cours de réponse
+let replyMsg=null;
+// ===== ÉTAT ENREGISTREMENT VOCAL (corrigé) =====
 let mediaRecorder=null,audioChunks=[],recordInterval=null,recordSec=0,isRecording=false;
+let waveAnimFrame=null,wavePoints=[];
 const REACTIONS=['❤️','🔥','👏','😮','😍'],REACT_IDS=['heart','fire','clap','wow','love'];
 let uMapCache=null,uMapCacheTime=0;
 const CACHE_TTL=60000;
@@ -1225,7 +1080,6 @@ let membresGroupeSelectionnes=new Set(),tousMembresGroupe=[];
 let localStream=null,vcInterval=null,vcSec=0,isMuted=false,isCamOff=false,currentFacingMode='user';
 let currentCallTargetUid=null;
 
-// Mobile Money state (local, initialisé à 0)
 const mmState={
   om:{connected:false,balance:0,phone:"",hist:[]},
   mtn:{connected:false,balance:0,phone:"",hist:[]},
@@ -1258,7 +1112,6 @@ onAuthStateChanged(auth,async fireUser=>{
   UC.id=fireUser.uid;
   if(!snap.exists())await setDoc(doc(db,"users",UC.id),UC);
   updateDoc(doc(db,"users",UC.id),{enLigne:true,dernierVu:serverTimestamp()}).catch(()=>{});
-  // Initialiser akit_coin à 0 si pas défini
   if(UC.akit_coin===undefined){UC.akit_coin=0;updateDoc(doc(db,"users",UC.id),{akit_coin:0}).catch(()=>{});}
   mmState.coin.balance=UC.akit_coin||0;
   if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();
@@ -1279,13 +1132,11 @@ onAuthStateChanged(auth,async fireUser=>{
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{
     setBdg("bdg_amis",snap.size);setBdg("bdg_amis_sb",snap.size);
   });
-  // Écouter appels entrants
   onSnapshot(doc(db,"appels",UC.id),snap2=>{
     if(!snap2.exists())return;
     const d=snap2.data();
     if(d.statut==="sonnerie"&&d.dest===UC.id){afficherSonnerie(d);}
   });
-  // Charger historique MM depuis Firestore
   const mmSnap=await getDoc(doc(db,"mobilemoney",UC.id));
   if(mmSnap.exists()){Object.assign(mmState,mmSnap.data());}
 });
@@ -1307,41 +1158,25 @@ function updateCoinDisplay(){
   const pc=document.getElementById("prfCoinNb");if(pc)pc.textContent=nb.toLocaleString();
 }
 
-// ===== APPEL VIDEO — CAMÉRA NORMALE (pas inversée globalement) =====
+// ===== APPEL VIDEO =====
 window.ouvrirVideoCall=async()=>{
   try{
-    const constraints={video:{facingMode:currentFacingMode,width:{ideal:1280},height:{ideal:720}},audio:true};
-    const stream=await navigator.mediaDevices.getUserMedia(constraints);
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode,width:{ideal:1280},height:{ideal:720}},audio:true});
     localStream=stream;
     const localVid=document.getElementById("localVideo");
     const remoteVid=document.getElementById("remoteVideo");
-    localVid.srcObject=stream;
-    remoteVid.srcObject=stream;
-    localVid.style.transform="scaleX(-1)";
-    remoteVid.style.transform="none";
+    localVid.srcObject=stream;remoteVid.srcObject=stream;
+    localVid.style.transform="scaleX(-1)";remoteVid.style.transform="none";
     document.getElementById("ovVideoCall").classList.add("open");
     document.getElementById("vcStatusText").textContent="📹 Caméra active";
     document.getElementById("callRingScreen").style.display="none";
-    vcSec=0;
-    document.getElementById("vcTimer").style.display="block";
+    vcSec=0;document.getElementById("vcTimer").style.display="block";
     clearInterval(vcInterval);
-    vcInterval=setInterval(()=>{
-      vcSec++;
-      const m=Math.floor(vcSec/60),s=vcSec%60;
-      document.getElementById("vcTimer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    },1000);
-    if(currentCallTargetUid){
-      await setDoc(doc(db,"appels",currentCallTargetUid),{
-        exp:UC.id,dest:currentCallTargetUid,
-        expNom:`${UC.prenom} ${UC.nom}`,
-        expAv:UC.avatarUrl||"",
-        statut:"sonnerie",date:serverTimestamp()
-      });
-    }
-  }catch(err){
-    alert("❌ Caméra inaccessible : "+err.message+"\n\nVérifiez les permissions de votre navigateur.");
-  }
+    vcInterval=setInterval(()=>{vcSec++;const m=Math.floor(vcSec/60),s=vcSec%60;document.getElementById("vcTimer").textContent=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;},1000);
+    if(currentCallTargetUid){await setDoc(doc(db,"appels",currentCallTargetUid),{exp:UC.id,dest:currentCallTargetUid,expNom:`${UC.prenom} ${UC.nom}`,expAv:UC.avatarUrl||"",statut:"sonnerie",date:serverTimestamp()});}
+  }catch(err){alert("❌ Caméra inaccessible : "+err.message);}
 };
+window.appelerVideoUtilisateur=()=>ouvrirVideoCall();
 function afficherSonnerie(data){
   document.getElementById("callRingScreen").style.display="flex";
   document.getElementById("callRingName").textContent=data.expNom||"Appelant";
@@ -1351,69 +1186,36 @@ function afficherSonnerie(data){
   document.getElementById("ovVideoCall").classList.add("open");
   window._currentCallData=data;
 }
-window.acceptCall=async()=>{
-  document.getElementById("callRingScreen").style.display="none";
-  if(window._currentCallData){
-    await updateDoc(doc(db,"appels",UC.id),{statut:"accepte"});
-  }
-  ouvrirVideoCall();
-};
-window.declineCall=async()=>{
-  document.getElementById("callRingScreen").style.display="none";
-  document.getElementById("ovVideoCall").classList.remove("open");
-  if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));
-};
-
+window.acceptCall=async()=>{document.getElementById("callRingScreen").style.display="none";if(window._currentCallData){await updateDoc(doc(db,"appels",UC.id),{statut:"accepte"});}ouvrirVideoCall();};
+window.declineCall=async()=>{document.getElementById("callRingScreen").style.display="none";document.getElementById("ovVideoCall").classList.remove("open");if(window._currentCallData)await deleteDoc(doc(db,"appels",UC.id));};
 window.appelerAudio=()=>alert("📞 Appel audio — Fonctionnalité WebRTC complète requise côté serveur.");
-
 window.endVideoCall=async()=>{
-  if(localStream)localStream.getTracks().forEach(t=>t.stop());
-  localStream=null;clearInterval(vcInterval);
-  document.getElementById("ovVideoCall").classList.remove("open");
-  document.getElementById("vcTimer").style.display="none";document.getElementById("vcTimer").textContent="00:00";
+  if(localStream)localStream.getTracks().forEach(t=>t.stop());localStream=null;clearInterval(vcInterval);
+  document.getElementById("ovVideoCall").classList.remove("open");document.getElementById("vcTimer").style.display="none";document.getElementById("vcTimer").textContent="00:00";
   document.getElementById("remoteVideo").srcObject=null;document.getElementById("localVideo").srcObject=null;
-  document.getElementById("callRingScreen").style.display="none";
-  isMuted=false;isCamOff=false;
-  document.getElementById("muteIcon").className="fas fa-microphone";
-  document.getElementById("camIcon").className="fas fa-video";
-  document.getElementById("btnMute").classList.remove("on");
-  document.getElementById("btnCam").classList.remove("off");
-  currentCallTargetUid=null;
-  if(window._currentCallData)try{await deleteDoc(doc(db,"appels",UC.id));}catch{}
+  document.getElementById("callRingScreen").style.display="none";isMuted=false;isCamOff=false;
+  document.getElementById("muteIcon").className="fas fa-microphone";document.getElementById("camIcon").className="fas fa-video";
+  document.getElementById("btnMute").classList.remove("on");document.getElementById("btnCam").classList.remove("off");
+  currentCallTargetUid=null;if(window._currentCallData)try{await deleteDoc(doc(db,"appels",UC.id));}catch{}
 };
 window.toggleMute=()=>{if(!localStream)return;isMuted=!isMuted;localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);document.getElementById("muteIcon").className=isMuted?"fas fa-microphone-slash":"fas fa-microphone";document.getElementById("btnMute").classList.toggle("on",isMuted);};
 window.toggleCam=()=>{if(!localStream)return;isCamOff=!isCamOff;localStream.getVideoTracks().forEach(t=>t.enabled=!isCamOff);document.getElementById("camIcon").className=isCamOff?"fas fa-video-slash":"fas fa-video";document.getElementById("btnCam").classList.toggle("off",isCamOff);};
 window.flipCamera=async()=>{
-  // Retournement caméra NORMAL (front/back), PAS miroir
   currentFacingMode=currentFacingMode==='user'?'environment':'user';
   if(localStream)localStream.getTracks().forEach(t=>t.stop());
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:true});
-    localStream=stream;
-    const localVid=document.getElementById("localVideo");
-    localVid.srcObject=stream;
-    // Caméra arrière = pas de miroir ; frontale = miroir local seulement
-    localVid.style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";
-    document.getElementById("remoteVideo").srcObject=stream;
-  }catch(e){alert("❌ Erreur : "+e.message);}
+  try{const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:true});localStream=stream;const localVid=document.getElementById("localVideo");localVid.srcObject=stream;localVid.style.transform=currentFacingMode==='user'?"scaleX(-1)":"none";document.getElementById("remoteVideo").srcObject=stream;}catch(e){alert("❌ Erreur : "+e.message);}
 };
 
-// ===== STORIES — 10 SECONDES =====
-const STORY_DURATION=10000; // 10 secondes
-
+// ===== STORIES =====
+const STORY_DURATION=10000;
 async function renderStories(){
-  const row=document.getElementById("sRow");const addCard=row.querySelector(".add-s");
-  row.innerHTML="";row.appendChild(addCard);const now=Date.now();
+  const row=document.getElementById("sRow");const addCard=row.querySelector(".add-s");row.innerHTML="";row.appendChild(addCard);const now=Date.now();
   const[storiesSnap,uMap]=await Promise.all([getDocs(query(collection(db,"stories"),orderBy("date","desc"),limit(80))),getUsers()]);
   const gr={};
   storiesSnap.forEach(d=>{const s={id:d.id,...d.data()};const dt=s.date?.toDate?s.date.toDate():new Date(s.date);if(now-dt.getTime()>86400000)return;if(!gr[s.userId])gr[s.userId]=[];gr[s.userId].push(s);});
   Object.keys(gr).forEach(uid=>{
-    const stories=gr[uid],user=uMap[uid]||{prenom:"?"};
-    const nonVu=stories.some(s=>!(s.vuPar||[]).includes(UC.id));
-    const isOwn=uid===UC.id;
-    const last=stories[0];
-    const totalReacts={};
-    stories.forEach(s=>{Object.entries(s.reactions||{}).forEach(([emoji,users])=>{totalReacts[emoji]=(totalReacts[emoji]||0)+users.length;});});
+    const stories=gr[uid],user=uMap[uid]||{prenom:"?"};const nonVu=stories.some(s=>!(s.vuPar||[]).includes(UC.id));const isOwn=uid===UC.id;const last=stories[0];
+    const totalReacts={};stories.forEach(s=>{Object.entries(s.reactions||{}).forEach(([emoji,users])=>{totalReacts[emoji]=(totalReacts[emoji]||0)+users.length;});});
     const ringC=user.avatarUrl?`<img src="${user.avatarUrl}"/>`:`<span class="sc-ring-i">${(user.prenom?.[0]||"?").toUpperCase()}</span>`;
     const reactBadges=Object.entries(totalReacts).filter(([,n])=>n>0).slice(0,3).map(([e,n])=>`<div class="sc-r-badge">${e}<span>${n}</span></div>`).join("");
     const totalVues=stories.reduce((a,s)=>a+(s.vues||0),0);
@@ -1427,7 +1229,6 @@ window.openAddStory=()=>{storyFile=null;document.getElementById("stPrev").style.
 window.prevStory=async e=>{const file=e.target.files[0];if(!file)return;document.getElementById("stPrev").src=URL.createObjectURL(file);document.getElementById("stPrev").style.display="block";document.getElementById("dropCont").style.display="none";document.getElementById("stCompInfo").classList.add("show");document.getElementById("btnPostSt").disabled=true;storyFile=await compresserStory(file);document.getElementById("stCompInfo").classList.remove("show");document.getElementById("btnPostSt").disabled=false;};
 window.posterStory=async()=>{if(!storyFile)return;const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";try{const imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));await addDoc(collection(db,"stories"),{userId:UC.id,imgUrl,date:serverTimestamp(),vues:0,vuPar:[],comments:[],reactions:{},likes:[],likedBy:[]});storyFile=null;ferm("ovAddS");renderStories();addNotifTous("story",`${UC.prenom} a publié une nouvelle story 📸`);}catch(err){alert("❌ Erreur : "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 
-// SV — pause/reprise pour commentaires
 function openSV(stories,idx){svData=stories;svIdx=idx;svPaused=false;affSV();ouv("ovSV");demarSV();}
 async function affSV(){
   const s=svData[svIdx];
@@ -1436,10 +1237,8 @@ async function affSV(){
   document.getElementById("svTm").textContent=isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
   document.getElementById("svCC").textContent=(s.comments||[]).length;
   document.getElementById("svCPanel").classList.remove("open");document.getElementById("svVuList").classList.remove("show");
-  const isOwn=s.userId===UC.id;
-  const vuEl=document.getElementById("svVu");
-  if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}
-  else vuEl.classList.remove("show");
+  const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
+  if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
   afficherReactionsStory(s);
   getDoc(doc(db,"users",s.userId)).then(ud=>{const u=ud.exists()?ud.data():{prenom:"?"};document.getElementById("svNm").textContent=`${u.prenom||""} ${u.nom||""}`.trim();const avEl=document.getElementById("svAv2");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}"/>`:`<span style="color:#fff;font-weight:700;font-size:12px">${(u.prenom?.[0]||"?").toUpperCase()}</span>`;});
   if(!isOwn&&!(s.vuPar||[]).includes(UC.id)){updateDoc(doc(db,"stories",s.id),{vues:(s.vues||0)+1,vuPar:[...(s.vuPar||[]),UC.id]});svData[svIdx].vues=(s.vues||0)+1;svData[svIdx].vuPar=[...(s.vuPar||[]),UC.id];}
@@ -1455,88 +1254,56 @@ window.reagirStory=async(emoji)=>{
   const s=svData[svIdx];if(s.userId===UC.id)return;
   const snap=await getDoc(doc(db,"stories",s.id));if(!snap.exists())return;
   const reactions=snap.data().reactions||{};const usersArr=reactions[emoji]||[];const already=usersArr.includes(UC.id);
-  if(already){reactions[emoji]=usersArr.filter(id=>id!==UC.id);}
-  else{reactions[emoji]=[...usersArr,UC.id];addNotif(s.userId,"reaction",`${UC.prenom} a réagi ${emoji} à votre story`);animerReaction(emoji);}
+  if(already){reactions[emoji]=usersArr.filter(id=>id!==UC.id);}else{reactions[emoji]=[...usersArr,UC.id];addNotif(s.userId,"reaction",`${UC.prenom} a réagi ${emoji} à votre story`);animerReaction(emoji);}
   await updateDoc(doc(db,"stories",s.id),{reactions});svData[svIdx].reactions=reactions;afficherReactionsStory(svData[svIdx]);
 };
-
-// PAUSE story quand on tape un commentaire
 window.pauseStory=()=>{svPaused=true;clearInterval(svTimer);};
 window.resumeStory=()=>{if(!svPaused)return;svPaused=false;demarSV();};
-
 window.toggleVuList=async()=>{
   const s=svData[svIdx];if(s.userId!==UC.id)return;
   const list=document.getElementById("svVuList");
   if(list.classList.contains("show")){list.classList.remove("show");return;}
-  list.innerHTML=`<div style="color:rgba(255,255,255,.5);font-size:11px;padding:6px">⏳...</div>`;
-  list.classList.add("show");
-  const uMap=await getUsers();
-  const viewers=(s.vuPar||[]).filter(id=>id!==UC.id);
+  list.innerHTML=`<div style="color:rgba(255,255,255,.5);font-size:11px;padding:6px">⏳...</div>`;list.classList.add("show");
+  const uMap=await getUsers();const viewers=(s.vuPar||[]).filter(id=>id!==UC.id);
   if(viewers.length===0){list.innerHTML=`<div style="color:rgba(255,255,255,.5);font-size:11px;padding:6px">Aucune vue</div>`;return;}
   const reactions=s.reactions||{};
   list.innerHTML=viewers.map(uid=>{const u=uMap[uid]||{prenom:"?"};const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>` :(u.prenom?.[0]||"?").toUpperCase();const ur=REACTIONS.filter(e=>(reactions[e]||[]).includes(uid)).join(" ");return `<div class="sv-vu-item"><div class="sv-vu-av">${av}</div><span>${u.prenom||""} ${u.nom||""}</span>${ur?`<span style="margin-left:auto">${ur}</span>`:""}</div>`;}).join("");
 };
-
-// STORY TIMER — 10 secondes, PAUSE si commentaire ouvert
 function demarSV(){
   clearInterval(svTimer);svProg=0;
   const fill=document.getElementById(`spf${svIdx}`);if(!fill)return;
-  svTimer=setInterval(()=>{
-    if(svPaused)return;
-    svProg+=100/(STORY_DURATION/100);
-    fill.style.width=Math.min(svProg,100)+"%";
-    if(svProg>=100){clearInterval(svTimer);window.svN();}
-  },100);
+  svTimer=setInterval(()=>{if(svPaused)return;svProg+=100/(STORY_DURATION/100);fill.style.width=Math.min(svProg,100)+"%";if(svProg>=100){clearInterval(svTimer);window.svN();}},100);
 }
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(svIdx>0){svIdx--;affSV();demarSV();}};
 window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories();};
 window.toggleSvC=()=>{
-  const panel=document.getElementById("svCPanel");
-  panel.classList.toggle("open");
+  const panel=document.getElementById("svCPanel");panel.classList.toggle("open");
   if(panel.classList.contains("open")){
-    pauseStory(); // PAUSE quand panel ouvert
+    pauseStory();
     const s=svData[svIdx];const list=document.getElementById("svCList");
-    list.innerHTML=(s.comments||[]).length===0
-      ?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:10px;font-size:12px'>Aucun commentaire</p>`
-      :(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>` :(c.user?.[0]||"?").toUpperCase();return `<div class="sv-ci"><div class="sv-ca">${av}</div><div class="sv-cb2"><div class="sv-cu">${c.user}</div><div class="sv-ct">${c.texte}</div><div class="sv-ctm">${c.time||""}</div></div></div>`;}).join("");
+    list.innerHTML=(s.comments||[]).length===0?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:10px;font-size:12px'>Aucun commentaire</p>`:(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>` :(c.user?.[0]||"?").toUpperCase();return `<div class="sv-ci"><div class="sv-ca">${av}</div><div class="sv-cb2"><div class="sv-cu">${c.user}</div><div class="sv-ct">${c.texte}</div><div class="sv-ctm">${c.time||""}</div></div></div>`;}).join("");
     list.scrollTop=list.scrollHeight;
-  } else {
-    resumeStory(); // REPREND quand panel fermé
-  }
+  }else{resumeStory();}
 };
-
-// COMMENTAIRE STORY → INBOX du créateur + reprend story
 window.sendSvC=async()=>{
   const inp=document.getElementById("svCInp");const texte=inp.value.trim();if(!texte)return;
-  const s=svData[svIdx];
-  const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"À l'instant",userId:UC.id};
+  const s=svData[svIdx];const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"À l'instant",userId:UC.id};
   const newC=[...(s.comments||[]),c];
-  await updateDoc(doc(db,"stories",s.id),{comments:newC});
-  svData[svIdx].comments=newC;
-  document.getElementById("svCC").textContent=newC.length;
-  // Notifier le créateur
+  await updateDoc(doc(db,"stories",s.id),{comments:newC});svData[svIdx].comments=newC;document.getElementById("svCC").textContent=newC.length;
   addNotif(s.userId,"comment_story",`${UC.prenom} a commenté votre story 💬`);
-  // Envoyer le commentaire en INBOX (message direct) au créateur
-  if(s.userId!==UC.id){
-    const convId=[UC.id,s.userId].sort().join("_");
-    await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:s.userId,contenu:`💬 (Story) ${texte}`,date:serverTimestamp(),lu:false,type:"text"});
-    await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:s.userId,contenu:`💬 (Story) ${texte}`,date:serverTimestamp(),luDest:false});
-  }
-  inp.value="";
-  // Fermer panel et REPRENDRE
-  document.getElementById("svCPanel").classList.remove("open");
-  resumeStory();
+  if(s.userId!==UC.id){const convId=[UC.id,s.userId].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:s.userId,contenu:`💬 (Story) ${texte}`,date:serverTimestamp(),lu:false,type:"text"});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:s.userId,contenu:`💬 (Story) ${texte}`,date:serverTimestamp(),luDest:false});}
+  inp.value="";document.getElementById("svCPanel").classList.remove("open");resumeStory();
 };
 
-// ===== POSTS — LIKES/COMMENTS/SHARES VISIBLES PAR TOUS =====
+// ===== POSTS =====
 function renderPosts(){
   if(unsubPosts)unsubPosts();lastPostDoc=null;allPostsLoaded=false;
   const el=document.getElementById("postsEl");el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--texte2);font-size:14px">⏳ Chargement...</div>`;
   document.getElementById("btnMore").style.display="none";
   const q=query(collection(db,"posts"),orderBy("date","desc"),limit(POSTS_PER_PAGE));
   unsubPosts=onSnapshot(q,async snap=>{
-    if(snap.empty){el.innerHTML=`<div style="text-align:center;padding:32px;background:var(--blanc);border-radius:var(--radius);box-shadow:var(--ombre);color:var(--texte2)">Aucune publication. Partagez quelque chose !</div>`;return;}
+    if(snap.empty){el.innerHTML=`<div style="text-align:center;padding:32px;background:var(--blanc);border-radius:var(--radius);box-shadow:var(--ombre);color:var(--texte2)">Aucune publication.</div>`;return;}
     const[uMap,favDoc]=await Promise.all([getUsers(),getDoc(doc(db,"favs",UC.id))]);
     const favs=favDoc.exists()?(favDoc.data().ids||[]):[];
     lastPostDoc=snap.docs[snap.docs.length-1];if(snap.docs.length<POSTS_PER_PAGE)allPostsLoaded=true;
@@ -1547,55 +1314,15 @@ function renderPosts(){
 window.chargerPlus=async()=>{if(!lastPostDoc||allPostsLoaded)return;const btn=document.getElementById("btnMore");btn.disabled=true;btn.textContent="⏳";const q=query(collection(db,"posts"),orderBy("date","desc"),limit(POSTS_PER_PAGE),startAfter(lastPostDoc));const snap=await getDocs(q);if(snap.empty){allPostsLoaded=true;btn.style.display="none";return;}const[uMap,favDoc]=await Promise.all([getUsers(),getDoc(doc(db,"favs",UC.id))]);const favs=favDoc.exists()?(favDoc.data().ids||[]):[];lastPostDoc=snap.docs[snap.docs.length-1];if(snap.docs.length<POSTS_PER_PAGE)allPostsLoaded=true;const el=document.getElementById("postsEl");snap.forEach(d=>{el.innerHTML+=buildPostHtml({id:d.id,...d.data()},uMap,favs);});btn.disabled=false;btn.textContent="⬇️ Voir plus";if(allPostsLoaded)btn.style.display="none";};
 
 function buildPostHtml(p,uMap,favs){
-  const u=uMap[p.userId]||{prenom:"Utilisateur",nom:""};
-  const isLiked=(p.likedBy||[]).includes(UC.id),isFav=favs.includes(p.id),isOwn=p.userId===UC.id;
-  const nom=`${u.prenom||""} ${u.nom||""}`.trim();
-  const avC=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>` :(u.prenom?.[0]||"U").toUpperCase();
+  const u=uMap[p.userId]||{prenom:"Utilisateur",nom:""};const isLiked=(p.likedBy||[]).includes(UC.id),isFav=favs.includes(p.id),isOwn=p.userId===UC.id;
+  const nom=`${u.prenom||""} ${u.nom||""}`.trim();const avC=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>` :(u.prenom?.[0]||"U").toUpperCase();
   const cmtHtml=(p.comments||[]).map(c=>{const cu=uMap[c.userId];const cav=cu?.avatarUrl?`<img src="${cu.avatarUrl}" style="width:100%;height:100%"/>` :(c.userPrenom?.[0]||"U").toUpperCase();return `<div class="ci"><div class="c-av2" onclick="ouvrirProfilUser('${c.userId||''}')">${cav}</div><div class="c-bbl"><div class="c-un" onclick="ouvrirProfilUser('${c.userId||''}')">${c.userPrenom||"?"}</div><div class="c-tx">${c.texte}</div><div class="c-tm">${c.time||""}</div></div></div>`;}).join("");
-
-  // LIKERS visibles — chips des personnes qui ont aimé
-  const likedBy=p.likedBy||[];
-  const likersChips=likedBy.slice(0,5).map(uid=>{const lu=uMap[uid];const la=lu?.avatarUrl?`<img src="${lu.avatarUrl}"/>` :(lu?.prenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${uid}')" title="${lu?.prenom||'?'} ${lu?.nom||''}"><span class="who-av">${la}</span> ${lu?.prenom||"?"}</span>`;}).join("");
-  const likersSuffix=likedBy.length>5?` <span style="font-size:11px;color:var(--texte2)">et ${likedBy.length-5} autres</span>`:"";
-
-  // COMMENTATEURS visibles — qui a commenté
-  const commentedBy=[...new Map((p.comments||[]).map(c=>[c.userId,c])).values()].slice(0,5);
-  const commentersChips=commentedBy.map(c=>{const cu=uMap[c.userId];const ca=cu?.avatarUrl?`<img src="${cu.avatarUrl}"/>`:(c.userPrenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${c.userId||''}')" title="${cu?.prenom||c.userPrenom||'?'}"><span class="who-av">${ca}</span>${c.userPrenom||"?"}</span>`;}).join("");
-
-  // PARTAGEURS
-  const sharedBy=p.sharedBy||[];
-  const sharersChips=sharedBy.slice(0,3).map(uid=>{const su=uMap[uid];const sa=su?.avatarUrl?`<img src="${su.avatarUrl}"/>`:(su?.prenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${uid}')"><span class="who-av">${sa}</span>${su?.prenom||"?"}</span>`;}).join("");
-
-  let mediaHtml="";
-  if(p.mediaUrl&&p.mediaType==="img")mediaHtml=`<div class="p-media" onclick="openLightbox('${p.mediaUrl}')"><img src="${p.mediaUrl}" loading="lazy"/></div>`;
-  else if(p.mediaUrl&&p.mediaType==="vid")mediaHtml=`<div class="p-media"><video src="${p.mediaUrl}" controls playsinline onclick="event.stopPropagation()"></video></div>`;
-
-  return `<div class="post p-wrap" id="post_${p.id}">
-    <div class="p-head">
-      <div class="p-av" onclick="ouvrirProfilUser('${p.userId}')">${avC}</div>
-      <div class="p-info"><div class="p-nom" onclick="ouvrirProfilUser('${p.userId}')">${nom||"Utilisateur"}</div><div class="p-date">${fmtDate(p.date)}</div></div>
-      ${isOwn?`<button class="p-menu-btn" onclick="event.stopPropagation();delPost('${p.id}')"><i class="fas fa-trash" style="color:#E24B4A"></i></button>`:""}
-    </div>
-    ${p.texte?`<div class="p-text">${p.texte}</div>`:""}
-    ${mediaHtml}
-    <div class="p-stats">
-      <button class="p-stat-link" onclick="toggleWhoPanel('likes_${p.id}')">❤️ ${p.likes||0} J'aime</button>
-      <button class="p-stat-link" onclick="toggleWhoPanel('cmts_panel_${p.id}')">💬 ${(p.comments||[]).length} commentaires</button>
-      <button class="p-stat-link" onclick="toggleWhoPanel('shares_${p.id}')">🔁 ${p.shares||0} partages</button>
-    </div>
-    ${likedBy.length>0?`<div class="who-panel" id="likes_${p.id}"><b style="font-size:11px;color:var(--texte2)">❤️ Aimé par : </b>${likersChips}${likersSuffix}</div>`:""}
-    ${commentedBy.length>0?`<div class="who-panel" id="cmts_panel_${p.id}"><b style="font-size:11px;color:var(--texte2)">💬 Commenté par : </b>${commentersChips}</div>`:""}
-    ${sharedBy.length>0?`<div class="who-panel" id="shares_${p.id}"><b style="font-size:11px;color:var(--texte2)">🔁 Partagé par : </b>${sharersChips}</div>`:""}
-    <div class="p-actions">
-      <button class="p-btn${isLiked?" liked":""}" onclick="likePost('${p.id}')"><i class="fas fa-heart"></i> J'aime</button>
-      <button class="p-btn" onclick="toggleCmts('${p.id}')"><i class="fas fa-comment"></i> Commenter</button>
-      <button class="p-btn" onclick="sharePost('${p.id}')"><i class="fas fa-share"></i> Partager</button>
-      <button class="p-btn${isFav?" faved":""}" onclick="toggleFav('${p.id}')"><i class="fas fa-bookmark"></i></button>
-    </div>
-    <div class="cmts" id="cmts_${p.id}">${cmtHtml}<div class="ci-row"><input class="ci-inp" id="ci_${p.id}" placeholder="Commenter..." autocomplete="off" onkeydown="if(event.key==='Enter')sendCmt('${p.id}')"/><button class="ci-send" onclick="sendCmt('${p.id}')"><i class="fas fa-paper-plane"></i></button></div></div>
-  </div>`;
+  const likedBy=p.likedBy||[];const likersChips=likedBy.slice(0,5).map(uid=>{const lu=uMap[uid];const la=lu?.avatarUrl?`<img src="${lu.avatarUrl}"/>` :(lu?.prenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${uid}')"><span class="who-av">${la}</span> ${lu?.prenom||"?"}</span>`;}).join("");const likersSuffix=likedBy.length>5?` <span style="font-size:11px;color:var(--texte2)">et ${likedBy.length-5} autres</span>`:"";
+  const commentedBy=[...new Map((p.comments||[]).map(c=>[c.userId,c])).values()].slice(0,5);const commentersChips=commentedBy.map(c=>{const cu=uMap[c.userId];const ca=cu?.avatarUrl?`<img src="${cu.avatarUrl}"/>`:(c.userPrenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${c.userId||''}')"><span class="who-av">${ca}</span>${c.userPrenom||"?"}</span>`;}).join("");
+  const sharedBy=p.sharedBy||[];const sharersChips=sharedBy.slice(0,3).map(uid=>{const su=uMap[uid];const sa=su?.avatarUrl?`<img src="${su.avatarUrl}"/>`:(su?.prenom?.[0]||"?").toUpperCase();return `<span class="who-chip" onclick="ouvrirProfilUser('${uid}')"><span class="who-av">${sa}</span>${su?.prenom||"?"}</span>`;}).join("");
+  let mediaHtml="";if(p.mediaUrl&&p.mediaType==="img")mediaHtml=`<div class="p-media" onclick="openLightbox('${p.mediaUrl}')"><img src="${p.mediaUrl}" loading="lazy"/></div>`;else if(p.mediaUrl&&p.mediaType==="vid")mediaHtml=`<div class="p-media"><video src="${p.mediaUrl}" controls playsinline onclick="event.stopPropagation()"></video></div>`;
+  return `<div class="post p-wrap" id="post_${p.id}"><div class="p-head"><div class="p-av" onclick="ouvrirProfilUser('${p.userId}')">${avC}</div><div class="p-info"><div class="p-nom" onclick="ouvrirProfilUser('${p.userId}')">${nom||"Utilisateur"}</div><div class="p-date">${fmtDate(p.date)}</div></div>${isOwn?`<button class="p-menu-btn" onclick="event.stopPropagation();delPost('${p.id}')"><i class="fas fa-trash" style="color:#E24B4A"></i></button>`:""}</div>${p.texte?`<div class="p-text">${p.texte}</div>`:""}${mediaHtml}<div class="p-stats"><button class="p-stat-link" onclick="toggleWhoPanel('likes_${p.id}')">❤️ ${p.likes||0} J'aime</button><button class="p-stat-link" onclick="toggleWhoPanel('cmts_panel_${p.id}')">💬 ${(p.comments||[]).length} commentaires</button><button class="p-stat-link" onclick="toggleWhoPanel('shares_${p.id}')">🔁 ${p.shares||0} partages</button></div>${likedBy.length>0?`<div class="who-panel" id="likes_${p.id}"><b style="font-size:11px;color:var(--texte2)">❤️ Aimé par : </b>${likersChips}${likersSuffix}</div>`:""}${commentedBy.length>0?`<div class="who-panel" id="cmts_panel_${p.id}"><b style="font-size:11px;color:var(--texte2)">💬 Commenté par : </b>${commentersChips}</div>`:""}${sharedBy.length>0?`<div class="who-panel" id="shares_${p.id}"><b style="font-size:11px;color:var(--texte2)">🔁 Partagé par : </b>${sharersChips}</div>`:""}<div class="p-actions"><button class="p-btn${isLiked?" liked":""}" onclick="likePost('${p.id}')"><i class="fas fa-heart"></i> J'aime</button><button class="p-btn" onclick="toggleCmts('${p.id}')"><i class="fas fa-comment"></i> Commenter</button><button class="p-btn" onclick="sharePost('${p.id}')"><i class="fas fa-share"></i> Partager</button><button class="p-btn${isFav?" faved":""}" onclick="toggleFav('${p.id}')"><i class="fas fa-bookmark"></i></button></div><div class="cmts" id="cmts_${p.id}">${cmtHtml}<div class="ci-row"><input class="ci-inp" id="ci_${p.id}" placeholder="Commenter..." autocomplete="off" onkeydown="if(event.key==='Enter')sendCmt('${p.id}')"/><button class="ci-send" onclick="sendCmt('${p.id}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`;
 }
-
 window.toggleWhoPanel=id=>{const el=document.getElementById(id);if(el)el.classList.toggle("open");};
 window.toggleCmts=id=>document.getElementById(`cmts_${id}`)?.classList.toggle("open");
 window.openComposer=type=>{postFile=null;postType=null;document.getElementById("postTxt").value="";document.getElementById("pmImg").classList.remove("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("inpPhoto").value="";document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
@@ -1612,8 +1339,7 @@ window.openMsg=()=>{ouv("ovMsg");document.getElementById("msgSrch").value="";doc
 window.closeMsg=()=>{ferm("ovMsg");if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();};
 
 async function loadConvs(q){
-  const liste=document.getElementById("listeCv");
-  liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px;font-size:13px'>⏳ Chargement...</p>`;
+  const liste=document.getElementById("listeCv");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px;font-size:13px'>⏳ Chargement...</p>`;
   const[uMap,lmSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"lastMessages"),where("dest","==",UC.id)))]);
   let users=Object.entries(uMap).filter(([id])=>id!==UC.id).map(([id,d])=>({id,...d}));
   if(q.trim())users=users.filter(u=>`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase()));
@@ -1636,6 +1362,8 @@ window.openConv=async(uid,type='direct')=>{
   document.getElementById("listeCv").style.display="none";document.getElementById("listeGroupes").style.display="none";
   document.getElementById("zoneCv").classList.add("open");
   document.getElementById("msgInp").value="";document.getElementById("typingIndicator").classList.remove("show");
+  // Réinitialiser la barre vocale au retour dans une conv
+  arreterEnregistrementSilencieux();
   const convId=[UC.id,uid].sort().join("_");
   try{const lmRef=doc(db,"lastMessages",convId);const lmSnap=await getDoc(lmRef);if(lmSnap.exists()&&lmSnap.data().dest===UC.id)await updateDoc(lmRef,{luDest:true});}catch{}
   if(unsubMsgs)unsubMsgs();
@@ -1643,29 +1371,15 @@ window.openConv=async(uid,type='direct')=>{
     const z=document.getElementById("msgsZ");
     if(snap2.empty){z.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>Commencez la conversation !</p>`;return;}
     z.innerHTML=snap2.docs.map(d=>{
-  const m=d.data();const mine=m.exp===UC.id;
-  const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
- if(m.type==="audio"){
-  const waveId='wv_'+d.id;
-  const dur=m.durStr||'0:00';
-  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px">
-    <div class="voice-bubble ${mine?'mine':'theirs'}">
-      <button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)">
-        <i class="fas fa-play" id="ico_${waveId}"></i>
-      </button>
-      <div class="vb-right">
-        <canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas>
-        <div class="vb-info">
-          <span class="vb-dur" id="dur_${waveId}">${dur}</span>
-          <span class="vb-time">${fmtHeure(m.date)}</span>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-  if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
-  return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
-}).join("");
+      const m=d.data();const mine=m.exp===UC.id;
+      const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
+      if(m.type==="audio"){
+        const waveId='wv_'+d.id;const dur=m.durStr||'0:00';
+        return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px"><div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${dur}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div>`;
+      }
+      if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
+      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
+    }).join("");
     z.scrollTop=z.scrollHeight;
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
   });
@@ -1673,6 +1387,7 @@ window.openConv=async(uid,type='direct')=>{
   const typingRef=doc(db,"typing",convId);
   unsubTyping=onSnapshot(typingRef,snap=>{if(!snap.exists()){document.getElementById("typingIndicator").classList.remove("show");return;}const isTyping=snap.data()[uid]===true;if(isTyping){document.getElementById("typingName").textContent=`${u.prenom||"?"} écrit...`;document.getElementById("typingIndicator").classList.add("show");document.getElementById("msgsZ").scrollTop=99999;}else document.getElementById("typingIndicator").classList.remove("show");});
 };
+
 window.openGroupConv=async(groupeId)=>{
   const groupeSnap=await getDoc(doc(db,"groupes",groupeId));if(!groupeSnap.exists())return;
   const g=groupeSnap.data();const uMap=await getUsers();
@@ -1689,133 +1404,127 @@ window.openGroupConv=async(groupeId)=>{
     z.scrollTop=z.scrollHeight;
   });
 };
-let waveAnimFrame=null,wavePoints=[];
-function startWaveAnimation(){
-  const canvas=document.getElementById('recWaveCanvas');if(!canvas)return;
-  const dpr=window.devicePixelRatio||1,rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
-  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
-  const W=rect.width,H=rect.height;
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    const mid=H/2,barW=3,gap=2,total=barW+gap,count=Math.floor(W/total);
-    while(wavePoints.length<count)wavePoints.push(0);
-    for(let i=0;i<count;i++){
-      const amp=wavePoints[wavePoints.length-count+i]||0;
-      const barH=Math.max(3,amp*(H*0.85)),x=i*total;
-      ctx.fillStyle='#25D366';ctx.beginPath();
-      if(ctx.roundRect)ctx.roundRect(x,mid-barH/2,barW,barH,2);
-      else ctx.rect(x,mid-barH/2,barW,barH);
-      ctx.fill();
-    }
-    wavePoints.push(Math.random()*0.55+0.15);
-    if(wavePoints.length>200)wavePoints.shift();
-    waveAnimFrame=requestAnimationFrame(draw);
-  }
-  draw();
+
+// ===== ENREGISTREMENT VOCAL — CORRIGÉ =====
+// Stopper silencieusement sans envoyer (pour réinitialiser)
+function arreterEnregistrementSilencieux(){
+  if(!isRecording)return;
+  clearInterval(recordInterval);cancelAnimationFrame(waveAnimFrame);
+  wavePoints=[];recordSec=0;isRecording=false;
+  if(mediaRecorder){try{mediaRecorder.stream.getTracks().forEach(t=>t.stop());}catch{}mediaRecorder=null;}
+  audioChunks=[];
+  // Remettre l'interface en mode normal
+  document.getElementById('normalInputRow').style.display='flex';
+  document.getElementById('voiceRecordZone').classList.remove('show');
+  document.getElementById('recordTimer').textContent='0:00';
 }
-window.toggleVoiceRecord = async () => {
-  if (isRecording) return;
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-    recordSec = 0;
-    wavePoints = [];
-    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-    mediaRecorder.start();
-    isRecording = true;
 
-    // Cacher barre normale, montrer barre enregistrement
-    document.getElementById('normalInputRow').style.display = 'none';
-    document.getElementById('voiceRecordZone').style.display = 'flex';
-
-    startWaveAnimation();
-    recordInterval = setInterval(() => {
-      recordSec++;
-      const m = Math.floor(recordSec / 60), s = recordSec % 60;
-      document.getElementById('recordTimer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-    }, 1000);
-  } catch {
-    alert('❌ Microphone non accessible');
-  }
-};
-  window.arreterEnregistrement = async (send) => {
-  if (!mediaRecorder) return;
-  clearInterval(recordInterval);
-  const recSavedSec = recordSec;
-  isRecording = false;
-  cancelAnimationFrame(waveAnimFrame);
-  wavePoints = [];
-
-  // Remettre barre normale
-  document.getElementById('normalInputRow').style.display = 'flex';
-  document.getElementById('voiceRecordZone').style.display = 'none';
-
-  mediaRecorder.stream.getTracks().forEach(t => t.stop());
-
-  if (!send) {
-    mediaRecorder = null;
-    audioChunks = [];
+// Démarrer l'enregistrement
+window.toggleVoiceRecord=async()=>{
+  if(isRecording){
+    // Si déjà en cours, on arrête et annule (sécurité)
+    arreterEnregistrementSilencieux();
     return;
   }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream);
+    audioChunks=[];recordSec=0;wavePoints=[];
+    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+    mediaRecorder.start(100);
+    isRecording=true;
+    // Cacher zone normale, montrer zone enregistrement
+    document.getElementById('normalInputRow').style.display='none';
+    document.getElementById('voiceRecordZone').classList.add('show');
+    startWaveAnimation();
+    recordInterval=setInterval(()=>{
+      recordSec++;
+      const m=Math.floor(recordSec/60),s=recordSec%60;
+      document.getElementById('recordTimer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    },1000);
+  }catch{
+    alert('❌ Microphone non accessible. Vérifiez les permissions.');
+  }
+};
 
-  mediaRecorder.onstop = async () => {
-    const blob = new Blob(audioChunks, {type: 'audio/webm'});
-    const file = new File([blob], 'voice.webm', {type: 'audio/webm'});
-    const uid = document.getElementById("cvUid").value;
-    if (!uid) return;
-    try {
-      const url = await uploadCloudinary(file, `akit/audio/${UC.id}`, null, null);
-      const convId = [UC.id, uid].sort().join("_");
-      const dur = recSavedSec || 0;
-      const m = Math.floor(dur/60), s = dur % 60;
-      const durStr = `${m}:${s.toString().padStart(2,'0')}`;
-      await addDoc(collection(db,"messages",convId,"msgs"), {
-        exp: UC.id, dest: uid,
-        type: "audio",
-        audioUrl: url,
-        durStr,
-        contenu: "🎤 Message vocal",
-        date: serverTimestamp(),
-        lu: false
-      });
-      await setDoc(doc(db,"lastMessages",convId), {
-        exp: UC.id, dest: uid,
-        contenu: "🎤 Message vocal",
-        date: serverTimestamp(),
-        luDest: false
-      });
-      addNotif(uid, "message", `🎤 ${UC.prenom} vous a envoyé un message vocal`);
-    } catch(e) {
-      alert("❌ " + e.message);
-    }
-    audioChunks = [];
+// Arrêter (envoyer ou annuler)
+window.arreterEnregistrement=async(send)=>{
+  if(!isRecording||!mediaRecorder)return;
+  clearInterval(recordInterval);cancelAnimationFrame(waveAnimFrame);
+  wavePoints=[];
+  const recSavedSec=recordSec;
+  recordSec=0;isRecording=false;
+  // Remettre zone normale immédiatement
+  document.getElementById('normalInputRow').style.display='flex';
+  document.getElementById('voiceRecordZone').classList.remove('show');
+  document.getElementById('recordTimer').textContent='0:00';
+  // Arrêter le flux micro
+  mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+  if(!send){
+    mediaRecorder=null;audioChunks=[];return;
+  }
+  // Envoyer
+  mediaRecorder.onstop=async()=>{
+    if(audioChunks.length===0){mediaRecorder=null;return;}
+    const blob=new Blob(audioChunks,{type:'audio/webm'});
+    const file=new File([blob],'voice.webm',{type:'audio/webm'});
+    const uid=document.getElementById("cvUid").value;
+    if(!uid){mediaRecorder=null;audioChunks=[];return;}
+    try{
+      const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);
+      const convId=[UC.id,uid].sort().join("_");
+      const dur=recSavedSec||0;const m=Math.floor(dur/60),s=dur%60;const durStr=`${m}:${s.toString().padStart(2,'0')}`;
+      await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,durStr,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});
+      await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false});
+      addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);
+    }catch(e){alert("❌ "+e.message);}
+    audioChunks=[];mediaRecorder=null;
   };
   mediaRecorder.stop();
 };
+
+function startWaveAnimation(){
+  const canvas=document.getElementById('recWaveCanvas');if(!canvas)return;
+  // Attendre que le canvas soit visible et ait des dimensions
+  requestAnimationFrame(()=>{
+    const dpr=window.devicePixelRatio||1;
+    const rect=canvas.getBoundingClientRect();
+    const W=rect.width||200,H=rect.height||36;
+    canvas.width=W*dpr;canvas.height=H*dpr;
+    const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      const mid=H/2,barW=3,gap=2,total=barW+gap,count=Math.floor(W/total);
+      while(wavePoints.length<count)wavePoints.push(0);
+      for(let i=0;i<count;i++){
+        const amp=wavePoints[wavePoints.length-count+i]||0;
+        const barH=Math.max(3,amp*(H*0.85));const x=i*total;
+        ctx.fillStyle='#25D366';ctx.beginPath();
+        if(ctx.roundRect)ctx.roundRect(x,mid-barH/2,barW,barH,2);else ctx.rect(x,mid-barH/2,barW,barH);
+        ctx.fill();
+      }
+      wavePoints.push(Math.random()*0.55+0.15);
+      if(wavePoints.length>300)wavePoints.shift();
+      if(isRecording)waveAnimFrame=requestAnimationFrame(draw);
+    }
+    draw();
+  });
+}
+
 window.envoyerPhotoMsg=async(e)=>{
   const file=e.target.files[0];if(!file)return;
-  const uid=document.getElementById("cvUid").value;
-  const type=document.getElementById("cvType").value;
-  if(!uid)return;
+  const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!uid)return;
   const compressed=await compresserImage(file,800,0.75);
   const url=await uploadCloudinary(compressed,`akit/msgphotos/${UC.id}`,null,null);
   const convId=type==="groupe"?`groupe_${uid}`:[UC.id,uid].sort().join("_");
-  await addDoc(collection(db,"messages",convId,"msgs"),{
-    exp:UC.id,dest:type==="groupe"?uid:uid,
-    type:"image",imageUrl:url,
-    contenu:"📷 Photo",date:serverTimestamp(),lu:false
-  });
-  if(type!=="groupe"){
-    await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"📷 Photo",date:serverTimestamp(),luDest:false});
-    addNotif(uid,"message",`📷 ${UC.prenom} vous a envoyé une photo`);
-  }
+  await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:type==="groupe"?uid:uid,type:"image",imageUrl:url,contenu:"📷 Photo",date:serverTimestamp(),lu:false});
+  if(type!=="groupe"){await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"📷 Photo",date:serverTimestamp(),luDest:false});addNotif(uid,"message",`📷 ${UC.prenom} vous a envoyé une photo`);}
   e.target.value="";
 };
+
 window.onTyping=async()=>{const uid=document.getElementById("cvUid").value;if(!uid)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:true},{merge:true});}catch{}clearTimeout(typingTimeout);typingTimeout=setTimeout(()=>stopTypingSignal(),3000);};
 async function stopTypingSignal(){const uid=document.getElementById("cvUid").value;if(!uid||!UC)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:false},{merge:true});}catch{}}
-window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
+window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();arreterEnregistrementSilencieux();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
 window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
 // ===== GROUPES =====
@@ -1834,26 +1543,10 @@ window.openMobileMoney=()=>{ouv("ovMobileMoney");refreshMMDisplay();};
 window.switchMM=(provider,btn)=>{currentMmProvider=provider;document.querySelectorAll('.mm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.mm-form').forEach(f=>f.classList.remove('active'));document.getElementById(`mm-${provider}`).classList.add('active');refreshMMDisplay();};
 function refreshMMDisplay(){['om','mtn','mpesa'].forEach(p=>{const s=mmState[p];document.getElementById(`${p}-connect-zone`).style.display=s.connected?"none":"block";document.getElementById(`${p}-panel`).style.display=s.connected?"block":"none";if(s.connected){document.getElementById(`${p}-balance`).textContent=s.balance.toLocaleString()+" FCFA";renderMMHist(p);}});}
 function renderMMHist(p){const el=document.getElementById(`${p}-hist`);const hist=mmState[p].hist||[];if(hist.length===0){el.innerHTML=`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:8px">Aucune transaction</p>`;return;}el.innerHTML=hist.slice(-10).reverse().map(h=>`<div class="mm-hist-item"><div class="mm-hist-ico ${h.type}">${h.type==='out'?'💸':'💰'}</div><div class="mm-hist-info"><div class="mm-hist-name">${h.label}</div><div class="mm-hist-date">${h.date||""}</div></div><div class="mm-hist-amount ${h.type}">${h.type==='out'?'-':'+'}${h.amount.toLocaleString()} FCFA</div></div>`).join("");}
-window.connecterMobileMoney=async(provider)=>{const phone=prompt(`📱 Entrez votre numéro ${provider.toUpperCase()} (ex: 699000000) :`);if(!phone||phone.length<9){alert("❌ Numéro invalide");return;}const pin=prompt(`🔒 Entrez votre PIN ${provider.toUpperCase()} :`);if(!pin||pin.length<4){alert("❌ PIN invalide");return;}// Simulation connexion — en production: appel API opérateur
-mmState[provider]={connected:true,balance:0,phone,hist:[]};// Solde initialisé à 0
-await saveMM();refreshMMDisplay();alert(`✅ Compte ${provider.toUpperCase()} connecté ! Solde : 0 FCFA\n(En production, le solde réel sera récupéré via l'API de l'opérateur)`);};
+window.connecterMobileMoney=async(provider)=>{const phone=prompt(`📱 Entrez votre numéro ${provider.toUpperCase()} (ex: 699000000) :`);if(!phone||phone.length<9){alert("❌ Numéro invalide");return;}const pin=prompt(`🔒 Entrez votre PIN ${provider.toUpperCase()} :`);if(!pin||pin.length<4){alert("❌ PIN invalide");return;}mmState[provider]={connected:true,balance:0,phone,hist:[]};await saveMM();refreshMMDisplay();alert(`✅ Compte ${provider.toUpperCase()} connecté ! Solde : 0 FCFA`);};
 window.mmEnvoyer=async(provider)=>{ferm("ovMobileMoney");document.getElementById("sendMoneyTitle").textContent=`💸 Envoyer via ${provider.toUpperCase()}`;window._sendProvider=provider;ouv("ovSendMoney");};
-window.mmRecevoir=(provider)=>{
-  if(provider==='coin'){
-    const montant=prompt("💰 Montant à déposer (FCFA) :");
-    if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide (min 100 FCFA)");return;}
-    const msg=`Bonjour, je souhaite acheter ${montant} FCFA de AKIT Coins. Mon ID: ${UC.id} - ${UC.prenom} ${UC.nom}`;
-    const omUrl=`https://om.orangemoney.com/pay?to=698083058&amount=${montant}&note=${encodeURIComponent(msg)}`;
-    const waUrl=`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`;
-    const choice=confirm(`💳 Envoyer ${parseInt(montant).toLocaleString()} FCFA au +237 698 083 058\n\nOK = WhatsApp\nAnnuler = Orange Money`);
-    if(choice)window.open(waUrl,'_blank');
-    else window.open(omUrl,'_blank');
-    alert("✅ Après paiement confirmé, vos Coins seront crédités manuellement sous 5 minutes.");
-    return;
-  }
-  alert(`📲 Votre numéro ${provider.toUpperCase()} : ${mmState[provider]?.phone||'Non connecté'}\n\nCommuniquez ce numéro pour recevoir de l'argent.`);
-};
-window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDest").value.trim();const amount=parseInt(document.getElementById("sendMoneyAmount").value);const note=document.getElementById("sendMoneyNote").value.trim();const provider=window._sendProvider||'om';if(!dest){alert("⚠️ Entrez le destinataire");return;}if(!amount||amount<100){alert("⚠️ Montant minimum : 100 FCFA");return;}if(provider!=='coin'&&!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(provider!=='coin'&&mmState[provider].balance<amount){alert(`❌ Solde insuffisant. Disponible : ${mmState[provider].balance.toLocaleString()} FCFA`);return;}if(provider==='coin'&&(UC.akit_coin||0)<amount){alert(`❌ Solde AKIT Coin insuffisant`);return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA à ${dest} via ${provider.toUpperCase()} ?\n${note?`Motif : ${note}`:""}`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="Envoi...";try{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});if(provider==='coin'){mmState.coin.balance-=amount;mmState.coin.hist.push({type:'out',label:`Envoi à ${dest}${note?' - '+note:''}`,amount,date:now});UC.akit_coin=(mmState.coin.balance);await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});}else{mmState[provider].balance-=amount;mmState[provider].hist.push({type:'out',label:`Envoi à ${dest} ${note?'('+note+')':''}`,amount,date:now});}await saveMM();updateCoinDisplay();ferm("ovSendMoney");alert(`✅ ${amount.toLocaleString()} FCFA envoyés à ${dest} avec succès !\n(En production, l'API opérateur traite la transaction réelle)`);}catch(e){alert("❌ Erreur : "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}};
+window.mmRecevoir=(provider)=>{if(provider==='coin'){const montant=prompt("💰 Montant à déposer (FCFA) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide (min 100 FCFA)");return;}const msg=`Bonjour, je souhaite acheter ${montant} FCFA de AKIT Coins. Mon ID: ${UC.id} - ${UC.prenom} ${UC.nom}`;const omUrl=`https://om.orangemoney.com/pay?to=698083058&amount=${montant}&note=${encodeURIComponent(msg)}`;const waUrl=`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`;const choice=confirm(`💳 Envoyer ${parseInt(montant).toLocaleString()} FCFA au +237 698 083 058\n\nOK = WhatsApp\nAnnuler = Orange Money`);if(choice)window.open(waUrl,'_blank');else window.open(omUrl,'_blank');alert("✅ Après paiement confirmé, vos Coins seront crédités sous 5 minutes.");return;}alert(`📲 Votre numéro ${provider.toUpperCase()} : ${mmState[provider]?.phone||'Non connecté'}`);};
+window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDest").value.trim();const amount=parseInt(document.getElementById("sendMoneyAmount").value);const note=document.getElementById("sendMoneyNote").value.trim();const provider=window._sendProvider||'om';if(!dest){alert("⚠️ Entrez le destinataire");return;}if(!amount||amount<100){alert("⚠️ Montant minimum : 100 FCFA");return;}if(provider!=='coin'&&!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(provider!=='coin'&&mmState[provider].balance<amount){alert(`❌ Solde insuffisant. Disponible : ${mmState[provider].balance.toLocaleString()} FCFA`);return;}if(provider==='coin'&&(UC.akit_coin||0)<amount){alert(`❌ Solde AKIT Coin insuffisant`);return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA à ${dest} via ${provider.toUpperCase()} ?${note?'\nMotif : '+note:""}`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="Envoi...";try{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});if(provider==='coin'){mmState.coin.balance-=amount;mmState.coin.hist.push({type:'out',label:`Envoi à ${dest}${note?' - '+note:''}`,amount,date:now});UC.akit_coin=mmState.coin.balance;await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});}else{mmState[provider].balance-=amount;mmState[provider].hist.push({type:'out',label:`Envoi à ${dest} ${note?'('+note+')':''}`,amount,date:now});}await saveMM();updateCoinDisplay();ferm("ovSendMoney");alert(`✅ ${amount.toLocaleString()} FCFA envoyés à ${dest} avec succès !`);}catch(e){alert("❌ Erreur : "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}};
 async function saveMM(){try{await setDoc(doc(db,"mobilemoney",UC.id),mmState);}catch(e){console.error("saveMM:",e);}}
 
 // ===== NOTIFS =====
@@ -1889,17 +1582,13 @@ window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinH
 window.openProfil=async()=>{
   pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");
   document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+' <span class="new-prf-check">✓</span>';
-  document.getElementById("prfEmail").textContent=UC.email||"";
-  document.getElementById("prfBio").textContent=UC.bio||"Membre AKIT-CHAT";
+  document.getElementById("prfEmail").textContent=UC.email||"";document.getElementById("prfBio").textContent=UC.bio||"Membre AKIT-CHAT";
   const avEl=document.getElementById("prfAvEl");
   avEl.innerHTML=UC.avatarUrl?`<img src="${UC.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>` :`<svg viewBox="0 0 100 100" style="width:100%;height:100%;fill:rgba(255,255,255,.9)"><circle cx="50" cy="35" r="20"/><ellipse cx="50" cy="80" rx="30" ry="20"/></svg>`;
-  if(UC.coverUrl){document.getElementById("prfCoverImg").src=UC.coverUrl;document.getElementById("prfCoverImg").style.display="block";}
-  else document.getElementById("prfCoverImg").style.display="none";
+  if(UC.coverUrl){document.getElementById("prfCoverImg").src=UC.coverUrl;document.getElementById("prfCoverImg").style.display="block";}else document.getElementById("prfCoverImg").style.display="none";
   const[sp,sa]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);
-  document.getElementById("psPosts").textContent=sp.size;
-  let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});
-  document.getElementById("psAmis").textContent=cntA;
-  document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);
+  document.getElementById("psPosts").textContent=sp.size;let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});
+  document.getElementById("psAmis").textContent=cntA;document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);
   updateCoinDisplay();renderPrfTab('posts',sp);ouv("ovProfil");
 };
 async function renderPrfTab(tab,spSnap){
@@ -1939,7 +1628,7 @@ window.ouvrirProfilUser=async uid=>{
 };
 
 // ===== RECHERCHE =====
-window.rechercher=async q=>{const drop=document.getElementById("srchDrop");if(!q.trim()){drop.classList.remove("open");return;}const uMap=await getUsers();const found=[];Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase()))found.push({id,...u});});if(found.length===0){drop.classList.remove("open");return;}drop.innerHTML=found.map(u=>`<div class="s-item" onclick="ouvrirProfilUser('${u.id}');fermSearch();document.getElementById('srchInp').value=''"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div><div class="s-nom">${u.prenom||""} ${u.nom||""}</div><div class="s-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div></div>`).join("");drop.classList.add("open");};
+window.rechercher=async q=>{const drop=document.getElementById("srchDrop");if(!q.trim()){drop.classList.remove("open");return;}const uMap=await getUsers();const found=[];Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase()))found.push({id,...u});});if(found.length===0){drop.classList.remove("open");return;}drop.innerHTML=found.map(u=>`<div class="s-item" onclick="ouvrirProfilUser('${u.id}');fermSearch();document.getElementById('srchInp').value=''"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}</div><div><div style="font-size:13px;font-weight:700">${u.prenom||""} ${u.nom||""}</div><div style="font-size:11px;color:var(--texte2)">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div></div>`).join("");drop.classList.add("open");};
 window.fermSearch=()=>document.getElementById("srchDrop").classList.remove("open");
 
 // ===== CLAUDE AI =====
@@ -1949,13 +1638,12 @@ window.sendClaude=async()=>{const inp=document.getElementById("clInp");const q=i
 window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.location.replace("index.html");};
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
 
-// Swipe pour répondre
+// ===== SWIPE POUR RÉPONDRE =====
 let swipeStartX=0,swipeData=null;
 window.startSwipe=(e,txt,mine)=>{swipeStartX=e.touches[0].clientX;swipeData={txt,mine};};
 window.endSwipe=(e)=>{
   if(!swipeData)return;
   const dx=e.changedTouches[0].clientX-swipeStartX;
-  // Swipe droite = répondre
   if(dx>60){
     replyMsg=swipeData.txt;
     const bar=document.getElementById('replyBar');
@@ -1966,11 +1654,12 @@ window.endSwipe=(e)=>{
   swipeData=null;
 };
 window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
-window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
+
+// ===== LECTURE AUDIO WAVEFORM =====
 const activeAudios={};
+window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
 window.playAudioWave=async(url,waveId,btn)=>{
   if(!url){alert('❌ Audio indisponible');return;}
-  // Stopper si déjà en lecture
   if(activeAudios[waveId]){
     activeAudios[waveId].pause();
     activeAudios[waveId]=null;
@@ -1981,7 +1670,6 @@ window.playAudioWave=async(url,waveId,btn)=>{
   activeAudios[waveId]=audio;
   const ico=document.getElementById('ico_'+waveId);
   ico.className='fas fa-pause';
-  // Dessiner waveform statique décorative
   const canvas=document.getElementById(waveId);
   drawVoiceWave(canvas,0);
   audio.ontimeupdate=()=>{
@@ -2008,7 +1696,6 @@ function drawVoiceWave(canvas,progress){
   const W=rect.width,H=rect.height,mid=H/2;
   const barW=2,gap=2,total=barW+gap;
   const count=Math.floor(W/total);
-  // Seed pseudo-aléatoire pour waveform cohérente
   for(let i=0;i<count;i++){
     const seed=(Math.sin(i*0.4)*0.5+0.5);
     const amp=0.2+seed*0.75;
@@ -2022,144 +1709,58 @@ function drawVoiceWave(canvas,progress){
     ctx.fill();
   }
 }
-// ===== BLOQUER RETOUR VERS INDEX/ACCUEIL =====
+
+// ===== BLOQUER RETOUR VERS INDEX =====
 (function(){
-  // Empiler plusieurs états pour absorber les retours
   history.pushState(null,'',location.href);
   history.pushState(null,'',location.href);
   history.pushState(null,'',location.href);
-
-  window.addEventListener('popstate',()=>{
-    history.pushState(null,'',location.href);
-  });
-
-  // Bloquer aussi le geste retour Android/swipe iOS
+  window.addEventListener('popstate',()=>{history.pushState(null,'',location.href);});
   document.addEventListener('touchstart',e=>{
-    if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20){
-      e.preventDefault();
-    }
+    if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20){e.preventDefault();}
   },{passive:false});
 })();
-  // ===== PARRAINAGE =====
-window.openParrainage = async () => {
-  ouv("ovParrainage");
-  const lien = `https://akit-chat.vercel.app/acceuil.html?ref=${UC.id}`;
-  document.getElementById("prrLink").value = lien;
-  document.getElementById("prrCoins").textContent = (UC.akit_coin || 0).toLocaleString();
-  const filleuls = UC.filleuls || [];
-  document.getElementById("prrFilleuls").textContent = filleuls.length;
 
-  // Charger la liste des filleuls
-  if (filleuls.length > 0) {
-    const uMap = await getUsers();
-    const liste = document.getElementById("prrListeFilleuls");
-    liste.innerHTML = filleuls.map(uid => {
-      const u = uMap[uid] || {prenom:"?", nom:""};
-      const av = u.avatarUrl
-        ? `<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
-        : (u.prenom?.[0]||"?").toUpperCase();
-      return `<div style="display:flex;align-items:center;gap:10px;padding:9px;background:var(--gris);border-radius:10px;margin-bottom:6px">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${av}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">${u.prenom||""} ${u.nom||""}</div>
-          <div style="font-size:11px;color:var(--texte2)">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div>
-        </div>
-        <div style="font-size:11px;font-weight:700;color:#00FF88">+500 💰</div>
-      </div>`;
+// ===== PARRAINAGE =====
+window.openParrainage=async()=>{
+  ouv("ovParrainage");
+  const lien=`https://akit-chat.vercel.app/acceuil.html?ref=${UC.id}`;
+  document.getElementById("prrLink").value=lien;
+  document.getElementById("prrCoins").textContent=(UC.akit_coin||0).toLocaleString();
+  const filleuls=UC.filleuls||[];
+  document.getElementById("prrFilleuls").textContent=filleuls.length;
+  if(filleuls.length>0){
+    const uMap=await getUsers();
+    const liste=document.getElementById("prrListeFilleuls");
+    liste.innerHTML=filleuls.map(uid=>{
+      const u=uMap[uid]||{prenom:"?",nom:""};
+      const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:(u.prenom?.[0]||"?").toUpperCase();
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px;background:var(--gris);border-radius:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${av}</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${u.prenom||""} ${u.nom||""}</div><div style="font-size:11px;color:var(--texte2)">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div><div style="font-size:11px;font-weight:700;color:#00FF88">+500 💰</div></div>`;
     }).join("");
   }
 };
 
-window.copierLienParrainage = () => {
-  const lien = document.getElementById("prrLink").value;
-  navigator.clipboard.writeText(lien).then(() => {
-    alert("✅ Lien copié ! Partagez-le avec vos amis.");
-  }).catch(() => {
-    document.getElementById("prrLink").select();
-    document.execCommand("copy");
-    alert("✅ Lien copié !");
-  });
+window.copierLienParrainage=()=>{
+  const lien=document.getElementById("prrLink").value;
+  navigator.clipboard.writeText(lien).then(()=>alert("✅ Lien copié !")).catch(()=>{document.getElementById("prrLink").select();document.execCommand("copy");alert("✅ Lien copié !");});
 };
 
-window.partagerWhatsApp = () => {
-  const lien = document.getElementById("prrLink").value;
-  const msg = `🚀 Rejoins-moi sur AKIT-CHAT, le réseau social africain !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n\n${lien}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+window.partagerWhatsApp=()=>{
+  const lien=document.getElementById("prrLink").value;
+  const msg=`🚀 Rejoins-moi sur AKIT-CHAT, le réseau social africain !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n\n${lien}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
 };
 
-window.partagerAutre = async () => {
-  const lien = document.getElementById("prrLink").value;
-  const msg = `🚀 Rejoins-moi sur AKIT-CHAT !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n${lien}`;
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: "AKIT-CHAT", text: msg, url: lien });
-    } catch {}
-  } else {
-    window.copierLienParrainage();
-  }
+window.partagerAutre=async()=>{
+  const lien=document.getElementById("prrLink").value;
+  const msg=`🚀 Rejoins-moi sur AKIT-CHAT !\n\nInscris-toi avec mon lien et reçois 250 AKIT Coins gratuits 🎁\n${lien}`;
+  if(navigator.share){try{await navigator.share({title:"AKIT-CHAT",text:msg,url:lien});}catch{}}
+  else window.copierLienParrainage();
 };
+
+// ===== APPELER UTILISATEUR VIDÉO =====
+window.appelerVideoUtilisateur=()=>ouvrirVideoCall();
+
 </script>
-  <!-- PARRAINAGE -->
-<div class="ov" id="ovParrainage" onclick="closeSiDehors(event,'ovParrainage')">
-  <div class="modal" style="max-width:440px">
-    <div class="m-head" style="background:linear-gradient(135deg,#00FF88,#FFD700);border-radius:16px 16px 0 0">
-      <h2 style="color:#000"><i class="fas fa-gift" style="margin-right:7px"></i>Inviter des amis</h2>
-      <button class="m-close" style="background:rgba(0,0,0,.15);color:#000" onclick="ferm('ovParrainage')">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="m-body">
-
-      <!-- Stats parrainage -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)">
-          <div style="font-size:24px;font-weight:900;color:#FFD700" id="prrCoins">0</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">AKIT Coins</div>
-        </div>
-        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:14px;text-align:center;border:0.5px solid rgba(0,255,136,.2)">
-          <div style="font-size:24px;font-weight:900;color:#00FF88" id="prrFilleuls">0</div>
-          <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">Amis invités</div>
-        </div>
-      </div>
-
-      <!-- Explication -->
-      <div style="background:#f0fff8;border-radius:12px;padding:14px;margin-bottom:14px;border:0.5px solid #00FF88">
-        <div style="font-size:13px;font-weight:700;color:#000;margin-bottom:8px">🎁 Comment ça marche ?</div>
-        <div style="font-size:12px;color:#333;line-height:1.8">
-          ✅ Partagez votre lien unique<br>
-          ✅ Votre ami s'inscrit avec votre lien<br>
-          ✅ Vous recevez <b>+500 AKIT Coins</b><br>
-          ✅ Votre ami reçoit <b>+250 AKIT Coins</b>
-        </div>
-      </div>
-
-      <!-- Lien de parrainage -->
-      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:6px">Votre lien unique</div>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <input id="prrLink" readonly style="flex:1;background:var(--gris);border:0.5px solid var(--gris2);border-radius:9px;padding:11px 14px;font-size:12px;outline:none;color:var(--texte)"/>
-        <button onclick="copierLienParrainage()" style="background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">
-          📋 Copier
-        </button>
-      </div>
-
-      <!-- Boutons partage -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        <button onclick="partagerWhatsApp()" style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-          <i class="fab fa-whatsapp" style="font-size:18px"></i> WhatsApp
-        </button>
-        <button onclick="partagerAutre()" style="background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-          <i class="fas fa-share-alt" style="font-size:18px"></i> Partager
-        </button>
-      </div>
-
-      <!-- Liste filleuls -->
-      <div style="font-size:12px;font-weight:700;color:var(--texte2);margin-bottom:8px">Amis que vous avez invités</div>
-      <div id="prrListeFilleuls">
-        <p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucun ami invité pour l'instant</p>
-      </div>
-
-    </div>
-  </div>
-</div>
 </body>
 </html>
