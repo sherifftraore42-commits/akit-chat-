@@ -299,7 +299,7 @@ input,textarea{font-family:var(--font)}
 .cv-nom{font-size:14px;font-weight:600;color:var(--texte)}
 .cv-last{font-size:12px;color:var(--texte2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-bdg{background:var(--bleu);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-.zone-cv{display:none;flex-direction:column;height:100%}
+.zone-cv{display:none;flex-direction:column;height:100%;overflow:hidden;}
 .zone-cv.open{display:flex}
 .cv-head{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:0.5px solid var(--gris2);margin-bottom:10px}
 .btn-back-mini{background:none;border:none;color:var(--bleu);font-size:22px;padding:6px 10px;border-radius:8px;cursor:pointer;min-width:36px;min-height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -315,7 +315,7 @@ input,textarea{font-family:var(--font)}
 .typing-dots span:nth-child(2){animation-delay:.2s}
 .typing-dots span:nth-child(3){animation-delay:.4s}
 @keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
-.msgs-z{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;min-height:160px;max-height:240px;padding:3px 0;-webkit-overflow-scrolling:touch}
+.msgs-z{overflow-y:auto;display:flex;flex-direction:column;gap:7px;flex:1;min-height:0;padding:3px 0;-webkit-overflow-scrolling:touch;}
 .msg-b{max-width:78%;padding:10px 13px;border-radius:14px;font-size:14px;display:flex;flex-direction:column;gap:3px;}
 .msg-b small{font-size:11px;opacity:.55}
 .msg-reply-preview{background:rgba(91,76,245,.1);border-left:3px solid var(--bleu);border-radius:6px;padding:5px 9px;margin-bottom:4px;font-size:11px;color:var(--texte2);cursor:pointer;}
@@ -335,9 +335,10 @@ input,textarea{font-family:var(--font)}
   display:flex;
   flex-direction:column;
   gap:6px;
-  margin-top:8px;
   border-top:0.5px solid var(--gris2);
   padding-top:8px;
+  padding-bottom:0;
+  margin-top:8px;
   flex-shrink:0;
 }
 
