@@ -594,6 +594,21 @@ input,textarea{font-family:var(--font)}
 .tgl-sm::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .25s}
 .tgl-sm.on::after{left:19px}
 
+  /* ===== BADGE TOPBAR ===== */
+.tb-bdg{
+  position:absolute;top:2px;right:2px;
+  background:#E24B4A;color:#fff;
+  font-size:9px;font-weight:800;
+  min-width:16px;height:16px;
+  border-radius:50px;
+  display:none;
+  align-items:center;justify-content:center;
+  padding:0 4px;
+  border:2px solid var(--blanc);
+  font-family:var(--font);
+}
+.tb-bdg.on{display:flex;}
+
 /* ADD STORY AVEC TEXTE+MUSIQUE */
 .story-compose-zone{background:var(--dark);border-radius:12px;overflow:hidden;position:relative;margin-bottom:12px;}
 .story-compose-preview{width:100%;height:200px;object-fit:cover;display:none;}
@@ -732,10 +747,18 @@ setTimeout(step,300);
       <button class="tb-btn" onclick="toggleSidebar()" style="display:none" id="sidebarToggleTop"><i class="fas fa-bars"></i></button>
       <span class="top-logo-text">AKIT-CHAT</span>
     </div>
-    <div class="topbar-right">
-      <div class="av-mini" id="miniAv" onclick="openProfil()"></div>
-      <button class="tb-btn" onclick="ouvrirSearch()" title="Rechercher"><i class="fas fa-search"></i></button>
-    </div>
+  <div class="topbar-right">
+  <button class="tb-btn" onclick="openMsg()" style="position:relative" title="Messages">
+    <i class="fas fa-comment-dots"></i>
+    <span class="tb-bdg" id="bdg_msg_top">0</span>
+  </button>
+  <button class="tb-btn" onclick="openNotif()" style="position:relative" title="Notifications">
+    <i class="fas fa-bell"></i>
+    <span class="tb-bdg" id="bdg_notif_top">0</span>
+  </button>
+  <div class="av-mini" id="miniAv" onclick="openProfil()"></div>
+  <button class="tb-btn" onclick="ouvrirSearch()" title="Rechercher"><i class="fas fa-search"></i></button>
+</div>
   </header>
 
   <!-- BOTTOM NAV MISE À JOUR (sans "Paramètres", avec menu "+") -->
@@ -1184,7 +1207,22 @@ window.ouv=ouv;window.ferm=ferm;
 window.closeSiDehors=(e,id)=>{if(e.target===document.getElementById(id))ferm(id);};
 function fmtDate(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString("fr-FR")+" · "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtHeure(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);return isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function setBdg(id,nb){const el=document.getElementById(id);if(!el)return;el.textContent=nb>0?nb:"";nb>0?el.classList.add("on"):el.classList.remove("on");}
+function setBdg(id,nb){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=nb>0?nb:"";
+  nb>0?el.classList.add("on"):el.classList.remove("on");
+}
+function majTousBadges(type,nb){
+  // Messages
+  if(type==='msg'){
+    ['bdg_msg_sb','bdg_msg_top'].forEach(id=>setBdg(id,nb));
+  }
+  // Notifications
+  if(type==='notif'){
+    ['bdg_notif_sb','bdg_notif_top'].forEach(id=>setBdg(id,nb));
+  }
+}
 function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
 function animerReaction(emoji){const pop=document.createElement("div");pop.className="react-pop";pop.textContent=emoji;pop.style.left=Math.random()*60+20+"%";pop.style.bottom="80px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);}
 
@@ -1245,14 +1283,17 @@ onAuthStateChanged(auth,async fireUser=>{
   if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   initUI();renderStories();renderPosts();
   window.addEventListener("beforeunload",()=>marquerEnLigne(false));
-  onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{
+onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{
     const nb=snap.size;
+    majTousBadges('notif',nb);
     if(nb>prevNotifCount&&prevNotifCount!==-1){document.title=`(${nb}) AKIT-CHAT`;jouerSon(880);}
     else if(nb===0)document.title="AKIT-CHAT";
     prevNotifCount=nb;
   });
+
   onSnapshot(query(collection(db,"lastMessages"),where("dest","==",UC.id)),snap=>{
     let unread=0;snap.forEach(d=>{if(d.data().luDest===false)unread++;});
+    majTousBadges('msg',unread);
     if(unread>prevMsgCount&&prevMsgCount!==-1&&unread>0)jouerSon(660);
     prevMsgCount=unread;
   });
@@ -1605,7 +1646,12 @@ async function loadConvs(q){
   if(users.length===0){liste.innerHTML=`<p style="color:var(--texte2);text-align:center;padding:18px;font-size:13px">Aucun utilisateur.</p>`;return;}
   const lmMap={};lmSnap.forEach(d=>{const data=d.data();lmMap[data.exp]=data;});
   users=users.map(u=>({...u,_hasUnread:lmMap[u.id]&&lmMap[u.id].luDest===false,_lastMsgDate:lmMap[u.id]?.date?.toDate?lmMap[u.id].date.toDate():new Date(0),_lastMsg:lmMap[u.id]?.contenu||""}));
-  users.sort((a,b)=>{if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;return b._lastMsgDate-a._lastMsgDate;});
+  users.sort((a,b)=>{
+  // 1. Non lus en premier
+  if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;
+  // 2. Plus récents en premier
+  return b._lastMsgDate-a._lastMsgDate;
+});
   liste.innerHTML=users.map(u=>`<div class="cv-item" onclick="openConv('${u.id}','direct')" style="${u._hasUnread?'background:var(--bleu3);border-left:3px solid var(--bleu);':''}"><div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}${u.enLigne?'<div class="cv-on"></div>':""}</div><div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${u._hasUnread?`📩 ${u._lastMsg?u._lastMsg.substring(0,28)+'...':'Nouveau message'}`:u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div>${u._hasUnread?'<div class="cv-bdg">●</div>':""}</div>`).join("");
 }
 window.srchConv=q=>loadConvs(q);
@@ -1774,7 +1820,14 @@ window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDes
 async function saveMM(){try{await setDoc(doc(db,"mobilemoney",UC.id),mmState);}catch(e){console.error("saveMM:",e);}}
 
 // ===== NOTIFS =====
-window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{if(a.lu!==b.lu)return a.lu?1:-1;const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});let html="";for(const n of notifs){const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";
+window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{
+  // 1. Non lues avant lues
+  if(a.lu!==b.lu)return a.lu?1:-1;
+  // 2. Plus récentes en premier
+  const da=a.date?.toDate?a.date.toDate():new Date(0);
+  const db2=b.date?.toDate?b.date.toDate():new Date(0);
+  return db2-da;
+});let html="";for(const n of notifs){const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";
 // Redirection au clic sur notification
 const onclick=n.type==="message"?`openMsg()`:n.type==="ami"?`openAmis()`:n.type==="post"||n.type==="like"||n.type==="comment"?`scrollTop()`:n.type==="story"||n.type==="reaction"||n.type==="comment_story"?`renderStories()`:n.type==="groupe_invite"||n.type==="groupe_message"?`openMsg();setTimeout(()=>switchMsgTab('groups'),400)`:n.type==="coin"?`openCoin()`:``;
 html+=`<div class="nf-item ${n.lu?"":"unread"}" onclick="${onclick};updateDoc(doc(db,'notifications','${n.id}'),{lu:true}).catch(()=>{});this.classList.remove('unread')"><div class="nf-ico">${ico}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`;updateDoc(doc(db,"notifications",n.id),{lu:true}).catch(()=>{});}liste.innerHTML=html;}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
