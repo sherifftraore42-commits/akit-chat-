@@ -1586,15 +1586,16 @@ window.posterStory=async()=>{
   try{
     let imgUrl=null;
     if(storyFile)imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));
-    const storyData={
+const storyData={
       userId:UC.id,imgUrl,date:serverTimestamp(),vues:0,vuPar:[],comments:[],reactions:{},likes:[],likedBy:[],
       ...(texteStory?{texte:texteStory,textePos:storyTextPos,texteCouleur:storyTextColor}:{}),
-     ...(selectedMusic?{
-  musicId:selectedMusic.id,
-  musicTitle:selectedMusic.title,
-  musicArtist:selectedMusic.artist,
-  musicPreview:selectedMusic.previewUrl||''
-}:{})
+      ...(selectedMusic?{
+        musicId:selectedMusic.id,
+        musicTitle:selectedMusic.title,
+        musicArtist:selectedMusic.artist,
+        musicPreview:selectedMusic.previewUrl||''
+      }:{})
+    };                            
     await addDoc(collection(db,"stories"),storyData);
     storyFile=null;selectedMusic=null;
     ferm("ovAddS");renderStories();
