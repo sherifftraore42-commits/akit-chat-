@@ -1159,20 +1159,6 @@ let currentCallTargetUid=null;
 let storyTextPos='top';
 let storyTextColor='#ffffff';
 let selectedMusic=null;
-
-const MUSIQUES_POPULAIRES=[
-  {id:'afro1',title:'Ye (Burna Boy)',artist:'Burna Boy',dur:'3:28',emoji:'🎵'},
-  {id:'afro2',title:'Sungba',artist:'Asake ft. Burna Boy',dur:'2:59',emoji:'🎶'},
-  {id:'afro3',title:'Essence',artist:'Wizkid ft. Tems',dur:'3:17',emoji:'💫'},
-  {id:'afro4',title:'Love Nwantiti',artist:'CKay',dur:'2:41',emoji:'❤️'},
-  {id:'afro5',title:'Banza',artist:'Locko',dur:'3:52',emoji:'🔥'},
-  {id:'afro6',title:'Kameni',artist:'Kameni',dur:'4:05',emoji:'🌟'},
-  {id:'afro7',title:'Askia',artist:'Askia',dur:'3:33',emoji:'🎤'},
-  {id:'afro8',title:'Doumbé',artist:'X Maleya',dur:'4:12',emoji:'🥁'},
-  {id:'afro9',title:'Pray for You',artist:'Tenor',dur:'3:44',emoji:'🙏'},
-  {id:'afro10',title:'African Giant',artist:'Burna Boy',dur:'3:55',emoji:'🦁'},
-];
-
 const mmState={
   om:{connected:false,balance:0,phone:"",hist:[]},
   mtn:{connected:false,balance:0,phone:"",hist:[]},
@@ -1403,48 +1389,106 @@ if(sp) sp.textContent=this.value||'Aperçu du texte';
 function chargerMusiquesDefaut(){
   const list=document.getElementById('storyMusicList');
   if(!list)return;
-  list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">⏳ Chargement...</div>`;
-  fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.deezer.com/search?q=afrobeat+burna+boy+wizkid+locko&limit=10')}`)
-    .then(r=>r.json())
-    .then(wrapper=>{
-      const d=JSON.parse(wrapper.contents);
-      if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucune musique disponible</div>`;return;}
-      list.innerHTML=d.data.map(t=>`
-        <div class="music-item" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
-          <div class="music-item-icon" style="padding:0;overflow:hidden">
-            <img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
-          </div>
-          <div class="music-item-info">
-            <div class="music-item-title">${t.title}</div>
-            <div class="music-item-artist">${t.artist.name}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px">
-            <span class="music-item-dur">30s</span>
-            <button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>
-          </div>
-        </div>`).join('');
-    })
-    .catch(()=>{list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Impossible de charger les musiques</div>`;});
+  rechercherMusique('afrobeat');
 }
+const PROXIES=[
+  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url=>`https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+async function fetchDeezer(q){
+  const deezerUrl=`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`;
+  for(const makeProxy of PROXIES){
+    try{
+      const r=await fetch(makeProxy(deezerUrl),{signal:AbortSignal.timeout(5000)});
+      if(!r.ok)continue;
+      const raw=await r.json();
+      // allorigins enveloppe dans {contents:"..."}
+      const data=raw.contents?JSON.parse(raw.contents):raw;
+      if(data?.data?.length>0)return data.data;
+    }catch{continue;}
+  }
+  return null; // tous les proxies ont échoué → liste locale
+}
+
 window.rechercherMusique=async q=>{
   const list=document.getElementById('storyMusicList');
-  if(!q.trim()){chargerMusiquesDefaut();return;}
+  if(!list)return;
   list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">🔍 Recherche en cours...</div>`;
-  try{
-    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`)}`);
-    const wrapper=await r.json();
-    const d=JSON.parse(wrapper.contents);
-    if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucun résultat pour "${q}"</div>`;return;}
-    list.innerHTML=d.data.map(t=>{
+
+  const terme=q.trim()||'afrobeat burna locko wizkid';
+  const tracks=await fetchDeezer(terme);
+
+  if(tracks){
+    // ✅ Résultats Deezer
+    list.innerHTML=tracks.map(t=>{
       const sel=selectedMusic?.id===t.id;
-      return `<div class="music-item${sel?' selected':''}" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
-        <div class="music-item-icon" style="padding:0;overflow:hidden"><img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/></div>
-        <div class="music-item-info"><div class="music-item-title">${t.title}</div><div class="music-item-artist">${t.artist.name}</div></div>
-        <div style="display:flex;align-items:center;gap:4px"><span class="music-item-dur">30s</span><button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button></div>
+      const cover=t.album?.cover_small||'';
+      const title=t.title.replace(/'/g,"\\'").replace(/"/g,'\\"');
+      const artist=t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"');
+      const preview=t.preview||'';
+      return `<div class="music-item${sel?' selected':''}" id="music_${t.id}"
+        onclick="choisirMusique(${t.id},'${title}','${artist}','${preview}','${cover}')">
+        <div class="music-item-icon" style="padding:0;overflow:hidden">
+          ${cover?`<img src="${cover}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>`
+                 :`<i class="fas fa-music" style="font-size:18px"></i>`}
+        </div>
+        <div class="music-item-info">
+          <div class="music-item-title">${t.title}</div>
+          <div class="music-item-artist">${t.artist.name}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span class="music-item-dur">30s</span>
+          ${preview?`<button onclick="event.stopPropagation();previewMusique('${preview}',this)"
+            style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;
+            font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fas fa-play"></i></button>`:''}
+        </div>
       </div>`;
     }).join('');
-  }catch{
-    list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Erreur de connexion</div>`;
+  } else {
+    // ✅ Fallback : liste locale si tous les proxies échouent
+    const LOCAL_MUSIQUES=[
+      {id:'loc1',title:'Ye',artist:'Burna Boy',dur:'3:28'},
+      {id:'loc2',title:'Essence',artist:'Wizkid ft. Tems',dur:'3:17'},
+      {id:'loc3',title:'Love Nwantiti',artist:'CKay',dur:'2:41'},
+      {id:'loc4',title:'Banza',artist:'Locko',dur:'3:52'},
+      {id:'loc5',title:'Sungba',artist:'Asake ft. Burna Boy',dur:'2:59'},
+      {id:'loc6',title:'Pray for You',artist:'Tenor',dur:'3:44'},
+      {id:'loc7',title:'African Giant',artist:'Burna Boy',dur:'3:55'},
+      {id:'loc8',title:'Doumbé',artist:'X Maleya',dur:'4:12'},
+      {id:'loc9',title:'Askia',artist:'Askia',dur:'3:33'},
+      {id:'loc10',title:'Kameni',artist:'Kameni',dur:'4:05'},
+    ];
+    const filtered=q.trim()
+      ? LOCAL_MUSIQUES.filter(m=>
+          m.title.toLowerCase().includes(q.toLowerCase())||
+          m.artist.toLowerCase().includes(q.toLowerCase()))
+      : LOCAL_MUSIQUES;
+
+    if(filtered.length===0){
+      list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">
+        Aucun résultat pour "${q}"</div>`;
+      return;
+    }
+    list.innerHTML=`<div style="background:#fff3cd;border-radius:8px;padding:8px 12px;
+      font-size:11px;color:#856404;margin-bottom:8px">
+      ⚠️ Mode hors-ligne — sélection locale (pas de preview)</div>`
+    +filtered.map(m=>{
+      const sel=selectedMusic?.id===m.id;
+      return `<div class="music-item${sel?' selected':''}" id="music_${m.id}"
+        onclick="choisirMusique('${m.id}','${m.title}','${m.artist}','','')">
+        <div class="music-item-icon">
+          <i class="fas fa-music" style="font-size:18px"></i>
+        </div>
+        <div class="music-item-info">
+          <div class="music-item-title">${m.title}</div>
+          <div class="music-item-artist">${m.artist}</div>
+        </div>
+        <span class="music-item-dur">${m.dur}</span>
+      </div>`;
+    }).join('');
   }
 };
 window.choisirMusique=(id,title,artist,previewUrl,cover)=>{
@@ -1545,8 +1589,12 @@ window.posterStory=async()=>{
     const storyData={
       userId:UC.id,imgUrl,date:serverTimestamp(),vues:0,vuPar:[],comments:[],reactions:{},likes:[],likedBy:[],
       ...(texteStory?{texte:texteStory,textePos:storyTextPos,texteCouleur:storyTextColor}:{}),
-      ...(selectedMusic?{musicId:selectedMusic.id,musicTitle:selectedMusic.title,musicArtist:selectedMusic.artist}:{})
-    };
+     ...(selectedMusic?{
+  musicId:selectedMusic.id,
+  musicTitle:selectedMusic.title,
+  musicArtist:selectedMusic.artist,
+  musicPreview:selectedMusic.previewUrl||''
+}:{})
     await addDoc(collection(db,"stories"),storyData);
     storyFile=null;selectedMusic=null;
     ferm("ovAddS");renderStories();
