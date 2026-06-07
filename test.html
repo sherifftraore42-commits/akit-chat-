@@ -1362,7 +1362,7 @@ window.flipCamera=async()=>{
 };
 
 // ===== STORIES avec TEXTE + MUSIQUE =====
-const STORY_DURATION=30000;
+const STORY_DURATION=15000;
 
 window.switchStoryTab=(tab,el)=>{
   document.querySelectorAll('.story-tab').forEach(t=>t.classList.remove('act'));
@@ -1401,31 +1401,95 @@ if(storyTextEl){
 function chargerMusiquesDefaut(){
   const list=document.getElementById('storyMusicList');
   if(!list)return;
-  list.innerHTML=MUSIQUES_POPULAIRES.map(m=>`
-    <div class="music-item" id="music_${m.id}" onclick="choisirMusique('${m.id}')">
-      <div class="music-item-icon">${m.emoji}</div>
-      <div class="music-item-info">
-        <div class="music-item-title">${m.title}</div>
-        <div class="music-item-artist">${m.artist}</div>
-      </div>
-      <div class="music-item-dur">${m.dur}</div>
-    </div>`).join('');
+  list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">⏳ Chargement...</div>`;
+  fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.deezer.com/search?q=afrobeat+burna+boy+wizkid+locko&limit=10')}`)
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucune musique disponible</div>`;return;}
+      list.innerHTML=d.data.map(t=>`
+        <div class="music-item" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
+          <div class="music-item-icon" style="padding:0;overflow:hidden">
+            <img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
+          </div>
+          <div class="music-item-info">
+            <div class="music-item-title">${t.title}</div>
+            <div class="music-item-artist">${t.artist.name}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span class="music-item-dur">30s</span>
+            <button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>
+          </div>
+        </div>`).join('');
+    })
+    .catch(()=>{list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Impossible de charger les musiques</div>`;});
 }
-window.rechercherMusique=q=>{
+
+window.rechercherMusique=async q=>{
   const list=document.getElementById('storyMusicList');
-  const filtered=q.trim()?MUSIQUES_POPULAIRES.filter(m=>m.title.toLowerCase().includes(q.toLowerCase())||m.artist.toLowerCase().includes(q.toLowerCase())):MUSIQUES_POPULAIRES;
-  list.innerHTML=filtered.map(m=>{const sel=selectedMusic?.id===m.id;return `<div class="music-item${sel?' selected':''}" id="music_${m.id}" onclick="choisirMusique('${m.id}')"><div class="music-item-icon">${m.emoji}</div><div class="music-item-info"><div class="music-item-title">${m.title}</div><div class="music-item-artist">${m.artist}</div></div><div class="music-item-dur">${m.dur}</div></div>`;}).join('');
+  if(!q.trim()){chargerMusiquesDefaut();return;}
+  list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">🔍 Recherche en cours...</div>`;
+  try{
+    const r=await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`)}`);
+    const d=await r.json();
+    if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucun résultat pour "${q}"</div>`;return;}
+    list.innerHTML=d.data.map(t=>{
+      const sel=selectedMusic?.id===t.id;
+      return `<div class="music-item${sel?' selected':''}" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
+        <div class="music-item-icon" style="padding:0;overflow:hidden">
+          <img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
+        </div>
+        <div class="music-item-info">
+          <div class="music-item-title">${t.title}</div>
+          <div class="music-item-artist">${t.artist.name}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span class="music-item-dur">30s</span>
+          <button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch{
+    list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Erreur de connexion</div>`;
+  }
 };
-window.choisirMusique=id=>{
-  selectedMusic=MUSIQUES_POPULAIRES.find(m=>m.id===id)||null;
+
+window.choisirMusique=(id,title,artist,previewUrl,cover)=>{
+  if(window._previewAudio){window._previewAudio.pause();window._previewAudio=null;
+  document.querySelectorAll('.music-item button i').forEach(i=>i.className='fas fa-play');}
+  selectedMusic={id,title,artist,previewUrl,cover};
   document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('music_'+id)?.classList.add('selected');
   const bar=document.getElementById('selectedMusicBar');
-  if(selectedMusic){bar.classList.add('show');document.getElementById('selectedMusicLabel').textContent=`${selectedMusic.title} — ${selectedMusic.artist}`;}
+  bar.classList.add('show');
+  document.getElementById('selectedMusicLabel').textContent=`${title} — ${artist}`;
   document.getElementById('btnPostSt').disabled=false;
 };
-window.retirerMusique=()=>{selectedMusic=null;document.getElementById('selectedMusicBar').classList.remove('show');document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));const btn=document.getElementById('btnPostSt');if(!storyFile&&!document.getElementById('storyTextInput').value.trim())btn.disabled=true;};
 
+window.previewMusique=(url,btn)=>{
+  if(!url){alert('❌ Preview indisponible');return;}
+  if(window._previewAudio&&!window._previewAudio.paused){
+    window._previewAudio.pause();window._previewAudio=null;
+    document.querySelectorAll('.music-item button i').forEach(i=>i.className='fas fa-play');
+    return;
+  }
+  if(window._previewAudio)window._previewAudio.pause();
+  document.querySelectorAll('.music-item button i').forEach(i=>i.className='fas fa-play');
+  const audio=new Audio(url);
+  window._previewAudio=audio;
+  const ico=btn.querySelector('i');
+  if(ico)ico.className='fas fa-pause';
+  audio.play().catch(()=>alert('❌ Lecture impossible'));
+  audio.onended=()=>{if(ico)ico.className='fas fa-play';window._previewAudio=null;};
+};
+
+window.retirerMusique=()=>{
+  if(window._previewAudio){window._previewAudio.pause();window._previewAudio=null;}
+  selectedMusic=null;
+  document.getElementById('selectedMusicBar').classList.remove('show');
+  document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));
+  const btn=document.getElementById('btnPostSt');
+  if(!storyFile&&!document.getElementById('storyTextInput').value.trim())btn.disabled=true;
+};
 async function renderStories(){
   const row=document.getElementById("sRow");const addCard=row.querySelector(".add-s");row.innerHTML="";row.appendChild(addCard);const now=Date.now();
   const[storiesSnap,uMap]=await Promise.all([getDocs(query(collection(db,"stories"),orderBy("date","desc"),limit(80))),getUsers()]);
@@ -1519,9 +1583,16 @@ async function affSV(){
   }else{textOv.style.display='none';}
   // Afficher badge musique
   const musicBadge=document.getElementById('svMusicBadge');
+if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
   if(s.musicTitle){
     musicBadge.style.display='flex';
     document.getElementById('svMusicName').textContent=`${s.musicTitle} — ${s.musicArtist||''}`;
+    if(s.musicPreview){
+      const audio=new Audio(s.musicPreview);
+      window._storyAudio=audio;
+      audio.volume=0.7;
+      audio.play().catch(()=>{});
+    }
   }else{musicBadge.style.display='none';}
   const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
   if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
@@ -1562,7 +1633,11 @@ function demarSV(){
 }
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(svIdx>0){svIdx--;affSV();demarSV();}};
-window.closeSV=()=>{clearInterval(svTimer);svPaused=false;ferm("ovSV");renderStories();};
+window.closeSV=()=>{
+  clearInterval(svTimer);svPaused=false;
+  if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
+  ferm("ovSV");renderStories();
+};
 window.toggleSvC=()=>{
   const panel=document.getElementById("svCPanel");panel.classList.toggle("open");
   if(panel.classList.contains("open")){
