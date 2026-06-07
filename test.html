@@ -1384,7 +1384,8 @@ window.setTextColor=(color,el)=>{
   storyTextColor=color;
   document.querySelectorAll('[onclick^="setTextColor"]').forEach(b=>b.style.border='2px solid transparent');
   el.style.border='3px solid '+color;
-  document.getElementById('storyTextPreviewSpan').style.color=color;
+  const sp=document.getElementById('storyTextPreviewSpan');
+if(sp) sp.style.color=color;
 };
 
 // Compteur texte story
@@ -1392,7 +1393,8 @@ const storyTextEl=document.getElementById('storyTextInput');
 if(storyTextEl){
   storyTextEl.addEventListener('input',function(){
     document.getElementById('storyTextCount').textContent=this.value.length;
-    document.getElementById('storyTextPreviewSpan').textContent=this.value||'Aperçu du texte';
+   const sp=document.getElementById('storyTextPreviewSpan');
+if(sp) sp.textContent=this.value||'Aperçu du texte';
     document.getElementById('btnPostSt').disabled=!this.value.trim()&&!storyFile;
   });
 }
@@ -1402,7 +1404,10 @@ function chargerMusiquesDefaut(){
   const list=document.getElementById('storyMusicList');
   if(!list)return;
   list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">⏳ Chargement...</div>`;
-  fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.deezer.com/search?q=afrobeat+burna+boy+wizkid+locko&limit=10')}`)
+  fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.deezer.com/search?q=afrobeat+burna+boy+wizkid+locko&limit=10')}`)
+  .then(r=>r.json())
+  .then(d=>{
+    const data = JSON.parse(d.contents);
     .then(r=>r.json())
     .then(d=>{
       if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucune musique disponible</div>`;return;}
@@ -1518,8 +1523,8 @@ window.openAddStory=()=>{
   document.getElementById("inpStory").value="";
   document.getElementById("storyTextInput").value="";
   document.getElementById("storyTextCount").textContent="0";
-  document.getElementById("storyTextPreviewSpan").textContent="Aperçu du texte";
-  document.getElementById("storyTextPreviewSpan").style.color="#fff";
+const prevSpan = document.getElementById("storyTextPreviewSpan");
+if(prevSpan){ prevSpan.textContent="Aperçu du texte"; prevSpan.style.color="#fff"; }
   document.getElementById("selectedMusicBar").classList.remove("show");
   document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));
   // Reset tabs
