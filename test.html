@@ -1146,6 +1146,11 @@ const POSTS_PER_PAGE=10;
 let lastPostDoc=null,allPostsLoaded=false;
 let typingTimeout=null,isDisappear=false;
 let replyMsg=null;
+window.cancelReply=()=>{
+  replyMsg=null;
+  document.getElementById('replyBar').classList.remove('show');
+  document.getElementById('replyBarText').textContent='';
+};
 let mediaRecorder=null,audioChunks=[],recordInterval=null,recordSec=0,isRecording=false;
 let waveAnimFrame=null,wavePoints=[];
 const REACTIONS=['❤️','🔥','👏','😮','😍'],REACT_IDS=['heart','fire','clap','wow','love'];
