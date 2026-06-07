@@ -1760,7 +1760,12 @@ window.closeMsg=()=>{ferm("ovMsg");if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(
 
 async function loadConvs(q){
   const liste=document.getElementById("listeCv");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px;font-size:13px'>⏳ Chargement...</p>`;
-  const[uMap,lmSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"lastMessages"),where("dest","==",UC.id)))]);
+  const[uMap,lmSnap1,lmSnap2]=await Promise.all([
+  getUsers(),
+  getDocs(query(collection(db,"lastMessages"),where("dest","==",UC.id))),
+  getDocs(query(collection(db,"lastMessages"),where("exp","==",UC.id)))
+]);
+const lmSnap={docs:[...lmSnap1.docs,...lmSnap2.docs]};
   let users=Object.entries(uMap).filter(([id])=>id!==UC.id).map(([id,d])=>({id,...d}));
   if(q.trim())users=users.filter(u=>`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase()));
   if(users.length===0){liste.innerHTML=`<p style="color:var(--texte2);text-align:center;padding:18px;font-size:13px">Aucun utilisateur.</p>`;return;}
