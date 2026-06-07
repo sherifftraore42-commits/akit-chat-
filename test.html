@@ -1494,6 +1494,7 @@ window.rechercherMusique=async q=>{
 window.choisirMusique=(id,title,artist,previewUrl,cover)=>{
   if(window._previewAudio){window._previewAudio.pause();window._previewAudio=null;
   document.querySelectorAll('.music-item button i').forEach(i=>i.className='fas fa-play');}
+  console.log('Preview URL:', previewUrl);
   selectedMusic={id,title,artist,previewUrl,cover};
   document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));
   document.getElementById('music_'+id)?.classList.add('selected');
@@ -1630,12 +1631,28 @@ if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
   if(s.musicTitle){
     musicBadge.style.display='flex';
     document.getElementById('svMusicName').textContent=`${s.musicTitle} — ${s.musicArtist||''}`;
-    if(s.musicPreview){
-      const audio=new Audio(s.musicPreview);
-      window._storyAudio=audio;
-      audio.volume=0.7;
-      audio.play().catch(()=>{});
-    }
+   if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
+if(s.musicTitle){
+  musicBadge.style.display='flex';
+  document.getElementById('svMusicName').textContent=`${s.musicTitle} — ${s.musicArtist||''}`;
+  // ✅ Cherche d'abord musicPreview, sinon musicId comme fallback
+  const previewUrl = s.musicPreview || s.musicId || '';
+  if(previewUrl && previewUrl.startsWith('http')){
+    const audio=new Audio(previewUrl);
+    window._storyAudio=audio;
+    audio.volume=0.7;
+    audio.currentTime=0;
+    // ✅ Limite à 30 secondes
+    audio.ontimeupdate=()=>{
+      if(audio.currentTime>=30){
+        audio.pause();
+        audio.currentTime=0;
+        window._storyAudio=null;
+      }
+    };
+    audio.play().catch(()=>{});
+  }
+}else{musicBadge.style.display='none';}
   }else{musicBadge.style.display='none';}
   const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
   if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
