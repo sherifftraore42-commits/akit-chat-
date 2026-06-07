@@ -1776,7 +1776,7 @@ const lmSnap={docs:[...lmSnap1.docs,...lmSnap2.docs]};
   if(users.length===0){liste.innerHTML=`<p style="color:var(--texte2);text-align:center;padding:18px;font-size:13px">Aucun utilisateur.</p>`;return;}
 const lmMap={};
 lmSnap.docs.forEach(d=>{const data=d.data();const key=data.exp===UC.id?data.dest:data.exp;lmMap[key]=data;});
-  users=users.map(u=>({...u,_hasUnread:lmMap[u.id]&&lmMap[u.id].luDest===false,_lastMsgDate:lmMap[u.id]?.date?.toDate?lmMap[u.id].date.toDate():new Date(0),_lastMsg:lmMap[u.id]?.contenu||""}));
+  users=users.map(u=>({...u,_hasUnread:lmMap[u.id]&&lmMap[u.id].luDest===false&&lmMap[u.id].exp!==UC.id,_lastMsgDate:lmMap[u.id]?.date?.toDate?lmMap[u.id].date.toDate():new Date(0),_lastMsg:lmMap[u.id]?.contenu||""}));
   users.sort((a,b)=>{
   // 1. Non lus en premier
   if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;
@@ -1805,8 +1805,8 @@ if(unsubTyping){unsubTyping();unsubTyping=null;}
 try{
   const lmRef=doc(db,"lastMessages",convId);
   const lmSnap=await getDoc(lmRef);
-  if(lmSnap.exists()){
-    // Marquer comme lu peu importe la direction
+  if(lmSnap.exists()&&lmSnap.data().dest===UC.id){
+    // Marquer lu SEULEMENT si je suis le destinataire
     await updateDoc(lmRef,{luDest:true});
   }
 }catch{}
