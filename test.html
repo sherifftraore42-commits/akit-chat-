@@ -1405,11 +1405,9 @@ function chargerMusiquesDefaut(){
   if(!list)return;
   list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">⏳ Chargement...</div>`;
   fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.deezer.com/search?q=afrobeat+burna+boy+wizkid+locko&limit=10')}`)
-  .then(r=>r.json())
-  .then(d=>{
-    const data = JSON.parse(d.contents);
     .then(r=>r.json())
-    .then(d=>{
+    .then(wrapper=>{
+      const d=JSON.parse(wrapper.contents);
       if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucune musique disponible</div>`;return;}
       list.innerHTML=d.data.map(t=>`
         <div class="music-item" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
@@ -1428,36 +1426,27 @@ function chargerMusiquesDefaut(){
     })
     .catch(()=>{list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Impossible de charger les musiques</div>`;});
 }
-
 window.rechercherMusique=async q=>{
   const list=document.getElementById('storyMusicList');
   if(!q.trim()){chargerMusiquesDefaut();return;}
   list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">🔍 Recherche en cours...</div>`;
   try{
-    const r=await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`)}`);
-    const d=await r.json();
+    const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`)}`);
+    const wrapper=await r.json();
+    const d=JSON.parse(wrapper.contents);
     if(!d.data||d.data.length===0){list.innerHTML=`<div style="text-align:center;padding:12px;color:var(--texte2);font-size:13px">Aucun résultat pour "${q}"</div>`;return;}
     list.innerHTML=d.data.map(t=>{
       const sel=selectedMusic?.id===t.id;
       return `<div class="music-item${sel?' selected':''}" id="music_${t.id}" onclick="choisirMusique(${t.id},'${t.title.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.artist.name.replace(/'/g,"\\'").replace(/"/g,'\\"')}','${t.preview}','${t.album.cover_small}')">
-        <div class="music-item-icon" style="padding:0;overflow:hidden">
-          <img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/>
-        </div>
-        <div class="music-item-info">
-          <div class="music-item-title">${t.title}</div>
-          <div class="music-item-artist">${t.artist.name}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:4px">
-          <span class="music-item-dur">30s</span>
-          <button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button>
-        </div>
+        <div class="music-item-icon" style="padding:0;overflow:hidden"><img src="${t.album.cover_small}" style="width:100%;height:100%;object-fit:cover;border-radius:8px"/></div>
+        <div class="music-item-info"><div class="music-item-title">${t.title}</div><div class="music-item-artist">${t.artist.name}</div></div>
+        <div style="display:flex;align-items:center;gap:4px"><span class="music-item-dur">30s</span><button onclick="event.stopPropagation();previewMusique('${t.preview}',this)" style="background:var(--bleu);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-play"></i></button></div>
       </div>`;
     }).join('');
   }catch{
     list.innerHTML=`<div style="text-align:center;padding:12px;color:#E24B4A;font-size:13px">❌ Erreur de connexion</div>`;
   }
 };
-
 window.choisirMusique=(id,title,artist,previewUrl,cover)=>{
   if(window._previewAudio){window._previewAudio.pause();window._previewAudio=null;
   document.querySelectorAll('.music-item button i').forEach(i=>i.className='fas fa-play');}
