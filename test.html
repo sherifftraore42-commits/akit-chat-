@@ -1281,7 +1281,11 @@ onAuthStateChanged(auth,async fireUser=>{
     else if(nb===0)document.title="AKIT-CHAT";
     prevNotifCount=nb;
   });
-
+// Bouton admin
+const roleCheck = (UC.role || '').toLowerCase();
+if (roleCheck === 'admin' || roleCheck === 'super_admin' || UC['directeur général'] === 'super_admin') {
+  document.getElementById('adminFloatBtn').style.display = 'block';
+}
   // ===== FIX MESSAGES BADGE : lire luDest correctement =====
   onSnapshot(query(collection(db,"lastMessages"),where("dest","==",UC.id)),snap=>{
     let unread=0;
@@ -2483,7 +2487,20 @@ window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behav
   window.addEventListener('popstate',()=>{history.pushState(null,'',location.href);});
   document.addEventListener('touchstart',e=>{if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20){e.preventDefault();}},{passive:false});
 })();
-
+<!-- BOUTON ADMIN FLOTTANT -->
+<div id="adminFloatBtn" style="display:none;position:fixed;bottom:80px;right:16px;z-index:999;">
+  <a href="admin.html" style="
+    width:52px;height:52px;border-radius:50%;
+    background:linear-gradient(135deg,#FFD700,#FF6B35);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 20px rgba(255,215,0,.5);
+    text-decoration:none;font-size:22px;
+    animation:adminPulse 2s ease-in-out infinite;
+  ">⚡</a>
+</div>
+<style>
+@keyframes adminPulse{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.5)}50%{box-shadow:0 4px 30px rgba(255,215,0,.9),0 0 40px rgba(255,107,53,.4)}}
+</style>
 </script>
 </body>
 </html>
