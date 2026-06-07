@@ -1282,7 +1282,17 @@ onAuthStateChanged(auth,async fireUser=>{
     prevNotifCount=nb;
   });
 // Bouton admin
+  // Bouton admin
   const adminBtn = document.getElementById('adminFloatBtn');
+  const roleCheck = (UC.role || '').toLowerCase();
+  if (adminBtn && (
+    roleCheck === 'admin' || 
+    roleCheck === 'super_admin' || 
+    roleCheck === 'superadmin' ||
+    UC['directeur général'] === 'super_admin'
+  )) {
+    adminBtn.style.display = 'block';
+  }
   // ===== FIX MESSAGES BADGE : lire luDest correctement =====
   onSnapshot(query(collection(db,"lastMessages"),where("dest","==",UC.id)),snap=>{
     let unread=0;
