@@ -1780,6 +1780,8 @@ window.toggleDisappear=(el)=>{el.classList.toggle('on');isDisappear=el.classList
 
 window.openConv=async(uid,type='direct')=>{
   const uMap=await getUsers();const u=uMap[uid];if(!u)return;
+if(unsubMsgs){unsubMsgs();unsubMsgs=null;}
+if(unsubTyping){unsubTyping();unsubTyping=null;}
   currentCallTargetUid=uid;
   document.getElementById("cvNom").textContent=`${u.prenom||""} ${u.nom||""}`;
   document.getElementById("cvStatus").textContent=u.enLigne?"":"";
@@ -1789,7 +1791,14 @@ window.openConv=async(uid,type='direct')=>{
   document.getElementById("msgInp").value="";document.getElementById("typingIndicator").classList.remove("show");
   arreterEnregistrementSilencieux();
   const convId=[UC.id,uid].sort().join("_");
-  try{const lmRef=doc(db,"lastMessages",convId);const lmSnap=await getDoc(lmRef);if(lmSnap.exists()&&lmSnap.data().dest===UC.id)await updateDoc(lmRef,{luDest:true});}catch{}
+try{
+  const lmRef=doc(db,"lastMessages",convId);
+  const lmSnap=await getDoc(lmRef);
+  if(lmSnap.exists()){
+    // Marquer comme lu peu importe la direction
+    await updateDoc(lmRef,{luDest:true});
+  }
+}catch{}
   if(unsubMsgs)unsubMsgs();
   unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
     const z=document.getElementById("msgsZ");
@@ -1802,8 +1811,9 @@ window.openConv=async(uid,type='direct')=>{
         return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px"><div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${dur}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div>`;
       }
       if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
-   return `<div class="msg-b ${mine?"msg-me":"msg-th"}" 
-  ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" 
+ const texteEscape=(m.contenu||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/`/g,'\\`');
+return `<div class="msg-b ${mine?"msg-me":"msg-th"}" 
+  ontouchstart="startSwipe(event,'${texteEscape}',${mine})" 
   ontouchmove="moveSwipe(event)"
   ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
     }).join("");
