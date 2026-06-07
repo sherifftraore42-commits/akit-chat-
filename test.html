@@ -269,7 +269,7 @@ input,textarea{font-family:var(--font)}
 .sv-l{left:0}.sv-r{right:0}
 /* Story text overlay */
 .sv-text-overlay{position:absolute;bottom:140px;left:10px;right:10px;z-index:8;pointer-events:none;}
-.sv-text-pill{display:inline-block;background:rgba(0,0,0,.6);color:#fff;padding:8px 14px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;width:100%;word-break:break-word;}
+.sv-text-pill{display:inline-block;background:transparent;color:#fff;padding:8px 14px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;width:100%;word-break:break-word;text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 20px rgba(0,0,0,.6);}
 /* Story music badge */
 .sv-music-badge{position:absolute;top:60px;right:10px;z-index:8;background:rgba(0,0,0,.5);border-radius:50px;padding:4px 10px;display:flex;align-items:center;gap:5px;font-size:11px;color:#fff;animation:musicPulse 1s ease-in-out infinite;}
 @keyframes musicPulse{0%,100%{opacity:1}50%{opacity:0.6}}
@@ -1018,69 +1018,58 @@ setTimeout(step,300);
 <div class="ov" id="ovAddS" onclick="closeSiDehors(event,'ovAddS')">
   <div class="modal">
     <div class="m-head"><h2>📸 Nouvelle Story</h2><button class="m-close" onclick="ferm('ovAddS')"><i class="fas fa-times"></i></button></div>
-    <div class="m-body">
-      <!-- Tabs -->
-      <div class="story-tabs">
-        <div class="story-tab act" onclick="switchStoryTab('photo',this)">📸 Photo</div>
-        <div class="story-tab" onclick="switchStoryTab('texte',this)">✏️ Texte</div>
-        <div class="story-tab" onclick="switchStoryTab('musique',this)">🎵 Musique</div>
-      </div>
-
-      <!-- Tab Photo -->
-      <div class="story-tab-content act" id="stTabPhoto">
-        <div class="drop-z" onclick="document.getElementById('inpStory').click()">
-          <div id="dropCont"><div class="drop-ico">📸</div><div class="drop-tx">Choisir une photo</div><div class="drop-sub">Visible 24h · 10 secondes par story</div></div>
-          <img class="prev-img" id="stPrev" src="" alt=""/>
-        </div>
-        <input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/>
-        <div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div>
-        <div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div>
-      </div>
-
-      <!-- Tab Texte -->
-      <div class="story-tab-content" id="stTabTexte">
-        <div style="background:var(--dark);border-radius:12px;padding:16px;margin-bottom:10px;">
-          <input type="text" id="storyTextInput" class="story-text-input" placeholder="✏️ Écrire un texte sur votre story..." maxlength="120"/>
-          <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:right;margin-bottom:10px"><span id="storyTextCount">0</span>/120</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:6px;font-weight:600;">Position du texte :</div>
-          <div class="story-text-pos-row">
-            <button class="story-text-pos-btn active" id="posBtn_top" onclick="setTextPos('top',this)">⬆️ Haut</button>
-            <button class="story-text-pos-btn" id="posBtn_center" onclick="setTextPos('center',this)">⬛ Centre</button>
-            <button class="story-text-pos-btn" id="posBtn_bottom" onclick="setTextPos('bottom',this)">⬇️ Bas</button>
-          </div>
-          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:6px;margin-top:10px;font-weight:600;">Couleur du texte :</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <div onclick="setTextColor('#ffffff',this)" style="width:28px;height:28px;border-radius:50%;background:#fff;cursor:pointer;border:3px solid #fff;"></div>
-            <div onclick="setTextColor('#FFD700',this)" style="width:28px;height:28px;border-radius:50%;background:#FFD700;cursor:pointer;border:2px solid transparent;"></div>
-            <div onclick="setTextColor('#00FF88',this)" style="width:28px;height:28px;border-radius:50%;background:#00FF88;cursor:pointer;border:2px solid transparent;"></div>
-            <div onclick="setTextColor('#FF6B6B',this)" style="width:28px;height:28px;border-radius:50%;background:#FF6B6B;cursor:pointer;border:2px solid transparent;"></div>
-            <div onclick="setTextColor('#7B68EE',this)" style="width:28px;height:28px;border-radius:50%;background:#7B68EE;cursor:pointer;border:2px solid transparent;"></div>
-          </div>
-        </div>
-        <!-- Aperçu texte -->
-        <div id="storyTextPreview" style="background:var(--dark);border-radius:10px;min-height:80px;display:flex;align-items:center;justify-content:center;padding:12px;margin-bottom:10px;border:1px dashed rgba(255,255,255,.15);">
-          <span id="storyTextPreviewSpan" style="font-size:16px;font-weight:700;color:#fff;text-align:center;word-break:break-word;">Aperçu du texte</span>
-        </div>
-      </div>
-
-      <!-- Tab Musique -->
-      <div class="story-tab-content" id="stTabMusique">
-        <input class="story-music-search" id="storyMusicSearch" placeholder="🔍 Rechercher une chanson / artiste..." oninput="rechercherMusique(this.value)"/>
-        <div class="selected-music-bar" id="selectedMusicBar">
-          <i class="fas fa-music" style="color:var(--akit-green);font-size:14px"></i>
-          <span id="selectedMusicLabel">Aucune musique</span>
-          <button onclick="retirerMusique()">✕</button>
-        </div>
-        <div class="story-music-list" id="storyMusicList">
-          <!-- Musiques populaires par défaut -->
-        </div>
-      </div>
-
-      <div class="m-actions">
-        <button class="btn-can" onclick="ferm('ovAddS')">Annuler</button>
-        <button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier la story</button>
-      </div>
+  <div class="m-body">
+  <!-- Photo -->
+  <div class="drop-z" id="dropZone" onclick="document.getElementById('inpStory').click()" style="margin-bottom:12px;position:relative;min-height:180px;display:flex;align-items:center;justify-content:center;background:var(--dark);border-color:rgba(255,255,255,.15);">
+    <div id="dropCont" style="text-align:center">
+      <div class="drop-ico">📸</div>
+      <div class="drop-tx" style="color:rgba(255,255,255,.7)">Choisir une photo (optionnel)</div>
+      <div class="drop-sub" style="color:rgba(255,255,255,.35)">Visible 24h · 30 secondes</div>
     </div>
+    <img class="prev-img" id="stPrev" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:9px;display:none"/>
+    <button id="btnSuppPhoto" onclick="event.stopPropagation();supprimerPhotoStory()" style="display:none;position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;z-index:5">✕</button>
+  </div>
+  <input type="file" id="inpStory" accept="image/*" style="display:none" onchange="prevStory(event)"/>
+  <div class="compress-info" id="stCompInfo">🗜️ Compression en cours...</div>
+  <div class="upload-bar" id="stUpBar"><div class="upload-bar-fill" id="stUpFill"></div></div>
+
+  <!-- Texte -->
+  <div style="background:var(--dark);border-radius:12px;padding:12px;margin-bottom:10px;">
+    <input type="text" id="storyTextInput" class="story-text-input" placeholder="✏️ Texte sur la story (optionnel)..." maxlength="120"/>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:right;margin-bottom:8px"><span id="storyTextCount">0</span>/120</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:6px;font-weight:600;">Couleur du texte :</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <div onclick="setTextColor('#ffffff',this)" style="width:26px;height:26px;border-radius:50%;background:#fff;cursor:pointer;border:3px solid #fff;"></div>
+      <div onclick="setTextColor('#FFD700',this)" style="width:26px;height:26px;border-radius:50%;background:#FFD700;cursor:pointer;border:2px solid transparent;"></div>
+      <div onclick="setTextColor('#00FF88',this)" style="width:26px;height:26px;border-radius:50%;background:#00FF88;cursor:pointer;border:2px solid transparent;"></div>
+      <div onclick="setTextColor('#FF6B6B',this)" style="width:26px;height:26px;border-radius:50%;background:#FF6B6B;cursor:pointer;border:2px solid transparent;"></div>
+      <div onclick="setTextColor('#7B68EE',this)" style="width:26px;height:26px;border-radius:50%;background:#7B68EE;cursor:pointer;border:2px solid transparent;"></div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;font-weight:600;">Position :</div>
+    <div class="story-text-pos-row">
+      <button class="story-text-pos-btn active" id="posBtn_top" onclick="setTextPos('top',this)">⬆️ Haut</button>
+      <button class="story-text-pos-btn" id="posBtn_center" onclick="setTextPos('center',this)">⬛ Centre</button>
+      <button class="story-text-pos-btn" id="posBtn_bottom" onclick="setTextPos('bottom',this)">⬇️ Bas</button>
+    </div>
+  </div>
+
+  <!-- Musique -->
+  <div style="background:var(--dark);border-radius:12px;padding:12px;margin-bottom:12px;">
+    <div style="font-size:11px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:8px;">🎵 Musique (optionnel)</div>
+    <input class="story-music-search" id="storyMusicSearch" placeholder="🔍 Rechercher..." oninput="rechercherMusique(this.value)"/>
+    <div class="selected-music-bar" id="selectedMusicBar">
+      <i class="fas fa-music" style="color:var(--akit-green);font-size:14px"></i>
+      <span id="selectedMusicLabel">Aucune musique</span>
+      <button onclick="retirerMusique()">✕</button>
+    </div>
+    <div class="story-music-list" id="storyMusicList"></div>
+  </div>
+
+  <div class="m-actions">
+    <button class="btn-can" onclick="ferm('ovAddS')">Annuler</button>
+    <button class="btn-pst" id="btnPostSt" onclick="posterStory()" disabled>Publier la story</button>
+  </div>
+  </div>
   </div>
 </div>
 
@@ -1373,7 +1362,7 @@ window.flipCamera=async()=>{
 };
 
 // ===== STORIES avec TEXTE + MUSIQUE =====
-const STORY_DURATION=10000;
+const STORY_DURATION=30000;
 
 window.switchStoryTab=(tab,el)=>{
   document.querySelectorAll('.story-tab').forEach(t=>t.classList.remove('act'));
@@ -1486,12 +1475,12 @@ window.prevStory=async e=>{
   storyFile=await compresserStory(file);
   document.getElementById("stCompInfo").classList.remove("show");
   document.getElementById("btnPostSt").disabled=false;
+  document.getElementById('btnSuppPhoto').style.display='block';
 };
-
 window.posterStory=async()=>{
   const texteStory=document.getElementById('storyTextInput').value.trim();
-  if(!storyFile&&!texteStory){alert("⚠️ Ajoutez une photo ou du texte.");return;}
-  const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";
+  if(!storyFile&&!texteStory&&!selectedMusic){alert("⚠️ Ajoutez une photo, du texte ou une musique.");return;}
+ const btn=document.getElementById("btnPostSt");btn.disabled=true;btn.textContent="Publication...";
   try{
     let imgUrl=null;
     if(storyFile)imgUrl=await uploadCloudinary(storyFile,`akit/stories/${UC.id}`,document.getElementById("stUpBar"),document.getElementById("stUpFill"));
@@ -1970,6 +1959,15 @@ window.partagerAutre=async()=>{const lien=document.getElementById("prrLink").val
     }
   }
 })();
+  window.supprimerPhotoStory=()=>{
+  storyFile=null;
+  document.getElementById('stPrev').style.display='none';
+  document.getElementById('dropCont').style.display='block';
+  document.getElementById('btnSuppPhoto').style.display='none';
+  document.getElementById('inpStory').value='';
+  const texte=document.getElementById('storyTextInput').value.trim();
+  if(!texte)document.getElementById('btnPostSt').disabled=true;
+};
 
 </script>
 </body>
