@@ -1776,7 +1776,7 @@ const lmSnap={docs:[...lmSnap1.docs,...lmSnap2.docs]};
   if(users.length===0){liste.innerHTML=`<p style="color:var(--texte2);text-align:center;padding:18px;font-size:13px">Aucun utilisateur.</p>`;return;}
 const lmMap={};
 lmSnap.docs.forEach(d=>{const data=d.data();const key=data.exp===UC.id?data.dest:data.exp;lmMap[key]=data;});
-  users=users.map(u=>({...u,_hasUnread:lmMap[u.id]&&lmMap[u.id].luDest===false&&lmMap[u.id].exp!==UC.id,_lastMsgDate:lmMap[u.id]?.date?.toDate?lmMap[u.id].date.toDate():new Date(0),_lastMsg:lmMap[u.id]?.contenu||""}));
+  users=users.map(u=>({...u,_hasUnread:lmMap[u.id]?._nonLu===true,_lastMsgDate:lmMap[u.id]?.date?.toDate?lmMap[u.id].date.toDate():new Date(0),_lastMsg:lmMap[u.id]?.contenu||""}));
   users.sort((a,b)=>{
   // 1. Non lus en premier
   if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;
@@ -1979,7 +1979,14 @@ window.envoyerPhotoMsg=async(e)=>{
 window.onTyping=async()=>{const uid=document.getElementById("cvUid").value;if(!uid)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:true},{merge:true});}catch{}clearTimeout(typingTimeout);typingTimeout=setTimeout(()=>stopTypingSignal(),3000);};
 async function stopTypingSignal(){const uid=document.getElementById("cvUid").value;if(!uid||!UC)return;const convId=[UC.id,uid].sort().join("_");try{await setDoc(doc(db,"typing",convId),{[UC.id]:false},{merge:true});}catch{}}
 window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();arreterEnregistrementSilencieux();currentCallTargetUid=null;document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
-window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
+window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text"});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){const membres=gSnap.data().membres||[];membres.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans ${gSnap.data().nom||"le groupe"}`);});}}else{const convId=[UC.id,uid].sort().join("_");const msgData={exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(replyMsg?{replyTo:replyMsg}:{})};if(isDisappear)msgData.disparait=true;await addDoc(collection(db,"messages",convId,"msgs"),msgData);await setDoc(doc(db,"lastMessages",convId),{
+  exp:UC.id,
+  dest:uid,
+  contenu:isDisappear?"⏱ "+contenu:contenu,
+  date:serverTimestamp(),
+  luDest:false,
+  luExp:true  // ← L'expéditeur a déjà "lu" son propre message
+});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
 // ===== GROUPES =====
 window.openGroupes=()=>{ouv("ovGroupes");loadGroupes();};
