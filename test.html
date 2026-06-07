@@ -1800,23 +1800,78 @@ try{
   }
 }catch{}
   if(unsubMsgs)unsubMsgs();
-  unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
-    const z=document.getElementById("msgsZ");
-    if(snap2.empty){z.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>Commencez la conversation !</p>`;return;}
-    z.innerHTML=snap2.docs.map(d=>{
-      const m=d.data();const mine=m.exp===UC.id;
-      const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
-      if(m.type==="audio"){
-        const waveId='wv_'+d.id;const dur=m.durStr||'0:00';
-        return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px"><div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${dur}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div>`;
-      }
-      if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
- const texteEscape=(m.contenu||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/`/g,'\\`');
-return `<div class="msg-b ${mine?"msg-me":"msg-th"}" 
-  ontouchstart="startSwipe(event,'${texteEscape}',${mine})" 
-  ontouchmove="moveSwipe(event)"
-  ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
-    }).join("");
+unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date","asc")),snap2=>{
+  const z=document.getElementById("msgsZ");
+  if(snap2.empty){
+    z.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>Commencez la conversation !</p>`;
+    return;
+  }
+  z.innerHTML=snap2.docs.map(d=>{
+    const m=d.data();
+    const mine=m.exp===UC.id;
+    const replyHtml=m.replyTo?`<div class="msg-reply-preview">↩ ${m.replyTo.substring(0,40)}${m.replyTo.length>40?'...':''}</div>`:'';
+
+    if(m.type==="audio"){
+      const waveId='wv_'+d.id;
+      const dur=m.durStr||'0:00';
+      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px">
+        <div class="voice-bubble ${mine?'mine':'theirs'}">
+          <button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)">
+            <i class="fas fa-play" id="ico_${waveId}"></i>
+          </button>
+          <div class="vb-right">
+            <canvas class="vb-wave" id="${waveId}"></canvas>
+            <div class="vb-info">
+              <span class="vb-dur" id="dur_${waveId}">${dur}</span>
+              <span class="vb-time">${fmtHeure(m.date)}</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    if(m.type==="image")return{
+      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px"
+        ontouchstart="startSwipe(event,'📷 Photo',${mine})"
+        ontouchend="endSwipe(event)">
+        ${replyHtml}
+        <div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer"
+          onclick="openLightbox('${m.imageUrl||''}')">
+          <img src="${m.imageUrl||''}" style="width:100%;display:block"
+            onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/>
+        </div>
+        <small style="padding:0 8px 4px">${fmtHeure(m.date)}</small>
+      </div>`;
+    }
+
+    // Message texte normal
+    const texteEscape=(m.contenu||'')
+      .replace(/\\/g,'\\\\')
+      .replace(/'/g,"\\'")
+      .replace(/"/g,'&quot;')
+      .replace(/`/g,'\\`');
+    return `<div class="msg-b ${mine?"msg-me":"msg-th"}"
+      ontouchstart="startSwipe(event,'${texteEscape}',${mine})"
+      ontouchmove="moveSwipe(event)"
+      ontouchend="endSwipe(event)">
+      ${replyHtml}
+      <span>${m.contenu||''}</span>
+      <small>${fmtHeure(m.date)}</small>
+    </div>`;
+
+  }).filter(Boolean).join("");
+
+  z.scrollTop=z.scrollHeight;
+
+  snap2.docs.forEach(d=>{
+    const m=d.data();
+    if(m.disparait){
+      const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);
+      if(Date.now()-dt.getTime()>30000)
+        deleteDoc(doc(db,"messages",convId,"msgs",d.id));
+    }
+  });
+});
     z.scrollTop=z.scrollHeight;
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
   });
