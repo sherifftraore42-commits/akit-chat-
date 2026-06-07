@@ -1282,10 +1282,6 @@ onAuthStateChanged(auth,async fireUser=>{
     prevNotifCount=nb;
   });
 // Bouton admin
-const roleCheck = (UC.role || '').toLowerCase();
-if (roleCheck === 'admin' || roleCheck === 'super_admin' || UC['directeur général'] === 'super_admin') {
-  document.getElementById('adminFloatBtn').style.display = 'block';
-}
   const adminBtn = document.getElementById('adminFloatBtn');
 const roleCheck = (UC.role || '').toLowerCase();
 if (adminBtn && (
