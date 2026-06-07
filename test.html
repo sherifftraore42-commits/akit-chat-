@@ -1402,7 +1402,7 @@ async function fetchDeezer(q){
   const deezerUrl=`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=10`;
   for(const makeProxy of PROXIES){
     try{
-      const r=await fetch(makeProxy(deezerUrl),{signal:AbortSignal.timeout(5000)});
+      const r=await fetch(makeProxy(deezerUrl),{signal:AbortSignal.timeout(2500)});
       if(!r.ok)continue;
       const raw=await r.json();
       // allorigins enveloppe dans {contents:"..."}
@@ -1562,15 +1562,13 @@ window.openAddStory=()=>{
   document.getElementById("inpStory").value="";
   document.getElementById("storyTextInput").value="";
   document.getElementById("storyTextCount").textContent="0";
-const prevSpan = document.getElementById("storyTextPreviewSpan");
-if(prevSpan){ prevSpan.textContent="Aperçu du texte"; prevSpan.style.color="#fff"; }
-  document.getElementById("selectedMusicBar").classList.remove("show");
+document.getElementById("selectedMusicBar").classList.remove("show");
   document.querySelectorAll('.music-item').forEach(el=>el.classList.remove('selected'));
   // Reset tabs
   document.querySelectorAll('.story-tab').forEach((t,i)=>t.classList.toggle('act',i===0));
   document.querySelectorAll('.story-tab-content').forEach((c,i)=>c.classList.toggle('act',i===0));
-  chargerMusiquesDefaut();
-  ouv("ovAddS");
+ouv("ovAddS");
+setTimeout(()=>chargerMusiquesDefaut(), 100);
 };
 
 window.prevStory=async e=>{
@@ -1650,11 +1648,12 @@ if(s.musicTitle){
         window._storyAudio=null;
       }
     };
-    audio.play().catch(()=>{});
+audio.play().catch(()=>{});
   }
-}else{
+} else {
   musicBadge.style.display='none';
 }
+  const isOwn=s.userId===UC.id;
   }else{musicBadge.style.display='none';}
   const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
   if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
