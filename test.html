@@ -1631,23 +1631,18 @@ async function affSV(){
     textOv.style.top=pos==='top'?'80px':'auto';
   }else{textOv.style.display='none';}
   // Afficher badge musique
-  const musicBadge=document.getElementById('svMusicBadge');
+  // Afficher badge musique
+const musicBadge=document.getElementById('svMusicBadge');
 if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
-  if(s.musicTitle){
-    musicBadge.style.display='flex';
-    document.getElementById('svMusicName').textContent=`${s.musicTitle} — ${s.musicArtist||''}`;
-   if(window._storyAudio){window._storyAudio.pause();window._storyAudio=null;}
 if(s.musicTitle){
   musicBadge.style.display='flex';
   document.getElementById('svMusicName').textContent=`${s.musicTitle} — ${s.musicArtist||''}`;
-  // ✅ Cherche d'abord musicPreview, sinon musicId comme fallback
-  const previewUrl = s.musicPreview || s.musicId || '';
-  if(previewUrl && previewUrl.startsWith('http')){
+  const previewUrl=s.musicPreview||'';
+  if(previewUrl&&previewUrl.startsWith('http')){
     const audio=new Audio(previewUrl);
     window._storyAudio=audio;
     audio.volume=0.7;
     audio.currentTime=0;
-    // ✅ Limite à 30 secondes
     audio.ontimeupdate=()=>{
       if(audio.currentTime>=30){
         audio.pause();
@@ -1657,7 +1652,9 @@ if(s.musicTitle){
     };
     audio.play().catch(()=>{});
   }
-}else{musicBadge.style.display='none';}
+}else{
+  musicBadge.style.display='none';
+}
   }else{musicBadge.style.display='none';}
   const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
   if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
