@@ -1392,9 +1392,10 @@ function chargerMusiquesDefaut(){
   rechercherMusique('afrobeat');
 }
 const PROXIES=[
-  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
   url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  url=>`https://thingproxy.freeboard.io/fetch/${url}`,
+  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url=>`https://crossorigin.me/${url}`,
 ];
 
 async function fetchDeezer(q){
@@ -1405,8 +1406,12 @@ async function fetchDeezer(q){
       if(!r.ok)continue;
       const raw=await r.json();
       // allorigins enveloppe dans {contents:"..."}
-      const data=raw.contents?JSON.parse(raw.contents):raw;
-      if(data?.data?.length>0)return data.data;
+    let data;
+try{data=raw.contents?JSON.parse(raw.contents):raw;}catch{data=raw;}
+if(data?.data?.length>0){
+  const avecPreview=data.data.filter(t=>t.preview&&t.preview.startsWith('http'));
+  return avecPreview.length>0?avecPreview:data.data;
+}
     }catch{continue;}
   }
   return null; // tous les proxies ont échoué → liste locale
