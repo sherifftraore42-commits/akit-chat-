@@ -1875,17 +1875,44 @@ window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDes
 async function saveMM(){try{await setDoc(doc(db,"mobilemoney",UC.id),mmState);}catch(e){console.error("saveMM:",e);}}
 
 // ===== NOTIFS =====
-window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{
-  // 1. Non lues avant lues
-  if(a.lu!==b.lu)return a.lu?1:-1;
-  // 2. Plus récentes en premier
-  const da=a.date?.toDate?a.date.toDate():new Date(0);
-  const db2=b.date?.toDate?b.date.toDate():new Date(0);
-  return db2-da;
-});let html="";for(const n of notifs){const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";
-// Redirection au clic sur notification
-const onclick=n.type==="message"?`openMsg()`:n.type==="ami"?`openAmis()`:n.type==="post"||n.type==="like"||n.type==="comment"?`scrollTop()`:n.type==="story"||n.type==="reaction"||n.type==="comment_story"?`renderStories()`:n.type==="groupe_invite"||n.type==="groupe_message"?`openMsg();setTimeout(()=>switchMsgTab('groups'),400)`:n.type==="coin"?`openCoin()`:``;
-html+=`<div class="nf-item ${n.lu?"":"unread"}" onclick="${onclick};updateDoc(doc(db,'notifications','${n.id}'),{lu:true}).catch(()=>{});this.classList.remove('unread')"><div class="nf-ico">${ico}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`;updateDoc(doc(db,"notifications",n.id),{lu:true}).catch(()=>{});}liste.innerHTML=html;}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
+  window.openNotif=async()=>{
+  ouv("ovNotif");
+  const liste=document.getElementById("listeNotif");
+  liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>⏳ Chargement...</p>`;
+  try{
+    const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));
+    if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}
+    
+    let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));
+    notifs.sort((a,b)=>{
+      if(a.lu!==b.lu)return a.lu?1:-1;
+      const da=a.date?.toDate?a.date.toDate():new Date(0);
+      const db2=b.date?.toDate?b.date.toDate():new Date(0);
+      return db2-da;
+    });
+
+    // ✅ MARQUER TOUTES COMME LUES EN BATCH (fonctionne sur mobile)
+    const promises=snap.docs
+      .filter(d=>d.data().lu===false)
+      .map(d=>updateDoc(doc(db,"notifications",d.id),{lu:true}));
+    await Promise.all(promises); // attend que tout soit marqué
+
+    // Mettre le badge à 0 immédiatement
+    majTousBadges('notif',0);
+    document.title="AKIT-CHAT";
+    prevNotifCount=0;
+
+    let html="";
+    for(const n of notifs){
+      const ico=n.type==="message"?"💬":n.type==="like"?"❤️":n.type==="comment"?"🗨️":n.type==="ami"?"👥":n.type==="post"?"📝":n.type==="reaction"?"⭐":n.type==="story"?"📸":n.type==="groupe_invite"?"👥":"🔔";
+      const onclick=n.type==="message"?`openMsg()`:n.type==="ami"?`openAmis()`:n.type==="post"||n.type==="like"||n.type==="comment"?`scrollTop()`:n.type==="story"||n.type==="reaction"||n.type==="comment_story"?`renderStories()`:n.type==="groupe_invite"||n.type==="groupe_message"?`openMsg();setTimeout(()=>switchMsgTab('groups'),400)`:n.type==="coin"?`openCoin()`:``;
+      // Toutes affichées comme lues (on a déjà tout marqué)
+      html+=`<div class="nf-item" onclick="${onclick}"><div class="nf-ico">${ico}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`;
+    }
+    liste.innerHTML=html;
+
+  }catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}
+};
 async function addNotif(userId,type,texte){try{await addDoc(collection(db,"notifications"),{userId,type,texte,date:serverTimestamp(),lu:false});}catch{}}
 async function addNotifTous(type,texte){const uMap=await getUsers();Object.keys(uMap).forEach(id=>{if(id!==UC.id)addNotif(id,type,texte);});}
 
