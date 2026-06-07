@@ -1802,7 +1802,10 @@ window.openConv=async(uid,type='direct')=>{
         return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px"><div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}" data-url="${m.audioUrl||''}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${dur}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div>`;
       }
       if(m.type==="image")return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
-      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
+   return `<div class="msg-b ${mine?"msg-me":"msg-th"}" 
+  ontouchstart="startSwipe(event,'${(m.contenu||'').replace(/'/g,"\\'")}',${mine})" 
+  ontouchmove="moveSwipe(event)"
+  ontouchend="endSwipe(event)">${replyHtml}<span>${m.contenu||''}</span><small>${fmtHeure(m.date)}</small></div>`;
     }).join("");
     z.scrollTop=z.scrollHeight;
     snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
@@ -2063,10 +2066,47 @@ window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behav
 
 // ===== SWIPE POUR RÉPONDRE =====
 let swipeStartX=0,swipeData=null;
-window.startSwipe=(e,txt,mine)=>{swipeStartX=e.touches[0].clientX;swipeData={txt,mine};};
-window.endSwipe=(e)=>{if(!swipeData)return;const dx=e.changedTouches[0].clientX-swipeStartX;if(dx>60){replyMsg=swipeData.txt;const bar=document.getElementById('replyBar');document.getElementById('replyBarText').textContent='↩ '+replyMsg.substring(0,50);bar.classList.add('show');document.getElementById('msgInp').focus();}swipeData=null;};
-window.cancelReply=()=>{replyMsg=null;document.getElementById('replyBar').classList.remove('show');};
+// ===== SWIPE POUR RÉPONDRE =====
+let swipeStartX=0,swipeData=null,swipeEl=null;
 
+window.startSwipe=(e,txt,mine)=>{
+  swipeStartX=e.touches[0].clientX;
+  swipeData={txt,mine};
+  swipeEl=e.currentTarget;
+};
+
+window.endSwipe=(e)=>{
+  if(!swipeData||!swipeEl)return;
+  const dx=e.changedTouches[0].clientX-swipeStartX;
+  
+  // Swipe droite = répondre
+  if(dx>60){
+    // Animation flash
+    swipeEl.style.transition='transform .15s';
+    swipeEl.style.transform='translateX(40px)';
+    setTimeout(()=>{
+      swipeEl.style.transform='translateX(0)';
+    },150);
+    
+    replyMsg=swipeData.txt;
+    const bar=document.getElementById('replyBar');
+    document.getElementById('replyBarText').textContent=
+      '↩ '+replyMsg.substring(0,50);
+    bar.classList.add('show');
+    document.getElementById('msgInp').focus();
+    
+    // Vibration mobile
+    if(navigator.vibrate) navigator.vibrate(40);
+  }
+if(swipeEl){
+  const ico=swipeEl.querySelector('.reply-ico');
+  if(ico)ico.remove();
+  swipeEl.style.transform='translateX(0)';
+  swipeEl.style.transition='transform .2s';
+}
+  swipeEl=null;
+  swipeData=null;
+};
 // ===== LECTURE AUDIO WAVEFORM =====
 const activeAudios={};
 window.playAudio=(url)=>{if(!url){alert('❌ Audio indisponible');return;}const a=new Audio(url);a.play().catch(()=>alert('❌ Impossible de lire le message vocal'));};
@@ -2129,7 +2169,31 @@ window.partagerAutre=async()=>{const lien=document.getElementById("prrLink").val
   const texte=document.getElementById('storyTextInput').value.trim();
   if(!texte)document.getElementById('btnPostSt').disabled=true;
 };
-
+window.moveSwipe=(e)=>{
+  if(!swipeEl)return;
+  const dx=e.touches[0].clientX-swipeStartX;
+  if(dx>0&&dx<80){
+    swipeEl.style.transition='none';
+    swipeEl.style.transform=`translateX(${dx}px)`;
+    
+    // Icône répondre qui apparaît
+    let ico=swipeEl.querySelector('.reply-ico');
+    if(!ico){
+      ico=document.createElement('div');
+      ico.className='reply-ico';
+      ico.innerHTML='↩';
+      ico.style.cssText=`
+        position:absolute;left:-30px;top:50%;
+        transform:translateY(-50%);
+        font-size:16px;color:var(--bleu);
+        opacity:0;transition:opacity .1s;
+      `;
+      swipeEl.style.position='relative';
+      swipeEl.appendChild(ico);
+    }
+    ico.style.opacity=dx>40?'1':'0';
+  }
+};
 </script>
 </body>
 </html>
