@@ -1829,21 +1829,9 @@ unsubMsgs=onSnapshot(query(collection(db,"messages",convId,"msgs"),orderBy("date
         </div>
       </div>`;
     }
-
-    if(m.type==="image")return{
-      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px"
-        ontouchstart="startSwipe(event,'📷 Photo',${mine})"
-        ontouchend="endSwipe(event)">
-        ${replyHtml}
-        <div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer"
-          onclick="openLightbox('${m.imageUrl||''}')">
-          <img src="${m.imageUrl||''}" style="width:100%;display:block"
-            onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/>
-        </div>
-        <small style="padding:0 8px 4px">${fmtHeure(m.date)}</small>
-      </div>`;
+if(m.type==="image"){
+      return `<div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px" ontouchstart="startSwipe(event,'📷 Photo',${mine})" ontouchend="endSwipe(event)">${replyHtml}<div style="max-width:200px;border-radius:10px;overflow:hidden;cursor:pointer" onclick="openLightbox('${m.imageUrl||''}')"><img src="${m.imageUrl||''}" style="width:100%;display:block" onerror="this.src='';this.parentElement.innerHTML='❌ Image indisponible'"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div>`;
     }
-
     // Message texte normal
     const texteEscape=(m.contenu||'')
       .replace(/\\/g,'\\\\')
