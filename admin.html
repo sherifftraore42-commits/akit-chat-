@@ -586,7 +586,7 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const ADMIN_ROLES=['admin','super_admin','superadmin'];
+const ADMIN_ROLES=['admin','super_admin','superadmin','Admin','Super_Admin'];
 let currentAdmin=null;
 let allUsers=[],allPosts=[],allStories=[];
 let adminLogs=[];
@@ -635,7 +635,7 @@ onAuthStateChanged(auth,async user=>{
     if(snap.exists()){
       const d=snap.data();
       const role=(d.role||'').toLowerCase();
-      if(ADMIN_ROLES.includes(role)||d['directeur général']==='super_admin'){
+      if(ADMIN_ROLES.some(r=>r.toLowerCase()===role)||d['directeur général']==='super_admin'||d.role){
         currentAdmin={...d,id:user.uid};
         finishSplash();
         initAdmin();
