@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr"> 
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>AKIT-CHAT · Admin Panel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#060810;--bg2:#0d1117;--bg3:#141a26;--bg4:#1a2236;
+  --bleu:#5B4CF5;--bleu2:#7B6CF5;--green:#00FF88;--yellow:#FFD700;--red:#FF4757;--orange:#FF6B35;
+  --texte:#e8edf5;--texte2:#8892a4;--texte3:#4a5568;
+  --border:rgba(255,255,255,0.06);--border2:rgba(91,76,245,0.3);
+  --ombre:0 8px 32px rgba(0,0,0,0.4);
+  --font:'Sora',sans-serif;--mono:'Space Mono',monospace;
+  --sidebar-w:260px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--texte);font-family:var(--font);overflow:hidden;}
+button{cursor:pointer;font-family:var(--font);}
+input,textarea,select{font-family:var(--font);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px;}
+
+/* ===== SPLASH ===== */
+#adminSplash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .5s;}
+#adminSplash.hide{opacity:0;pointer-events:none;}
+.splash-title{font-family:var(--mono);font-size:clamp(22px,5vw,48px);font-weight:700;letter-spacing:6px;text-transform:uppercase;background:linear-gradient(90deg,var(--green),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.splash-sub{font-size:12px;letter-spacing:4px;color:var(--texte3);text-transform:uppercase;}
+.splash-line{width:200px;height:1px;background:var(--border);position:relative;overflow:hidden;}
+.splash-line-fill{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--yellow));transition:width .1s;}
+.splash-lock{font-size:48px;animation:lockPulse 1s ease-in-out infinite;}
+@keyframes lockPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:0.7}}
+
+/* ===== AUTH GATE ===== */
+#authGate{position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;align-items:center;justify-content:center;}
+#authGate.show{display:flex;}
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:24px;padding:48px 40px;width:100%;max-width:400px;text-align:center;box-shadow:0 0 60px rgba(91,76,245,0.15);}
+.auth-icon{font-size:56px;margin-bottom:20px;display:block;}
+.auth-title{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--texte);margin-bottom:8px;letter-spacing:2px;}
+.auth-sub{font-size:13px;color:var(--texte2);margin-bottom:32px;line-height:1.6;}
+.auth-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 18px;font-size:14px;color:var(--texte);outline:none;margin-bottom:12px;}
+.auth-inp:focus{border-color:var(--bleu);}
+.auth-btn{width:100%;background:linear-gradient(135deg,var(--bleu),var(--bleu2));border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;color:#fff;letter-spacing:1px;transition:all .2s;margin-top:8px;}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(91,76,245,0.4);}
+.auth-error{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+.auth-error.show{display:block;}
+
+/* ===== LAYOUT ===== */
+#appShell{display:none;height:100vh;overflow:hidden;}
+#appShell.show{display:flex;}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;overflow:hidden;position:relative;z-index:10;}
+.sb-logo{padding:0 24px 28px;border-bottom:1px solid var(--border);}
+.sb-logo-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:3px;background:linear-gradient(90deg,var(--green),var(--yellow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sb-logo-sub{font-size:10px;color:var(--texte3);letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+.sb-admin-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:50px;padding:4px 10px;font-size:10px;color:var(--green);font-weight:700;margin-top:10px;letter-spacing:1px;}
+.sb-nav{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:3px;}
+.sb-section-label{font-size:9px;color:var(--texte3);letter-spacing:2px;text-transform:uppercase;padding:12px 8px 6px;font-family:var(--mono);}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;cursor:pointer;border:none;background:none;color:var(--texte2);font-size:13px;font-weight:600;width:100%;text-align:left;transition:all .15s;position:relative;}
+.sb-item:hover{background:var(--bg3);color:var(--texte);}
+.sb-item.active{background:linear-gradient(135deg,rgba(91,76,245,.2),rgba(91,76,245,.05));color:var(--texte);border:1px solid rgba(91,76,245,.3);}
+.sb-item.active .sb-item-icon{color:var(--bleu2);}
+.sb-item-icon{font-size:16px;width:18px;text-align:center;flex-shrink:0;}
+.sb-bdg{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px;}
+.sb-bottom{padding:16px;border-top:1px solid var(--border);}
+.sb-user-row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg3);border-radius:12px;}
+.sb-user-av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--bleu),var(--green));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;}
+.sb-user-av img{width:100%;height:100%;object-fit:cover;}
+.sb-user-name{font-size:12px;font-weight:700;color:var(--texte);}
+.sb-user-role{font-size:10px;color:var(--green);font-weight:600;}
+.sb-logout-btn{margin-left:auto;background:none;border:none;color:var(--texte3);font-size:16px;padding:4px;}
+.sb-logout-btn:hover{color:var(--red);}
+
+/* ===== MAIN ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:64px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:16px;flex-shrink:0;}
+.topbar-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--texte);letter-spacing:2px;text-transform:uppercase;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.tb-stat{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;}
+.tb-stat-dot{width:6px;height:6px;border-radius:50%;}
+.tb-stat-dot.green{background:var(--green);}
+.tb-stat-dot.red{background:var(--red);}
+.content{flex:1;overflow-y:auto;padding:28px;-webkit-overflow-scrolling:touch;}
+
+/* ===== PANELS ===== */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ===== DASHBOARD ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:transform .2s;}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.green::before{background:linear-gradient(90deg,var(--green),transparent);}
+.stat-card.blue::before{background:linear-gradient(90deg,var(--bleu),transparent);}
+.stat-card.yellow::before{background:linear-gradient(90deg,var(--yellow),transparent);}
+.stat-card.red::before{background:linear-gradient(90deg,var(--red),transparent);}
+.stat-card.orange::before{background:linear-gradient(90deg,var(--orange),transparent);}
+.stat-card-icon{font-size:28px;margin-bottom:12px;display:block;}
+.stat-card-nb{font-family:var(--mono);font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--texte);}
+.stat-card-label{font-size:12px;color:var(--texte2);margin-top:4px;letter-spacing:.5px;}
+.stat-card-trend{position:absolute;top:20px;right:20px;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;}
+.stat-card-trend.up{background:rgba(0,255,136,.1);color:var(--green);}
+.stat-card-trend.down{background:rgba(255,71,87,.1);color:var(--red);}
+
+.section-title{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--texte2);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.activity-feed{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:24px;}
+.activity-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);last-child{border:none}}
+.activity-item:last-child{border-bottom:none;}
+.activity-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.activity-text{flex:1;font-size:13px;color:var(--texte);}
+.activity-text span{color:var(--bleu2);font-weight:700;}
+.activity-time{font-size:11px;color:var(--texte3);font-family:var(--mono);}
+
+/* ===== TABLE ===== */
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.table-header{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border);gap:12px;}
+.table-search{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--texte);outline:none;}
+.table-search:focus{border-color:var(--bleu);}
+.table-action-btn{background:linear-gradient(135deg,var(--bleu),var(--bleu2));border:none;border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px;white-space:nowrap;}
+.table-action-btn.red{background:linear-gradient(135deg,var(--red),#ff6b6b);}
+.table-action-btn.green{background:linear-gradient(135deg,var(--green),#00cc6a);color:#000;}
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{padding:12px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--texte3);text-align:left;background:var(--bg3);font-family:var(--mono);border-bottom:1px solid var(--border);}
+.data-table td{padding:13px 16px;font-size:13px;color:var(--texte);border-bottom:1px solid var(--border);}
+.data-table tr:hover td{background:rgba(255,255,255,0.02);}
+.data-table tr:last-child td{border-bottom:none;}
+.role-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px;}
+.role-badge.admin{background:rgba(91,76,245,.15);color:var(--bleu2);border:1px solid rgba(91,76,245,.3);}
+.role-badge.superadmin{background:rgba(255,215,0,.12);color:var(--yellow);border:1px solid rgba(255,215,0,.3);}
+.role-badge.user{background:rgba(255,255,255,.05);color:var(--texte2);border:1px solid var(--border);}
+.role-badge.banned{background:rgba(255,71,87,.12);color:var(--red);border:1px solid rgba(255,71,87,.3);}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;}
+.status-dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
+.status-dot.offline{background:var(--texte3);}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.row-btn{background:var(--bg4);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:11px;color:var(--texte2);cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;}
+.row-btn:hover{border-color:var(--bleu);color:var(--bleu2);}
+.row-btn.danger:hover{border-color:var(--red);color:var(--red);}
+.row-btn.success:hover{border-color:var(--green);color:var(--green);}
+.user-cell{display:flex;align-items:center;gap:10px;}
+.user-av{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--bleu),var(--bleu2));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+.user-av img{width:100%;height:100%;object-fit:cover;}
+.user-av-name{font-size:13px;font-weight:700;}
+.user-av-email{font-size:11px;color:var(--texte3);}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);}
+.page-info{font-size:12px;color:var(--texte3);font-family:var(--mono);}
+.page-btns{display:flex;gap:6px;}
+.page-btn{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-size:12px;color:var(--texte2);cursor:pointer;}
+.page-btn:hover{border-color:var(--bleu);color:var(--bleu2);}
+.page-btn.active{background:var(--bleu);border-color:var(--bleu);color:#fff;}
+
+/* ===== POSTS PANEL ===== */
+.posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.post-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .2s;}
+.post-card:hover{transform:translateY(-2px);}
+.post-card-media{height:140px;background:var(--bg3);position:relative;overflow:hidden;}
+.post-card-media img{width:100%;height:100%;object-fit:cover;}
+.post-card-media-placeholder{display:flex;align-items:center;justify-content:center;height:100%;color:var(--texte3);font-size:32px;}
+.post-card-body{padding:14px;}
+.post-card-author{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.post-card-author-av{width:28px;height:28px;border-radius:7px;background:var(--bleu);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.post-card-author-name{font-size:12px;font-weight:700;color:var(--texte);}
+.post-card-text{font-size:12px;color:var(--texte2);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.post-card-stats{display:flex;gap:10px;font-size:11px;color:var(--texte3);margin-bottom:10px;}
+.post-card-actions{display:flex;gap:6px;}
+
+/* ===== BANK/WALLET ===== */
+.wallet-hero{background:linear-gradient(135deg,#0d1a0a,#0a1628,#1a0d28);border:1px solid rgba(0,255,136,.15);border-radius:24px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;}
+.wallet-hero::before{content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,.06),transparent 70%);}
+.wallet-hero::after{content:'';position:absolute;bottom:-30%;left:-5%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(91,76,245,.08),transparent 70%);}
+.wallet-label{font-size:11px;color:rgba(0,255,136,.6);letter-spacing:2px;text-transform:uppercase;font-family:var(--mono);margin-bottom:8px;}
+.wallet-balance{font-family:var(--mono);font-size:clamp(36px,6vw,60px);font-weight:700;color:var(--yellow);line-height:1;}
+.wallet-balance span{font-size:20px;color:var(--green);margin-right:8px;}
+.wallet-sub{font-size:12px;color:rgba(255,255,255,.3);margin-top:6px;}
+.wallet-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
+.wallet-btn{display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.wallet-btn.credit{background:var(--green);color:#000;}
+.wallet-btn.debit{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,.3);}
+.wallet-btn.transfer{background:rgba(91,76,245,.15);color:var(--bleu2);border:1px solid rgba(91,76,245,.3);}
+.wallet-btn:hover{transform:translateY(-2px);}
+.wallet-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.wallet-stat{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+.wallet-stat-nb{font-family:var(--mono);font-size:18px;font-weight:700;}
+.wallet-stat-lb{font-size:11px;color:var(--texte3);margin-top:3px;}
+.tx-table{background:var(--bg2);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.tx-item{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);}
+.tx-item:last-child{border-bottom:none;}
+.tx-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tx-ico.in{background:rgba(0,255,136,.1);}
+.tx-ico.out{background:rgba(255,71,87,.1);}
+.tx-ico.pending{background:rgba(255,215,0,.1);}
+.tx-info{flex:1;}
+.tx-label{font-size:13px;font-weight:600;color:var(--texte);}
+.tx-date{font-size:11px;color:var(--texte3);margin-top:2px;font-family:var(--mono);}
+.tx-amount{font-family:var(--mono);font-size:15px;font-weight:700;}
+.tx-amount.in{color:var(--green);}
+.tx-amount.out{color:var(--red);}
+.tx-amount.pending{color:var(--yellow);}
+.tx-status{font-size:9px;padding:3px 8px;border-radius:4px;font-weight:700;letter-spacing:.5px;}
+.tx-status.confirmed{background:rgba(0,255,136,.1);color:var(--green);}
+.tx-status.pending{background:rgba(255,215,0,.1);color:var(--yellow);}
+.tx-status.failed{background:rgba(255,71,87,.1);color:var(--red);}
+
+/* ===== SETTINGS ===== */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:24px;}
+.settings-card-title{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--texte2);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.settings-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--texte);outline:none;margin-bottom:10px;}
+.settings-inp:focus{border-color:var(--bleu);}
+.settings-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-label{flex:1;font-size:13px;color:var(--texte);}
+.settings-sub{font-size:11px;color:var(--texte3);margin-top:2px;}
+.tgl{width:44px;height:24px;background:var(--bg4);border-radius:50px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;border:1px solid var(--border);}
+.tgl.on{background:var(--green);}
+.tgl::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .25s;}
+.tgl.on::after{left:22px;}
+.save-btn{width:100%;background:linear-gradient(135deg,var(--bleu),var(--bleu2));border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;color:#fff;margin-top:14px;letter-spacing:.5px;transition:all .2s;}
+.save-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(91,76,245,.3);}
+.danger-btn{width:100%;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.25);border-radius:10px;padding:12px;font-size:13px;font-weight:700;color:var(--red);margin-top:8px;transition:all .2s;}
+.danger-btn:hover{background:var(--red);color:#fff;}
+
+/* ===== MODAL ===== */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.ov.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:modalIn .2s ease;}
+@keyframes modalIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head h3{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:1px;}
+.modal-close{background:var(--bg3);border:1px solid var(--border);width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--texte2);cursor:pointer;font-size:14px;}
+.modal-body{padding:24px;}
+.modal-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--texte);outline:none;margin-bottom:12px;}
+.modal-inp:focus{border-color:var(--bleu);}
+.modal-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--texte);outline:none;margin-bottom:12px;cursor:pointer;}
+.modal-select option{background:var(--bg2);}
+.modal-btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:all .2s;}
+.modal-btn.primary{background:linear-gradient(135deg,var(--bleu),var(--bleu2));color:#fff;}
+.modal-btn.primary:hover{transform:translateY(-2px);}
+.modal-btn.danger{background:linear-gradient(135deg,var(--red),#ff6b6b);color:#fff;}
+.modal-btn.cancel{background:var(--bg3);border:1px solid var(--border);color:var(--texte2);}
+
+/* ===== TOAST ===== */
+#toastZone{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--texte);box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .3s ease;display:flex;align-items:center;gap:8px;min-width:240px;}
+.toast.success{border-left:3px solid var(--green);}
+.toast.error{border-left:3px solid var(--red);}
+.toast.info{border-left:3px solid var(--bleu);}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ===== LOADING ===== */
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--texte3);}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--bleu);border-radius:50%;animation:spin .8s linear infinite;margin-right:12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== EMPTY ===== */
+.empty-state{text-align:center;padding:56px 24px;color:var(--texte3);}
+.empty-state-icon{font-size:48px;margin-bottom:16px;display:block;}
+.empty-state-text{font-size:14px;font-weight:600;color:var(--texte2);}
+.empty-state-sub{font-size:12px;margin-top:6px;}
+
+/* ===== CHARTS ===== */
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:48px;margin-top:10px;}
+.mini-bar{flex:1;border-radius:3px 3px 0 0;min-height:4px;transition:height .3s;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .wallet-stats{grid-template-columns:1fr 1fr;}
+  .content{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<div id="toastZone"></div>
+
+<!-- SPLASH -->
+<div id="adminSplash">
+  <span class="splash-lock">🔐</span>
+  <div class="splash-title">AKIT ADMIN</div>
+  <div class="splash-sub">Panneau de contrôle · Accès restreint</div>
+  <div class="splash-line"><div class="splash-line-fill" id="splashFill"></div></div>
+  <div style="font-size:11px;color:var(--texte3);font-family:var(--mono)" id="splashStatus">Initialisation...</div>
+</div>
+
+<!-- AUTH GATE -->
+<div id="authGate">
+  <div class="auth-card">
+    <span class="auth-icon">🛡️</span>
+    <div class="auth-title">ACCÈS ADMIN</div>
+    <div class="auth-sub">Cette zone est réservée aux administrateurs AKIT-CHAT.<br>Connectez-vous pour continuer.</div>
+    <input class="auth-inp" id="authEmail" type="email" placeholder="Email administrateur..." autocomplete="off"/>
+    <input class="auth-inp" id="authPass" type="password" placeholder="Mot de passe..." onkeydown="if(event.key==='Enter')tryAuth()"/>
+    <button class="auth-btn" onclick="tryAuth()">🔓 Accéder au panneau</button>
+    <div class="auth-error" id="authError">❌ Accès refusé — compte non administrateur</div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">AKIT-CHAT</div>
+      <div class="sb-logo-sub">Admin Panel v2.0</div>
+      <span class="sb-admin-badge">⚡ SUPER ADMIN</span>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-section-label">Vue d'ensemble</div>
+      <button class="sb-item active" onclick="showPanel('dashboard',this)"><i class="fas fa-chart-line sb-item-icon"></i> Dashboard</button>
+      <button class="sb-item" onclick="showPanel('activity',this)"><i class="fas fa-bolt sb-item-icon"></i> Activité en temps réel</button>
+
+      <div class="sb-section-label">Gestion</div>
+      <button class="sb-item" onclick="showPanel('users',this)"><i class="fas fa-users sb-item-icon"></i> Utilisateurs<span class="sb-bdg" id="sbBdgUsers">...</span></button>
+      <button class="sb-item" onclick="showPanel('posts',this)"><i class="fas fa-newspaper sb-item-icon"></i> Publications<span class="sb-bdg" id="sbBdgPosts">...</span></button>
+      <button class="sb-item" onclick="showPanel('stories',this)"><i class="fas fa-circle-play sb-item-icon"></i> Stories</button>
+      <button class="sb-item" onclick="showPanel('reports',this)"><i class="fas fa-flag sb-item-icon" style="color:var(--red)"></i> Signalements</button>
+
+      <div class="sb-section-label">Finance</div>
+      <button class="sb-item" onclick="showPanel('bank',this)"><i class="fas fa-vault sb-item-icon" style="color:var(--yellow)"></i> Banque AKIT</button>
+      <button class="sb-item" onclick="showPanel('transactions',this)"><i class="fas fa-arrow-right-arrow-left sb-item-icon"></i> Transactions</button>
+      <button class="sb-item" onclick="showPanel('mobilemoney',this)"><i class="fas fa-mobile-screen sb-item-icon" style="color:var(--orange)"></i> Mobile Money</button>
+
+      <div class="sb-section-label">Système</div>
+      <button class="sb-item" onclick="showPanel('roles',this)"><i class="fas fa-shield-halved sb-item-icon" style="color:var(--bleu2)"></i> Rôles & Permissions</button>
+      <button class="sb-item" onclick="showPanel('settings',this)"><i class="fas fa-sliders sb-item-icon"></i> Paramètres app</button>
+      <button class="sb-item" onclick="showPanel('logs',this)"><i class="fas fa-terminal sb-item-icon"></i> Logs système</button>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-user-row">
+        <div class="sb-user-av" id="sbUserAv">A</div>
+        <div>
+          <div class="sb-user-name" id="sbUserName">Admin</div>
+          <div class="sb-user-role">⚡ Super Admin</div>
+        </div>
+        <button class="sb-logout-btn" onclick="deconnexion()" title="Déconnexion"><i class="fas fa-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="tb-stat"><span class="tb-stat-dot green"></span><span id="tbOnline">0 en ligne</span></div>
+        <div class="tb-stat" style="font-family:var(--mono);font-size:11px" id="tbTime">--:--</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card blue"><span class="stat-card-icon">👥</span><div class="stat-card-nb" id="statUsers">...</div><div class="stat-card-label">Utilisateurs totaux</div><div class="mini-chart" id="chartUsers"></div></div>
+          <div class="stat-card green"><span class="stat-card-icon">📝</span><div class="stat-card-nb" id="statPosts">...</div><div class="stat-card-label">Publications</div><div class="mini-chart" id="chartPosts"></div></div>
+          <div class="stat-card yellow"><span class="stat-card-icon">📸</span><div class="stat-card-nb" id="statStories">...</div><div class="stat-card-label">Stories actives</div></div>
+          <div class="stat-card orange"><span class="stat-card-icon">💬</span><div class="stat-card-nb" id="statMsgs">...</div><div class="stat-card-label">Messages envoyés</div></div>
+          <div class="stat-card green"><span class="stat-card-icon">🟢</span><div class="stat-card-nb" id="statOnline">...</div><div class="stat-card-label">En ligne maintenant</div></div>
+          <div class="stat-card yellow"><span class="stat-card-icon">💰</span><div class="stat-card-nb" id="statCoins">...</div><div class="stat-card-label">AKIT Coins en circulation</div></div>
+          <div class="stat-card red"><span class="stat-card-icon">🚫</span><div class="stat-card-nb" id="statBanned">...</div><div class="stat-card-label">Comptes bannis</div></div>
+          <div class="stat-card blue"><span class="stat-card-icon">👥</span><div class="stat-card-nb" id="statGroups">...</div><div class="stat-card-label">Groupes créés</div></div>
+        </div>
+
+        <div class="section-title">Activité récente</div>
+        <div class="activity-feed" id="activityFeed">
+          <div class="loading"><div class="spinner"></div> Chargement...</div>
+        </div>
+
+        <div class="section-title">Actions rapides</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+          <button onclick="showPanel('users',document.querySelector('[onclick*=users]'))" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--bleu)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:24px;margin-bottom:8px">👥</div><div style="font-size:13px;font-weight:700;color:var(--texte)">Gérer les users</div><div style="font-size:11px;color:var(--texte3);margin-top:3px">Voir, bannir, promouvoir</div>
+          </button>
+          <button onclick="openBroadcastModal()" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:24px;margin-bottom:8px">📢</div><div style="font-size:13px;font-weight:700;color:var(--texte)">Broadcast</div><div style="font-size:11px;color:var(--texte3);margin-top:3px">Notifier tous les users</div>
+          </button>
+          <button onclick="showPanel('bank',document.querySelector('[onclick*=bank]'))" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:24px;margin-bottom:8px">🏦</div><div style="font-size:13px;font-weight:700;color:var(--texte)">Banque AKIT</div><div style="font-size:11px;color:var(--texte3);margin-top:3px">Gérer les finances</div>
+          </button>
+          <button onclick="exportData()" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:left;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='var(--bleu2)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:24px;margin-bottom:8px">📊</div><div style="font-size:13px;font-weight:700;color:var(--texte)">Exporter données</div><div style="font-size:11px;color:var(--texte3);margin-top:3px">CSV / JSON</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="panel" id="panel-activity">
+        <div class="section-title">🔴 Temps réel — Utilisateurs en ligne</div>
+        <div id="realtimeUsers" class="table-wrap" style="margin-bottom:20px;padding:16px;">
+          <div class="loading"><div class="spinner"></div> Connexion flux...</div>
+        </div>
+        <div class="section-title">Derniers messages envoyés</div>
+        <div id="realtimeMsgs" class="table-wrap" style="padding:16px;">
+          <div class="loading"><div class="spinner"></div> Chargement...</div>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="panel" id="panel-users">
+        <div class="table-wrap">
+          <div class="table-header">
+            <input class="table-search" id="userSearch" placeholder="🔍 Rechercher un utilisateur..." oninput="filterUsers(this.value)"/>
+            <button class="table-action-btn" onclick="exportUsers()">⬇️ Exporter</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Inscription</th><th>Coins</th><th>Actions</th></tr></thead>
+              <tbody id="usersTableBody"><tr><td colspan="7"><div class="loading"><div class="spinner"></div> Chargement...</div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination"><span class="page-info" id="usersPagInfo">— utilisateurs</span><div class="page-btns" id="usersPagBtns"></div></div>
+        </div>
+      </div>
+
+      <!-- POSTS -->
+      <div class="panel" id="panel-posts">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <input class="table-search" id="postSearch" placeholder="🔍 Rechercher..." oninput="filterPosts(this.value)" style="max-width:340px;"/>
+          <button class="table-action-btn red" onclick="deleteAllFlaggedPosts()">🗑️ Suppr. signalés</button>
+        </div>
+        <div class="posts-grid" id="postsGrid">
+          <div class="loading"><div class="spinner"></div> Chargement...</div>
+        </div>
+      </div>
+
+      <!-- STORIES -->
+      <div class="panel" id="panel-stories">
+        <div class="posts-grid" id="storiesGrid">
+          <div class="loading"><div class="spinner"></div> Chargement...</div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="panel" id="panel-reports">
+        <div class="empty-state">
+          <span class="empty-state-icon">🚩</span>
+          <div class="empty-state-text">Aucun signalement actif</div>
+          <div class="empty-state-sub">Les contenus signalés apparaîtront ici</div>
+        </div>
+      </div>
+
+      <!-- BANK -->
+      <div class="panel" id="panel-bank">
+        <div class="wallet-hero">
+          <div class="wallet-label">💰 Compte Banque AKIT — Administrateur</div>
+          <div class="wallet-balance"><span>A</span><span id="bankBalance">0</span></div>
+          <div class="wallet-sub">AKIT Coins · Compte principal · <span id="bankOwner">Admin</span></div>
+          <div class="wallet-actions">
+            <button class="wallet-btn credit" onclick="openBankModal('credit')"><i class="fas fa-plus-circle"></i> Créditer</button>
+            <button class="wallet-btn debit" onclick="openBankModal('debit')"><i class="fas fa-minus-circle"></i> Débiter</button>
+            <button class="wallet-btn transfer" onclick="openBankModal('transfer')"><i class="fas fa-paper-plane"></i> Transférer à un user</button>
+          </div>
+        </div>
+        <div class="wallet-stats">
+          <div class="wallet-stat"><div class="wallet-stat-nb" style="color:var(--green)" id="bankTotalIn">0</div><div class="wallet-stat-lb">Total crédité</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-nb" style="color:var(--red)" id="bankTotalOut">0</div><div class="wallet-stat-lb">Total débité</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-nb" style="color:var(--yellow)" id="bankTxCount">0</div><div class="wallet-stat-lb">Transactions</div></div>
+        </div>
+        <div class="section-title">Historique des transactions</div>
+        <div class="tx-table" id="bankTxTable">
+          <div class="loading"><div class="spinner"></div> Chargement...</div>
+        </div>
+      </div>
+
+      <!-- TRANSACTIONS -->
+      <div class="panel" id="panel-transactions">
+        <div class="section-title">Toutes les transactions Mobile Money</div>
+        <div class="table-wrap">
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>User</th><th>Provider</th><th>Type</th><th>Montant</th><th>Date</th><th>Statut</th></tr></thead>
+              <tbody id="txTableBody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOBILE MONEY -->
+      <div class="panel" id="panel-mobilemoney">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card orange"><span class="stat-card-icon">🟠</span><div class="stat-card-nb" id="mmOM">0</div><div class="stat-card-label">Comptes Orange Money</div></div>
+          <div class="stat-card yellow"><span class="stat-card-icon">🟡</span><div class="stat-card-nb" id="mmMTN">0</div><div class="stat-card-label">Comptes MTN MoMo</div></div>
+          <div class="stat-card green"><span class="stat-card-icon">🟢</span><div class="stat-card-nb" id="mmMPesa">0</div><div class="stat-card-label">Comptes M-Pesa</div></div>
+        </div>
+        <div class="section-title">Utilisateurs avec Mobile Money</div>
+        <div class="table-wrap"><div class="loading" id="mmList"><div class="spinner"></div> Chargement...</div></div>
+      </div>
+
+      <!-- ROLES -->
+      <div class="panel" id="panel-roles">
+        <div class="section-title">Gestion des rôles</div>
+        <div class="table-wrap" style="margin-bottom:20px;">
+          <div class="table-header">
+            <input class="table-search" placeholder="🔍 Rechercher..." id="roleSearch" oninput="filterRoles(this.value)"/>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>Utilisateur</th><th>Rôle actuel</th><th>Coins</th><th>Actions</th></tr></thead>
+              <tbody id="rolesTableBody"><tr><td colspan="4"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="settings-card-title"><i class="fas fa-app-store"></i> Application</div>
+            <div class="settings-row"><div><div class="settings-label">Mode maintenance</div><div class="settings-sub">Bloque l'accès aux utilisateurs</div></div><div class="tgl" id="tglMaintenance" onclick="this.classList.toggle('on');saveSetting('maintenance',this.classList.contains('on'))"></div></div>
+            <div class="settings-row"><div><div class="settings-label">Inscription ouverte</div><div class="settings-sub">Autoriser les nouveaux comptes</div></div><div class="tgl on" id="tglReg" onclick="this.classList.toggle('on');saveSetting('openReg',this.classList.contains('on'))"></div></div>
+            <div class="settings-row"><div><div class="settings-label">Stories actives</div><div class="settings-sub">Activer la fonctionnalité Stories</div></div><div class="tgl on" id="tglStories" onclick="this.classList.toggle('on');saveSetting('storiesEnabled',this.classList.contains('on'))"></div></div>
+            <div class="settings-row"><div><div class="settings-label">Mobile Money</div><div class="settings-sub">Activer les paiements</div></div><div class="tgl on" id="tglMM" onclick="this.classList.toggle('on');saveSetting('mmEnabled',this.classList.contains('on'))"></div></div>
+            <button class="save-btn" onclick="saveAllSettings()">💾 Sauvegarder les paramètres</button>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title"><i class="fas fa-coins"></i> AKIT Coins</div>
+            <label style="font-size:12px;color:var(--texte2);display:block;margin-bottom:6px;">Coins par inscription</label>
+            <input class="settings-inp" id="setCoinsReg" type="number" value="100" placeholder="Ex: 100"/>
+            <label style="font-size:12px;color:var(--texte2);display:block;margin-bottom:6px;">Coins par parrainage (parrain)</label>
+            <input class="settings-inp" id="setCoinsRef" type="number" value="500"/>
+            <label style="font-size:12px;color:var(--texte2);display:block;margin-bottom:6px;">Coins par parrainage (filleul)</label>
+            <input class="settings-inp" id="setCoinsFilleul" type="number" value="250"/>
+            <button class="save-btn" onclick="saveCoinSettings()">💰 Sauvegarder Coins</button>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title"><i class="fas fa-shield"></i> Sécurité</div>
+            <div class="settings-row"><div><div class="settings-label">Logs d'activité</div><div class="settings-sub">Enregistrer les actions admin</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="settings-row"><div><div class="settings-label">2FA Admin</div><div class="settings-sub">Double authentification</div></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+            <div style="margin-top:16px;">
+              <button class="danger-btn" onclick="if(confirm('Supprimer toutes les stories expirées ?'))purgeStories()">🗑️ Purger stories expirées</button>
+              <button class="danger-btn" onclick="if(confirm('Supprimer toutes les notifications lues ?'))purgeNotifications()">🗑️ Purger notifications</button>
+            </div>
+          </div>
+          <div class="settings-card">
+            <div class="settings-card-title"><i class="fas fa-envelope"></i> Broadcast</div>
+            <label style="font-size:12px;color:var(--texte2);display:block;margin-bottom:6px;">Message à envoyer à tous</label>
+            <textarea class="settings-inp" id="broadcastMsg" rows="4" placeholder="Entrez votre message..." style="resize:none;"></textarea>
+            <button class="save-btn" onclick="sendBroadcast()">📢 Envoyer à tous les utilisateurs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="panel" id="panel-logs">
+        <div class="section-title">Journal d'activité administrateur</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:20px;font-family:var(--mono);font-size:12px;max-height:600px;overflow-y:auto;" id="logsContainer">
+          <div style="color:var(--green)">▶ Système AKIT-CHAT Admin initialisé</div>
+          <div style="color:var(--texte3);margin-top:6px" id="logsContent"></div>
+        </div>
+        <button onclick="clearLogs()" style="margin-top:12px;background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;color:var(--texte3);cursor:pointer;font-family:var(--mono);font-size:12px;">Effacer les logs</button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /appShell -->
+
+<!-- MODAL GÉNÉRIQUE -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Action</h3><button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp, getCountFromServer, getDocs as _getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig={apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",authDomain:"akit-chat.firebaseapp.com",projectId:"akit-chat",storageBucket:"akit-chat.firebasestorage.app",messagingSenderId:"902366174407",appId:"1:902366174407:web:eb38057c473be0fabd32e2"};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const ADMIN_ROLES=['admin','super_admin','superadmin'];
+let currentAdmin=null;
+let allUsers=[],allPosts=[],allStories=[];
+let adminLogs=[];
+const ITEMS_PER_PAGE=20;
+let usersPage=1;
+
+// ===== TOAST =====
+function toast(msg,type='info'){
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<span>${msg}</span>`;document.getElementById('toastZone').appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+
+// ===== LOG =====
+function addLog(msg){
+  const now=new Date().toLocaleTimeString('fr-FR');
+  adminLogs.unshift(`[${now}] ${msg}`);
+  const el=document.getElementById('logsContent');
+  if(el)el.innerHTML=adminLogs.slice(0,100).map(l=>`<div style="color:var(--texte2);margin-top:4px">${l}</div>`).join('');
+}
+window.clearLogs=()=>{adminLogs=[];document.getElementById('logsContent').innerHTML='';toast('Logs effacés','info');}
+
+// ===== CLOCK =====
+setInterval(()=>{document.getElementById('tbTime').textContent=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});},1000);
+
+// ===== SPLASH =====
+let splashPct=0;
+const splashInterval=setInterval(()=>{
+  splashPct+=Math.random()*4+1;
+  if(splashPct>=85){splashPct=85;clearInterval(splashInterval);}
+  document.getElementById('splashFill').style.width=splashPct+'%';
+  const statuses=['Initialisation...','Connexion Firebase...','Vérification des droits...','Chargement...'];
+  document.getElementById('splashStatus').textContent=statuses[Math.floor(splashPct/25)]||statuses[3];
+},60);
+
+function finishSplash(){
+  splashPct=100;document.getElementById('splashFill').style.width='100%';
+  document.getElementById('splashStatus').textContent='Prêt ✓';
+  setTimeout(()=>{document.getElementById('adminSplash').classList.add('hide');setTimeout(()=>document.getElementById('adminSplash').style.display='none',500);},500);
+}
+
+// ===== AUTH =====
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    const snap=await getDoc(doc(db,'users',user.uid));
+    if(snap.exists()){
+      const d=snap.data();
+      const role=(d.role||'').toLowerCase();
+      if(ADMIN_ROLES.includes(role)||d['directeur général']==='super_admin'){
+        currentAdmin={...d,id:user.uid};
+        finishSplash();
+        initAdmin();
+      }else{
+        finishSplash();
+        document.getElementById('authGate').classList.add('show');
+        document.getElementById('authError').textContent='❌ Compte sans droits admin';
+        document.getElementById('authError').classList.add('show');
+        signOut(auth);
+      }
+    }else{
+      finishSplash();document.getElementById('authGate').classList.add('show');
+    }
+  }else{
+    finishSplash();document.getElementById('authGate').classList.add('show');
+  }
+});
+
+window.tryAuth=async()=>{
+  const email=document.getElementById('authEmail').value.trim();
+  const pass=document.getElementById('authPass').value;
+  const errEl=document.getElementById('authError');
+  errEl.classList.remove('show');
+  if(!email||!pass){errEl.textContent='⚠️ Remplissez tous les champs';errEl.classList.add('show');return;}
+  try{
+    const cred=await signInWithEmailAndPassword(auth,email,pass);
+    const snap=await getDoc(doc(db,'users',cred.user.uid));
+    if(snap.exists()){
+      const d=snap.data();const role=(d.role||'').toLowerCase();
+      if(ADMIN_ROLES.includes(role)||d['directeur général']==='super_admin'){
+        currentAdmin={...d,id:cred.user.uid};
+        document.getElementById('authGate').classList.remove('show');
+        initAdmin();
+      }else{
+        errEl.textContent='❌ Ce compte n\'a pas les droits administrateur';
+        errEl.classList.add('show');
+        signOut(auth);
+      }
+    }
+  }catch(e){
+    errEl.textContent='❌ Email ou mot de passe incorrect';errEl.classList.add('show');
+  }
+};
+
+window.deconnexion=async()=>{
+  if(!confirm('Se déconnecter du panneau admin ?'))return;
+  addLog('Déconnexion admin');await signOut(auth);window.location.reload();
+};
+
+// ===== INIT =====
+async function initAdmin(){
+  document.getElementById('appShell').classList.add('show');
+  const av=document.getElementById('sbUserAv');
+  if(currentAdmin.avatarUrl)av.innerHTML=`<img src="${currentAdmin.avatarUrl}"/>`;
+  else av.textContent=(currentAdmin.prenom?.[0]||'A').toUpperCase();
+  document.getElementById('sbUserName').textContent=`${currentAdmin.prenom||''} ${currentAdmin.nom||''}`.trim();
+  document.getElementById('bankOwner').textContent=`${currentAdmin.prenom||''} ${currentAdmin.nom||''}`.trim();
+  addLog(`Connexion admin : ${currentAdmin.prenom} ${currentAdmin.nom} <${currentAdmin.email}>`);
+  await loadDashboard();
+  await loadUsers();
+  loadBank();
+}
+
+// ===== PANEL NAVIGATION =====
+window.showPanel=(id,btn)=>{
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  const titles={dashboard:'Dashboard',activity:'Activité Temps Réel',users:'Utilisateurs',posts:'Publications',stories:'Stories',reports:'Signalements',bank:'Banque AKIT',transactions:'Transactions',mobilemoney:'Mobile Money',roles:'Rôles & Permissions',settings:'Paramètres',logs:'Logs Système'};
+  document.getElementById('topbarTitle').textContent=titles[id]||id;
+  addLog(`Navigation → ${titles[id]||id}`);
+  if(id==='posts')loadPosts();
+  if(id==='stories')loadStories();
+  if(id==='activity')loadActivity();
+  if(id==='transactions')loadTransactions();
+  if(id==='mobilemoney')loadMobileMoneyPanel();
+  if(id==='roles')loadRoles();
+};
+
+// ===== DASHBOARD =====
+async function loadDashboard(){
+  try{
+    const[usersSnap,postsSnap,storiesSnap,groupsSnap]=await Promise.all([
+      getDocs(collection(db,'users')),
+      getDocs(collection(db,'posts')),
+      getDocs(collection(db,'stories')),
+      getDocs(collection(db,'groupes')),
+    ]);
+    allUsers=usersSnap.docs.map(d=>({id:d.id,...d.data()}));
+    allPosts=postsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    allStories=storiesSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const online=allUsers.filter(u=>u.enLigne).length;
+    const banned=allUsers.filter(u=>u.banni).length;
+    const totalCoins=allUsers.reduce((a,u)=>a+(u.akit_coin||0),0);
+
+    document.getElementById('statUsers').textContent=allUsers.length.toLocaleString();
+    document.getElementById('statPosts').textContent=allPosts.length.toLocaleString();
+    document.getElementById('statStories').textContent=allStories.length.toLocaleString();
+    document.getElementById('statOnline').textContent=online.toLocaleString();
+    document.getElementById('statBanned').textContent=banned.toLocaleString();
+    document.getElementById('statCoins').textContent=totalCoins.toLocaleString();
+    document.getElementById('statGroups').textContent=groupsSnap.size.toLocaleString();
+    document.getElementById('tbOnline').textContent=`${online} en ligne`;
+    document.getElementById('sbBdgUsers').textContent=allUsers.length;
+    document.getElementById('sbBdgPosts').textContent=allPosts.length;
+
+    // Messages count
+    let totalMsgs=0;
+    const lmSnap=await getDocs(collection(db,'lastMessages'));
+    totalMsgs=lmSnap.size;
+    document.getElementById('statMsgs').textContent=totalMsgs.toLocaleString();
+
+    // Mini charts
+    buildMiniChart('chartUsers',[4,7,12,8,15,21,allUsers.length],'#5B4CF5');
+    buildMiniChart('chartPosts',[2,5,8,12,9,18,allPosts.length],'#00FF88');
+
+    // Activity feed
+    const recent=[...allPosts].sort((a,b)=>(b.date?.toDate?.()??new Date(0))-(a.date?.toDate?.()??new Date(0))).slice(0,8);
+    const feed=document.getElementById('activityFeed');
+    feed.innerHTML=recent.map(p=>{const u=allUsers.find(u=>u.id===p.userId)||{prenom:'?'};return `<div class="activity-item"><div class="activity-ico" style="background:rgba(91,76,245,.1);font-size:18px">📝</div><div class="activity-text"><span>${u.prenom||'?'}</span> a publié ${p.texte?`"${p.texte.substring(0,40)}..."`:p.mediaType==='img'?'une photo':'un contenu'}</div><div class="activity-time">${fmtDate(p.date)}</div></div>`;}).join('')||'<div class="empty-state" style="padding:24px"><span class="empty-state-icon" style="font-size:32px">📭</span><div class="empty-state-text">Aucune activité</div></div>';
+
+    addLog(`Dashboard chargé : ${allUsers.length} users, ${allPosts.length} posts, ${online} en ligne`);
+  }catch(e){toast('Erreur chargement dashboard : '+e.message,'error');}
+}
+function buildMiniChart(id,data,color){
+  const el=document.getElementById(id);if(!el)return;
+  const max=Math.max(...data,1);
+  el.innerHTML=data.map(v=>`<div class="mini-bar" style="background:${color};opacity:0.6;height:${Math.round(v/max*100)}%"></div>`).join('');
+}
+function fmtDate(d){if(!d)return '—';const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return '—';const diff=Date.now()-dt.getTime();if(diff<60000)return 'À l\'instant';if(diff<3600000)return Math.floor(diff/60000)+'min';if(diff<86400000)return Math.floor(diff/3600000)+'h';return dt.toLocaleDateString('fr-FR');}
+
+// ===== USERS =====
+async function loadUsers(){
+  if(allUsers.length===0){const snap=await getDocs(collection(db,'users'));allUsers=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  renderUsersTable(allUsers);
+}
+function renderUsersTable(users){
+  const body=document.getElementById('usersTableBody');
+  const start=(usersPage-1)*ITEMS_PER_PAGE;const page=users.slice(start,start+ITEMS_PER_PAGE);
+  if(page.length===0){body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="empty-state-icon">👥</span><div class="empty-state-text">Aucun utilisateur</div></div></td></tr>`;return;}
+  body.innerHTML=page.map(u=>{
+    const av=u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase();
+    const role=(u.role||'user').toLowerCase();
+    const isSelf=u.id===currentAdmin?.id;
+    const roleBadge=u.banni?`<span class="role-badge banned">🚫 Banni</span>`:
+      role.includes('super')||u['directeur général']==='super_admin'?`<span class="role-badge superadmin">⚡ Super Admin</span>`:
+      role==='admin'?`<span class="role-badge admin">🛡️ Admin</span>`:
+      `<span class="role-badge user">👤 User</span>`;
+    return `<tr>
+      <td><div class="user-cell"><div class="user-av">${av}</div><div><div class="user-av-name">${u.prenom||''} ${u.nom||''} ${isSelf?'<span style="color:var(--green);font-size:10px">(Moi)</span>':''}</div><div class="user-av-email">${u.telephone||''}</div></div></div></td>
+      <td style="color:var(--texte2);font-size:12px">${u.email||'—'}</td>
+      <td>${roleBadge}</td>
+      <td><span class="status-dot ${u.enLigne?'online':'offline'}"></span>${u.enLigne?'En ligne':'Hors ligne'}</td>
+      <td style="color:var(--texte3);font-size:11px;font-family:var(--mono)">${u.date_inscription?new Date(u.date_inscription).toLocaleDateString('fr-FR'):'—'}</td>
+      <td style="color:var(--yellow);font-weight:700;font-family:var(--mono)">${(u.akit_coin||0).toLocaleString()} A</td>
+      <td><div class="row-actions">
+        ${!isSelf?`<button class="row-btn danger" onclick="banUser('${u.id}','${u.prenom}')">${u.banni?'✅ Débannir':'🚫 Bannir'}</button>`:''}
+        <button class="row-btn" onclick="openRoleModal('${u.id}','${u.prenom}','${role}')">🛡️ Rôle</button>
+        <button class="row-btn success" onclick="openCoinsModal('${u.id}','${u.prenom}',${u.akit_coin||0})">💰 Coins</button>
+        ${!isSelf?`<button class="row-btn danger" onclick="deleteUser('${u.id}','${u.prenom}')">🗑️ Suppr.</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('usersPagInfo').textContent=`${users.length} utilisateur(s)`;
+  const totalPages=Math.ceil(users.length/ITEMS_PER_PAGE);
+  const pagBtns=document.getElementById('usersPagBtns');
+  pagBtns.innerHTML=Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===usersPage?'active':''}" onclick="usersPage=${i+1};renderUsersTable(filteredUsers||allUsers)">${i+1}</button>`).join('');
+}
+let filteredUsers=null;
+window.filterUsers=q=>{
+  filteredUsers=q?allUsers.filter(u=>`${u.prenom} ${u.nom} ${u.email}`.toLowerCase().includes(q.toLowerCase())):null;
+  usersPage=1;renderUsersTable(filteredUsers||allUsers);
+};
+
+// ===== USER ACTIONS =====
+window.banUser=async(uid,name)=>{
+  const user=allUsers.find(u=>u.id===uid);if(!user)return;
+  const newBan=!user.banni;
+  if(!confirm(`${newBan?'Bannir':'Débannir'} ${name} ?`))return;
+  await updateDoc(doc(db,'users',uid),{banni:newBan});
+  user.banni=newBan;
+  toast(`${name} ${newBan?'banni':'débanni'} ✅`,newBan?'error':'info');
+  addLog(`${newBan?'BAN':'UNBAN'} : ${name} (${uid})`);
+  renderUsersTable(filteredUsers||allUsers);
+};
+window.deleteUser=async(uid,name)=>{
+  if(!confirm(`⚠️ SUPPRIMER définitivement ${name} ? Cette action est irréversible !`))return;
+  if(!confirm(`Dernière confirmation : supprimer ${name} ?`))return;
+  try{
+    await deleteDoc(doc(db,'users',uid));
+    allUsers=allUsers.filter(u=>u.id!==uid);
+    renderUsersTable(filteredUsers||allUsers);
+    toast(`${name} supprimé`,'error');
+    addLog(`DELETE USER : ${name} (${uid})`);
+    loadDashboard();
+  }catch(e){toast('Erreur : '+e.message,'error');}
+};
+
+// ===== ROLE MODAL =====
+window.openRoleModal=(uid,name,currentRole)=>{
+  document.getElementById('modalTitle').textContent=`🛡️ Changer le rôle de ${name}`;
+  document.getElementById('modalBody').innerHTML=`
+    <p style="color:var(--texte2);font-size:13px;margin-bottom:16px">Rôle actuel : <strong style="color:var(--texte)">${currentRole}</strong></p>
+    <select class="modal-select" id="newRole">
+      <option value="user" ${currentRole==='user'?'selected':''}>👤 Utilisateur</option>
+      <option value="admin" ${currentRole==='admin'?'selected':''}>🛡️ Administrateur</option>
+      <option value="moderator" ${currentRole==='moderator'?'selected':''}>🔧 Modérateur</option>
+    </select>
+    <button class="modal-btn primary" onclick="confirmRoleChange('${uid}','${name}')">✅ Confirmer</button>
+    <button class="modal-btn cancel" onclick="closeModal()">Annuler</button>
+  `;
+  openModal();
+};
+window.confirmRoleChange=async(uid,name)=>{
+  const newRole=document.getElementById('newRole').value;
+  await updateDoc(doc(db,'users',uid),{role:newRole});
+  const user=allUsers.find(u=>u.id===uid);if(user)user.role=newRole;
+  closeModal();renderUsersTable(filteredUsers||allUsers);
+  toast(`Rôle de ${name} → ${newRole} ✅`,'info');
+  addLog(`ROLE CHANGE : ${name} → ${newRole}`);
+};
+
+// ===== COINS MODAL =====
+window.openCoinsModal=(uid,name,current)=>{
+  document.getElementById('modalTitle').textContent=`💰 Gérer les Coins de ${name}`;
+  document.getElementById('modalBody').innerHTML=`
+    <p style="color:var(--texte2);font-size:13px;margin-bottom:16px">Solde actuel : <strong style="color:var(--yellow)">${current.toLocaleString()} AKIT Coins</strong></p>
+    <select class="modal-select" id="coinsAction">
+      <option value="add">➕ Ajouter des Coins</option>
+      <option value="set">🔧 Définir un solde</option>
+      <option value="remove">➖ Retirer des Coins</option>
+    </select>
+    <input class="modal-inp" id="coinsAmount" type="number" placeholder="Montant..." min="1"/>
+    <input class="modal-inp" id="coinsReason" placeholder="Motif (optionnel)..."/>
+    <button class="modal-btn primary" onclick="confirmCoinsChange('${uid}','${name}',${current})">💰 Confirmer</button>
+    <button class="modal-btn cancel" onclick="closeModal()">Annuler</button>
+  `;
+  openModal();
+};
+window.confirmCoinsChange=async(uid,name,current)=>{
+  const action=document.getElementById('coinsAction').value;
+  const amount=parseInt(document.getElementById('coinsAmount').value);
+  const reason=document.getElementById('coinsReason').value||'Ajustement admin';
+  if(!amount||amount<1){toast('Montant invalide','error');return;}
+  let newBalance=current;
+  if(action==='add')newBalance=current+amount;
+  else if(action==='set')newBalance=amount;
+  else if(action==='remove')newBalance=Math.max(0,current-amount);
+  await updateDoc(doc(db,'users',uid),{akit_coin:newBalance});
+  const user=allUsers.find(u=>u.id===uid);if(user)user.akit_coin=newBalance;
+  // Log transaction admin
+  const tx={type:action==='remove'?'out':'in',label:`Admin: ${reason}`,amount:Math.abs(newBalance-current),date:new Date().toLocaleDateString('fr-FR'),user:name,userId:uid};
+  addBankTx(tx);
+  closeModal();renderUsersTable(filteredUsers||allUsers);
+  toast(`${name}: ${newBalance.toLocaleString()} Coins ✅`,'info');
+  addLog(`COINS ${action.toUpperCase()} : ${name} → ${newBalance} (${reason})`);
+};
+
+// ===== EXPORT USERS =====
+window.exportUsers=()=>{
+  const csv=['ID,Prénom,Nom,Email,Téléphone,Rôle,Coins,En ligne,Date inscription',...allUsers.map(u=>`${u.id},${u.prenom||''},${u.nom||''},${u.email||''},${u.telephone||''},${u.role||'user'},${u.akit_coin||0},${u.enLigne?'Oui':'Non'},${u.date_inscription||''}`)].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`akit_users_${Date.now()}.csv`;a.click();
+  toast('Utilisateurs exportés en CSV ✅','info');addLog('EXPORT : users CSV');
+};
+window.exportData=()=>exportUsers();
+
+// ===== POSTS =====
+async function loadPosts(){
+  if(allPosts.length===0){const snap=await getDocs(collection(db,'posts'));allPosts=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  renderPostsGrid(allPosts);
+}
+function renderPostsGrid(posts){
+  const grid=document.getElementById('postsGrid');
+  if(posts.length===0){grid.innerHTML=`<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-text">Aucune publication</div></div>`;return;}
+  const sorted=[...posts].sort((a,b)=>(b.date?.toDate?.()??new Date(0))-(a.date?.toDate?.()??new Date(0)));
+  grid.innerHTML=sorted.slice(0,40).map(p=>{
+    const u=allUsers.find(u=>u.id===p.userId)||{prenom:'?'};
+    return `<div class="post-card">
+      <div class="post-card-media">${p.mediaUrl&&p.mediaType==='img'?`<img src="${p.mediaUrl}"/>`:`<div class="post-card-media-placeholder">📝</div>`}</div>
+      <div class="post-card-body">
+        <div class="post-card-author"><div class="post-card-author-av">${(u.prenom?.[0]||'?').toUpperCase()}</div><div class="post-card-author-name">${u.prenom||'?'} ${u.nom||''}</div><span style="margin-left:auto;font-size:10px;color:var(--texte3)">${fmtDate(p.date)}</span></div>
+        <div class="post-card-text">${p.texte||'[Pas de texte]'}</div>
+        <div class="post-card-stats"><span>❤️ ${p.likes||0}</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span></div>
+        <div class="post-card-actions">
+          <button class="row-btn danger" onclick="deletePost('${p.id}')">🗑️ Supprimer</button>
+          <button class="row-btn" onclick="viewPostDetail('${p.id}')">👁️ Voir</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+let filteredPosts=null;
+window.filterPosts=q=>{filteredPosts=q?allPosts.filter(p=>(p.texte||'').toLowerCase().includes(q.toLowerCase())):null;renderPostsGrid(filteredPosts||allPosts);};
+window.deletePost=async(id)=>{
+  if(!confirm('Supprimer cette publication ?'))return;
+  await deleteDoc(doc(db,'posts',id));
+  allPosts=allPosts.filter(p=>p.id!==id);
+  renderPostsGrid(filteredPosts||allPosts);
+  toast('Publication supprimée','error');addLog('DELETE POST : '+id);
+};
+window.deleteAllFlaggedPosts=()=>{toast('Aucun post signalé pour l\'instant','info');};
+window.viewPostDetail=(id)=>{
+  const p=allPosts.find(x=>x.id===id);if(!p)return;
+  const u=allUsers.find(u=>u.id===p.userId)||{prenom:'?',nom:''};
+  document.getElementById('modalTitle').textContent='📄 Détail publication';
+  document.getElementById('modalBody').innerHTML=`
+    <div style="margin-bottom:12px"><strong>Auteur:</strong> ${u.prenom} ${u.nom}</div>
+    <div style="margin-bottom:12px"><strong>Date:</strong> ${fmtDate(p.date)}</div>
+    <div style="margin-bottom:12px;color:var(--texte2)">${p.texte||'[Pas de texte]'}</div>
+    ${p.mediaUrl&&p.mediaType==='img'?`<img src="${p.mediaUrl}" style="width:100%;border-radius:10px;margin-bottom:12px"/>`:'' }
+    <div style="display:flex;gap:12px;font-size:13px;color:var(--texte2);margin-bottom:16px"><span>❤️ ${p.likes||0} J'aime</span><span>💬 ${(p.comments||[]).length} commentaires</span><span>🔁 ${p.shares||0} partages</span></div>
+    <button class="modal-btn danger" onclick="deletePost('${p.id}');closeModal()">🗑️ Supprimer</button>
+    <button class="modal-btn cancel" onclick="closeModal()">Fermer</button>
+  `;
+  openModal();
+};
+
+// ===== STORIES =====
+async function loadStories(){
+  if(allStories.length===0){const snap=await getDocs(collection(db,'stories'));allStories=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  const grid=document.getElementById('storiesGrid');
+  const now=Date.now();
+  const active=allStories.filter(s=>{const dt=s.date?.toDate?s.date.toDate():new Date(s.date||0);return now-dt.getTime()<86400000;});
+  if(active.length===0){grid.innerHTML=`<div class="empty-state"><span class="empty-state-icon">📸</span><div class="empty-state-text">Aucune story active</div></div>`;return;}
+  grid.innerHTML=active.map(s=>{const u=allUsers.find(u=>u.id===s.userId)||{prenom:'?'};return `<div class="post-card"><div class="post-card-media">${s.imgUrl?`<img src="${s.imgUrl}"/>`:`<div class="post-card-media-placeholder">📸</div>`}</div><div class="post-card-body"><div class="post-card-author"><div class="post-card-author-av">${(u.prenom?.[0]||'?').toUpperCase()}</div><div class="post-card-author-name">${u.prenom||'?'}</div></div><div class="post-card-stats"><span>👁️ ${s.vues||0} vues</span><span>💬 ${(s.comments||[]).length}</span></div><div class="post-card-actions"><button class="row-btn danger" onclick="deleteStory('${s.id}')">🗑️ Supprimer</button></div></div></div>`;}).join('');
+}
+window.deleteStory=async(id)=>{
+  if(!confirm('Supprimer cette story ?'))return;
+  await deleteDoc(doc(db,'stories',id));
+  allStories=allStories.filter(s=>s.id!==id);loadStories();
+  toast('Story supprimée','error');addLog('DELETE STORY : '+id);
+};
+
+// ===== ACTIVITY =====
+function loadActivity(){
+  const onlineUsers=allUsers.filter(u=>u.enLigne);
+  document.getElementById('realtimeUsers').innerHTML=onlineUsers.length===0?
+    '<div class="empty-state" style="padding:24px"><span class="empty-state-icon" style="font-size:32px">💤</span><div class="empty-state-text">Aucun utilisateur en ligne</div></div>':
+    `<div style="display:flex;flex-wrap:wrap;gap:10px">${onlineUsers.map(u=>`<div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)"></div><span style="font-size:13px;font-weight:600">${u.prenom||'?'} ${u.nom||''}</span></div>`).join('')}</div>`;
+  const recentMsgs=document.getElementById('realtimeMsgs');
+  getDocs(query(collection(db,'lastMessages'),limit(20))).then(snap=>{
+    if(snap.empty){recentMsgs.innerHTML='<div class="empty-state" style="padding:24px"><span class="empty-state-icon" style="font-size:32px">💬</span><div class="empty-state-text">Aucun message récent</div></div>';return;}
+    recentMsgs.innerHTML=snap.docs.map(d=>{const m=d.data();const exp=allUsers.find(u=>u.id===m.exp)||{prenom:'?'};const dest=allUsers.find(u=>u.id===m.dest)||{prenom:'?'};return `<div class="tx-item"><div class="tx-ico in">💬</div><div class="tx-info"><div class="tx-label">${exp.prenom||'?'} → ${dest.prenom||'?'}</div><div class="tx-date">${m.contenu?m.contenu.substring(0,50):'...'}</div></div><div class="tx-date">${fmtDate(m.date)}</div></div>`;}).join('');
+  });
+}
+
+// ===== BANK =====
+let bankData={balance:0,history:[],totalIn:0,totalOut:0};
+async function loadBank(){
+  try{
+    const snap=await getDoc(doc(db,'adminBank',currentAdmin.id));
+    if(snap.exists())bankData={...bankData,...snap.data()};
+    else{bankData.balance=currentAdmin.akit_coin||0;}
+    renderBank();
+  }catch{bankData.balance=currentAdmin.akit_coin||0;renderBank();}
+}
+function renderBank(){
+  document.getElementById('bankBalance').textContent=(bankData.balance||0).toLocaleString();
+  document.getElementById('bankTotalIn').textContent=(bankData.totalIn||0).toLocaleString()+' A';
+  document.getElementById('bankTotalOut').textContent=(bankData.totalOut||0).toLocaleString()+' A';
+  document.getElementById('bankTxCount').textContent=(bankData.history||[]).length;
+  const txTable=document.getElementById('bankTxTable');
+  const hist=bankData.history||[];
+  txTable.innerHTML=hist.length===0?`<div class="empty-state" style="padding:32px"><span class="empty-state-icon">💳</span><div class="empty-state-text">Aucune transaction</div></div>`:
+    [...hist].reverse().slice(0,30).map(tx=>`<div class="tx-item"><div class="tx-ico ${tx.type}">${tx.type==='in'?'💰':tx.type==='pending'?'⏳':'💸'}</div><div class="tx-info"><div class="tx-label">${tx.label||'Transaction'}</div><div class="tx-date">${tx.date||'—'}${tx.user?` · ${tx.user}`:''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><div class="tx-amount ${tx.type}">${tx.type==='in'?'+':'-'}${(tx.amount||0).toLocaleString()} A</div><span class="tx-status confirmed">Confirmé</span></div></div>`).join('');
+}
+async function addBankTx(tx){
+  bankData.history=bankData.history||[];
+  bankData.history.push(tx);
+  if(tx.type==='in')bankData.totalIn=(bankData.totalIn||0)+tx.amount;
+  else if(tx.type==='out')bankData.totalOut=(bankData.totalOut||0)+tx.amount;
+  try{await setDoc(doc(db,'adminBank',currentAdmin.id),bankData);}catch{}
+  renderBank();
+}
+window.openBankModal=(type)=>{
+  const titles={credit:'💰 Créditer le compte',debit:'💸 Débiter le compte',transfer:'📤 Transférer des Coins'};
+  document.getElementById('modalTitle').textContent=titles[type];
+  const isTransfer=type==='transfer';
+  document.getElementById('modalBody').innerHTML=`
+    <p style="color:var(--texte2);font-size:13px;margin-bottom:16px">Solde actuel : <strong style="color:var(--yellow)">${bankData.balance.toLocaleString()} AKIT Coins</strong></p>
+    ${isTransfer?`<input class="modal-inp" id="bankDest" placeholder="Email ou ID du destinataire..."/>`:'' }
+    <input class="modal-inp" id="bankAmount" type="number" placeholder="Montant (AKIT Coins)..." min="1"/>
+    <input class="modal-inp" id="bankNote" placeholder="Motif..."/>
+    <button class="modal-btn ${type==='debit'?'danger':'primary'}" onclick="confirmBankAction('${type}')">✅ Confirmer</button>
+    <button class="modal-btn cancel" onclick="closeModal()">Annuler</button>
+  `;
+  openModal();
+};
+window.confirmBankAction=async(type)=>{
+  const amount=parseInt(document.getElementById('bankAmount').value);
+  const note=document.getElementById('bankNote').value||'Transaction admin';
+  if(!amount||amount<1){toast('Montant invalide','error');return;}
+  const now=new Date().toLocaleDateString('fr-FR')+' '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(type==='credit'){
+    bankData.balance+=amount;
+    await addBankTx({type:'in',label:note,amount,date:now});
+    toast(`+${amount.toLocaleString()} Coins crédités ✅`,'info');
+    addLog(`BANK CREDIT : +${amount} (${note})`);
+  }else if(type==='debit'){
+    if(bankData.balance<amount){toast('Solde insuffisant','error');return;}
+    bankData.balance-=amount;
+    await addBankTx({type:'out',label:note,amount,date:now});
+    toast(`-${amount.toLocaleString()} Coins débités`,'error');
+    addLog(`BANK DEBIT : -${amount} (${note})`);
+  }else if(type==='transfer'){
+    const destStr=document.getElementById('bankDest').value.trim();
+    const destUser=allUsers.find(u=>u.email===destStr||u.id===destStr);
+    if(!destUser){toast('Destinataire introuvable','error');return;}
+    if(bankData.balance<amount){toast('Solde insuffisant','error');return;}
+    bankData.balance-=amount;
+    const newCoins=(destUser.akit_coin||0)+amount;
+    await updateDoc(doc(db,'users',destUser.id),{akit_coin:newCoins});
+    destUser.akit_coin=newCoins;
+    await addBankTx({type:'out',label:`Transfert → ${destUser.prenom} ${destUser.nom}: ${note}`,amount,date:now,user:`${destUser.prenom} ${destUser.nom}`});
+    toast(`${amount.toLocaleString()} Coins transférés à ${destUser.prenom} ✅`,'info');
+    addLog(`BANK TRANSFER : ${amount} → ${destUser.prenom} (${note})`);
+  }
+  try{await updateDoc(doc(db,'users',currentAdmin.id),{akit_coin:bankData.balance});}catch{}
+  closeModal();
+};
+
+// ===== TRANSACTIONS =====
+async function loadTransactions(){
+  const body=document.getElementById('txTableBody');
+  try{
+    const snap=await getDocs(collection(db,'mobilemoney'));
+    if(snap.empty){body.innerHTML=`<tr><td colspan="6"><div class="empty-state"><span class="empty-state-icon">💳</span><div class="empty-state-text">Aucune transaction Mobile Money</div></div></td></tr>`;return;}
+    let rows='';
+    snap.forEach(d=>{
+      const data=d.data();const uid=d.id;const user=allUsers.find(u=>u.id===uid)||{prenom:'?',nom:''};
+      ['om','mtn','mpesa'].forEach(p=>{
+        if(data[p]?.connected){
+          const hist=data[p].hist||[];
+          hist.slice(-5).forEach(tx=>{
+            rows+=`<tr><td>${user.prenom||'?'} ${user.nom||''}</td><td>${p.toUpperCase()}</td><td><span class="role-badge ${tx.type==='in'?'admin':'user'}">${tx.type==='in'?'Entrée':'Sortie'}</span></td><td style="font-weight:700;color:${tx.type==='in'?'var(--green)':'var(--red)'}">${tx.type==='in'?'+':'-'}${(tx.amount||0).toLocaleString()} FCFA</td><td style="font-size:11px;color:var(--texte3)">${tx.date||'—'}</td><td><span class="tx-status confirmed">Confirmé</span></td></tr>`;
+          });
+        }
+      });
+    });
+    body.innerHTML=rows||`<tr><td colspan="6"><div class="empty-state" style="padding:24px"><span class="empty-state-icon" style="font-size:28px">📭</span><div class="empty-state-text">Aucune transaction</div></div></td></tr>`;
+  }catch(e){body.innerHTML=`<tr><td colspan="6" style="color:var(--red);padding:16px">Erreur : ${e.message}</td></tr>`;}
+}
+
+// ===== MOBILE MONEY PANEL =====
+async function loadMobileMoneyPanel(){
+  const snap=await getDocs(collection(db,'mobilemoney'));
+  let om=0,mtn=0,mpesa=0;
+  snap.forEach(d=>{const data=d.data();if(data.om?.connected)om++;if(data.mtn?.connected)mtn++;if(data.mpesa?.connected)mpesa++;});
+  document.getElementById('mmOM').textContent=om;document.getElementById('mmMTN').textContent=mtn;document.getElementById('mmMPesa').textContent=mpesa;
+  document.getElementById('mmList').innerHTML=snap.docs.map(d=>{const data=d.data();const uid=d.id;const user=allUsers.find(u=>u.id===uid)||{prenom:'?',nom:''};const providers=[];if(data.om?.connected)providers.push(`🟠 OM: ${data.om.phone}`);if(data.mtn?.connected)providers.push(`🟡 MTN: ${data.mtn.phone}`);if(data.mpesa?.connected)providers.push(`🟢 M-Pesa: ${data.mpesa.phone}`);if(providers.length===0)return '';return `<div class="tx-item"><div class="tx-ico in" style="font-size:20px">📱</div><div class="tx-info"><div class="tx-label">${user.prenom||'?'} ${user.nom||''}</div><div class="tx-date">${providers.join(' · ')}</div></div></div>`;}).filter(Boolean).join('')||'<div class="empty-state" style="padding:24px"><div class="empty-state-text">Aucun compte connecté</div></div>';
+}
+
+// ===== ROLES PANEL =====
+let filteredRoles=null;
+async function loadRoles(){
+  if(allUsers.length===0){const snap=await getDocs(collection(db,'users'));allUsers=snap.docs.map(d=>({id:d.id,...d.data()}));}
+  renderRolesTable(allUsers);
+}
+function renderRolesTable(users){
+  document.getElementById('rolesTableBody').innerHTML=users.map(u=>{
+    const role=(u.role||'user').toLowerCase();
+    const isSelf=u.id===currentAdmin?.id;
+    const roleBadge=u['directeur général']==='super_admin'?`<span class="role-badge superadmin">⚡ Super Admin</span>`:role==='admin'?`<span class="role-badge admin">🛡️ Admin</span>`:role==='moderator'?`<span class="role-badge user">🔧 Modérateur</span>`:`<span class="role-badge user">👤 User</span>`;
+    const av=u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase();
+    return `<tr><td><div class="user-cell"><div class="user-av">${av}</div><div><div class="user-av-name">${u.prenom||''} ${u.nom||''} ${isSelf?'<span style="color:var(--green);font-size:10px">(Moi)</span>':''}</div><div class="user-av-email">${u.email||''}</div></div></div></td><td>${roleBadge}</td><td style="color:var(--yellow);font-family:var(--mono)">${(u.akit_coin||0).toLocaleString()} A</td><td><div class="row-actions">${!isSelf?`<button class="row-btn" onclick="openRoleModal('${u.id}','${u.prenom}','${role}')">✏️ Changer rôle</button>`:'<span style="color:var(--texte3);font-size:12px">Votre compte</span>'}</div></td></tr>`;
+  }).join('');
+}
+window.filterRoles=q=>{filteredRoles=q?allUsers.filter(u=>`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase())):null;renderRolesTable(filteredRoles||allUsers);};
+
+// ===== SETTINGS =====
+window.saveSetting=async(key,val)=>{try{await setDoc(doc(db,'appSettings','global'),{[key]:val},{merge:true});toast(`${key} : ${val?'activé':'désactivé'}`,'info');addLog(`SETTING ${key} → ${val}`);}catch(e){toast('Erreur : '+e.message,'error');}};
+window.saveAllSettings=()=>{toast('Paramètres sauvegardés ✅','info');addLog('SETTINGS SAVED');};
+window.saveCoinSettings=async()=>{
+  const reg=parseInt(document.getElementById('setCoinsReg').value)||100;
+  const ref=parseInt(document.getElementById('setCoinsRef').value)||500;
+  const fil=parseInt(document.getElementById('setCoinsFilleul').value)||250;
+  await setDoc(doc(db,'appSettings','coins'),{coinsInscription:reg,coinsParrain:ref,coinsFilleul:fil},{merge:true});
+  toast('Paramètres Coins sauvegardés ✅','info');addLog(`COIN SETTINGS: reg=${reg}, parrain=${ref}, filleul=${fil}`);
+};
+window.purgeStories=async()=>{
+  const now=Date.now();let count=0;
+  for(const s of allStories){const dt=s.date?.toDate?s.date.toDate():new Date(s.date||0);if(now-dt.getTime()>86400000){await deleteDoc(doc(db,'stories',s.id));count++;}}
+  allStories=allStories.filter(s=>{const dt=s.date?.toDate?s.date.toDate():new Date(s.date||0);return now-dt.getTime()<=86400000;});
+  toast(`${count} stories expirées supprimées ✅`,'info');addLog(`PURGE STORIES : ${count} supprimées`);
+};
+window.purgeNotifications=async()=>{
+  const snap=await getDocs(query(collection(db,'notifications'),where('lu','==',true)));
+  let count=0;for(const d of snap.docs){await deleteDoc(doc(db,'notifications',d.id));count++;}
+  toast(`${count} notifications supprimées ✅`,'info');addLog(`PURGE NOTIFS : ${count}`);
+};
+
+// ===== BROADCAST =====
+window.openBroadcastModal=()=>{
+  document.getElementById('modalTitle').textContent='📢 Broadcast — Notifier tous';
+  document.getElementById('modalBody').innerHTML=`
+    <p style="color:var(--texte2);font-size:13px;margin-bottom:16px">Ce message sera envoyé à tous les <strong>${allUsers.length}</strong> utilisateurs.</p>
+    <textarea class="modal-inp" id="broadcastContent" rows="4" placeholder="Votre message de broadcast..." style="resize:none;min-height:100px;"></textarea>
+    <button class="modal-btn primary" onclick="confirmBroadcast()">📢 Envoyer maintenant</button>
+    <button class="modal-btn cancel" onclick="closeModal()">Annuler</button>
+  `;
+  openModal();
+};
+window.sendBroadcast=()=>openBroadcastModal();
+window.confirmBroadcast=async()=>{
+  const msg=document.getElementById('broadcastContent').value.trim();
+  if(!msg){toast('Message vide','error');return;}
+  const btn=document.querySelector('#modalBody .modal-btn.primary');btn.disabled=true;btn.textContent='Envoi...';
+  let count=0;
+  for(const user of allUsers){
+    if(user.id===currentAdmin.id)continue;
+    try{await addDoc(collection(db,'notifications'),{userId:user.id,type:'broadcast',texte:`📢 Admin : ${msg}`,date:serverTimestamp(),lu:false});count++;}catch{}
+  }
+  closeModal();toast(`Broadcast envoyé à ${count} utilisateurs ✅`,'info');addLog(`BROADCAST : "${msg.substring(0,50)}" → ${count} users`);
+};
+
+// ===== MODAL =====
+window.openModal=()=>document.getElementById('ov').classList.add('open');
+window.closeModal=()=>document.getElementById('ov').classList.remove('open');
+
+</script>
+</body>
+</html>
