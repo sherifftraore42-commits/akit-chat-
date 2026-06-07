@@ -1860,9 +1860,6 @@ if(m.type==="image"){
     }
   });
 });
-    z.scrollTop=z.scrollHeight;
-    snap2.docs.forEach(d=>{const m=d.data();if(m.disparait){const dt=m.date?.toDate?m.date.toDate():new Date(m.date||0);if(Date.now()-dt.getTime()>30000)deleteDoc(doc(db,"messages",convId,"msgs",d.id));}});
-  });
   if(unsubTyping){unsubTyping();unsubTyping=null;}
   const typingRef=doc(db,"typing",convId);
   unsubTyping=onSnapshot(typingRef,snap=>{if(!snap.exists()){document.getElementById("typingIndicator").classList.remove("show");return;}const isTyping=snap.data()[uid]===true;if(isTyping){document.getElementById("typingName").textContent=`${u.prenom||"?"} écrit...`;document.getElementById("typingIndicator").classList.add("show");document.getElementById("msgsZ").scrollTop=99999;}else document.getElementById("typingIndicator").classList.remove("show");});
