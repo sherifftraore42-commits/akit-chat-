@@ -1170,51 +1170,29 @@ const CL_CLOUD="dvv8gytfp",CL_PRESET="akit_chat_upload";
 // ===== CAMPAY CONFIG (token pré-obtenu) =====
 // L'erreur CORS vient du fait que campay.net ne permet pas les appels directs depuis navigateur.
 // Solution : On utilise le token déjà obtenu + un proxy allorigins pour les requêtes.
-const CAMPAY_TOKEN = "03f1cee7cddfed67c64eef581cddc1ad6f050db7";
-const CAMPAY_BASE = "https://campay.net";
-const CAMPAY_PROXY = "https://api.allorigins.win/raw?url=";
 
+// ===== CAMPAY VIA API VERCEL =====
 async function campayRequest(endpoint, method, body) {
-  const url = CAMPAY_BASE + endpoint;
+  const url = `/api/campay?endpoint=${encodeURIComponent(endpoint)}`;
   const opts = {
     method: method || "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Token ${CAMPAY_TOKEN}`
-    }
+    headers: { "Content-Type": "application/json" }
   };
   if (body) opts.body = JSON.stringify(body);
-
-  // Essai 1: direct (peut marcher depuis mobile/serveur)
-  try {
-    const r = await fetch(url, { ...opts, signal: AbortSignal.timeout(8000) });
-    if (r.ok || r.status < 500) {
-      return await r.json();
-    }
-  } catch (e) {
-    console.log("Direct Campay failed, trying proxy...", e.message);
-  }
-
-  // Essai 2: via proxy allorigins
-  try {
-    const proxyUrl = CAMPAY_PROXY + encodeURIComponent(url);
-    const r2 = await fetch(proxyUrl, { ...opts, signal: AbortSignal.timeout(12000) });
-    const txt = await r2.text();
-    return JSON.parse(txt);
-  } catch (e) {
-    console.log("Proxy Campay failed:", e.message);
-  }
-
-  // Essai 3: corsproxy.io
-  try {
-    const proxyUrl2 = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-    const r3 = await fetch(proxyUrl2, { ...opts, signal: AbortSignal.timeout(12000) });
-    return await r3.json();
-  } catch (e) {
-    throw new Error("Service Campay temporairement inaccessible. Réessayez dans quelques instants.");
-  }
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error("Erreur API " + r.status);
+  return await r.json();
 }
 
+async function getCampayToken() {
+  try {
+    const data = await campayRequest('api/token/', 'POST', {
+      username: CAMPAY_CONFIG.username,
+      password: CAMPAY_CONFIG.password
+    });
+    return data.token || null;
+  } catch { return null; }
+}
 // ===== COMPRESSION =====
 function compresserImage(file,maxW=900,qualite=0.72){return new Promise(resolve=>{if(!file.type.startsWith('image/')){resolve(file);return;}const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{const canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);canvas.toBlob(blob=>{resolve(new File([blob],file.name.replace(/\.[^/.]+$/,'.jpg'),{type:'image/jpeg'}));},'image/jpeg',qualite);};img.onerror=()=>resolve(file);img.src=e.target.result;};reader.onerror=()=>resolve(file);reader.readAsDataURL(file);});}
 const compresserAvatar=f=>compresserImage(f,400,0.8);
