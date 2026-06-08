@@ -1773,8 +1773,8 @@ window.openConv=async(uid,type='direct')=>{
     const z=document.getElementById("msgsZ");
     if(snap2.empty){z.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px;font-size:13px'>Commencez la conversation !</p>`;return;}
     const uMap2=await getUsers();const nomDest=uMap2[uid]?.prenom||"Eux";
-    z.innerHTML=snap2const m=d.data();const mine=m.exp===UC.id;const msgId=d.id;
-      const nomDest2=uMap2[uid]?.prenom||"Eux";
+    z.innerHTML=snap2.docs.map(d=>{const m=d.data();const mine=m.exp===UC.id;const msgId=d.id;
+    const nomDest2=uMap2[uid]?.prenom||"Eux";
       let replyHtml='';
       if(m.replyTo){replyHtml=`<div class="msg-reply-preview"><div class="msg-reply-from">${m.replyFrom||'Message'}</div><div class="msg-reply-text">${(m.replyTo||'').substring(0,60)}${(m.replyTo||'').length>60?'...':''}</div></div>`;}
       if(m.type==="audio"){const waveId='wv_'+msgId;const dur=m.durStr||'0:00';return `<div class="msg-row-wrap ${mine?'mine':''}"><div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px" data-id="${msgId}" data-txt="🎤 Message vocal" data-from="${mine?'Moi':nomDest2}" ontouchstart="startSwipe(event)" ontouchmove="moveSwipe(event)" ontouchend="endSwipe(event)"><div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${dur}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div></div>`;}
