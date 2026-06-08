@@ -1172,17 +1172,16 @@ const CL_CLOUD="dvv8gytfp",CL_PRESET="akit_chat_upload";
 // Solution : On utilise le token déjà obtenu + un proxy allorigins pour les requêtes.
 
 // ===== CAMPAY VIA API VERCEL =====
-async function campayRequest(endpoint, method, body) {
+async function campayRequest(endpoint = 'token', method = 'POST', body = null) {
   const url = `/api/campay?endpoint=${encodeURIComponent(endpoint)}`;
   const opts = {
-    method: method || "GET",
+    method,
     headers: { "Content-Type": "application/json" }
   };
-  if (body) opts.body = JSON.stringify(body);
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
   const r = await fetch(url, opts);
-  const text = await r.text();
-  try { return JSON.parse(text); }
-  catch { throw new Error("Réponse invalide: " + text.substring(0, 100)); }
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return await r.json();
 }
 // ===== COMPRESSION =====
 function compresserImage(file,maxW=900,qualite=0.72){return new Promise(resolve=>{if(!file.type.startsWith('image/')){resolve(file);return;}const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{const canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);canvas.toBlob(blob=>{resolve(new File([blob],file.name.replace(/\.[^/.]+$/,'.jpg'),{type:'image/jpeg'}));},'image/jpeg',qualite);};img.onerror=()=>resolve(file);img.src=e.target.result;};reader.onerror=()=>resolve(file);reader.readAsDataURL(file);});}
@@ -1218,7 +1217,13 @@ const mmState={
   mpesa:{connected:false,balance:0,phone:"",hist:[]},
   coin:{balance:0,hist:[]}
 };
-
+async function saveMM() {
+  try {
+    await setDoc(doc(db, "mobilemoney", UC.id), mmState, { merge: true });
+  } catch(e) {
+    console.error("saveMM error:", e);
+  }
+}
 // ===== CACHE USERS =====
 async function getUsers(){const now=Date.now();if(uMapCache&&(now-uMapCacheTime)<CACHE_TTL)return uMapCache;const snap=await getDocs(collection(db,"users"));uMapCache={};snap.forEach(d=>uMapCache[d.id]=d.data());uMapCacheTime=now;return uMapCache;}
 
@@ -1798,8 +1803,47 @@ window.openMobileMoney=()=>{ouv("ovMobileMoney");refreshMMDisplay();};
 window.switchMM=(provider,btn)=>{currentMmProvider=provider;document.querySelectorAll('.mm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.mm-form').forEach(f=>f.classList.remove('active'));document.getElementById(`mm-${provider}`).classList.add('active');refreshMMDisplay();};
 function refreshMMDisplay(){['om','mtn','mpesa'].forEach(p=>{const s=mmState[p];document.getElementById(`${p}-connect-zone`).style.display=s.connected?"none":"block";document.getElementById(`${p}-panel`).style.display=s.connected?"block":"none";if(s.connected){document.getElementById(`${p}-balance`).textContent=(s.balance||0).toLocaleString()+" FCFA";renderMMHist(p);}});}
 function renderMMHist(p){const el=document.getElementById(`${p}-hist`);const hist=mmState[p].hist||[];if(hist.length===0){el.innerHTML=`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:8px">Aucune transaction</p>`;return;}el.innerHTML=hist.slice(-10).reverse().map(h=>`<div class="mm-hist-item"><div class="mm-hist-ico ${h.type}">${h.type==='out'?'💸':'💰'}</div><div class="mm-hist-info"><div class="mm-hist-name">${h.label}</div><div class="mm-hist-date">${h.date||""} ${h.ref?'· Ref: '+h.ref.substring(0,8)+'...':''}</div></div><div class="mm-hist-amount ${h.type}">${h.type==='out'?'-':'+'}${(h.amount||0).toLocaleString()} FCFA</div></div>`).join("");}
-window.connecterMobileMoney=async(provider)=>{const providerLabel=provider==='om'?'Orange Money':provider==='mtn'?'MTN MoMo':'M-Pesa';const phone=prompt(`📱 Entrez votre numéro ${providerLabel} (format: 237XXXXXXXXX) :`);if(!phone||phone.length<9){alert("❌ Numéro invalide");return;}let numFormate=phone.replace(/\s/g,'').replace(/^0/,'');if(!numFormate.startsWith('237'))numFormate='237'+numFormate;const btn=document.querySelector(`#${provider}-connect-zone .mm-connect-btn`);if(btn){btn.disabled=true;btn.textContent="⏳ Vérification...";}try{const token=await campayRequest("token","POST",{});if(!token)throw new Error("Impossible de contacter Campay");mmState[provider]={connected:true,balance:0,phone:numFormate,hist:[]};await saveMM();refreshMMDisplay();alert(`✅ Compte ${providerLabel} connecté !\nNuméro : ${numFormate}`);}catch(e){alert("❌ Erreur : "+e.message);}finally{if(btn){btn.disabled=false;btn.textContent=`🔗 Connecter ${providerLabel}`;}}};
-window.mmRecevoir=async(provider)=>{if(provider==='coin'){const montant=prompt("💰 Montant à déposer (FCFA) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide (min 100 FCFA)");return;}const msg=`Bonjour, je souhaite acheter ${montant} FCFA de AKIT Coins.\nMon ID: ${UC.id}\nNom: ${UC.prenom} ${UC.nom}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');alert("✅ Après confirmation du paiement, vos Coins seront crédités sous 5 minutes.");return;}if(!mmState[provider]?.connected){alert("❌ Connectez d'abord votre compte "+provider.toUpperCase());return;}const montant=prompt(`💰 Montant à recevoir (FCFA, min 100) :`);if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide");return;}const amount=parseInt(montant);try{const token=await campayRequest();if(!token)throw new Error("Connexion Campay impossible");const reference=`AKIT_${UC.id.substring(0,8)}_${Date.now()}`;const resp=await fetch(`${CAMPAY_CONFIG.BASE_URL}/api/collect/`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Token ${token}`},body:JSON.stringify({amount:amount.toString(),currency:"XAF",from:mmState[provider].phone,description:`Dépôt AKIT-CHAT - ${UC.prenom}`,external_reference:reference})});const data=await resp.json();if(data.reference||data.operator_reference){const ref=data.reference||data.operator_reference;alert(`📱 Validez le paiement sur votre téléphone !\n\nNuméro : ${mmState[provider].phone}\nMontant : ${amount.toLocaleString()} FCFA`);attendreConfirmation(ref,token,async(statut)=>{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].balance=(mmState[provider].balance||0)+amount;mmState[provider].hist.push({type:'in',label:`Dépôt ${provider.toUpperCase()}`,amount,date:now,ref});await saveMM();refreshMMDisplay();alert(`✅ ${amount.toLocaleString()} FCFA reçus !`);},(errMsg)=>{alert("❌ "+errMsg);});}else{throw new Error(data.message||data.detail||JSON.stringify(data));}}catch(e){alert("❌ Erreur paiement : "+e.message);}};
+window.connecterMobileMoney = async (provider) => {
+  const providerLabel = provider === 'om' ? 'Orange Money' 
+                      : provider === 'mtn' ? 'MTN MoMo' 
+                      : 'M-Pesa';
+  
+  const phone = prompt(`📱 Entrez votre numéro ${providerLabel} (format: 237XXXXXXXXX) :`);
+  if (!phone || phone.length < 9) { alert("❌ Numéro invalide"); return; }
+  
+  let numFormate = phone.replace(/\s/g, '').replace(/^0/, '');
+  if (!numFormate.startsWith('237')) numFormate = '237' + numFormate;
+  
+  const btn = document.querySelector(`#${provider}-connect-zone .mm-connect-btn`);
+  if (btn) { btn.disabled = true; btn.textContent = "⏳ Vérification..."; }
+  
+  try {
+    // Appel au proxy Vercel pour obtenir le token
+    const tokenData = await campayRequest('token', 'POST', {});
+    if (!tokenData || !tokenData.token) throw new Error("Token non reçu de Campay");
+    
+    // Token OK → marquer comme connecté
+    mmState[provider] = { 
+      connected: true, 
+      balance: 0, 
+      phone: numFormate, 
+      hist: [] 
+    };
+    
+    await saveMM();
+    refreshMMDisplay();
+    alert(`✅ Compte ${providerLabel} connecté !\nNuméro : ${numFormate}`);
+    
+  } catch(e) {
+    alert("❌ Erreur connexion : " + e.message);
+  } finally {
+    if (btn) { 
+      btn.disabled = false; 
+      btn.textContent = `🔗 Connecter ${providerLabel}`; 
+    }
+  }
+};
+  window.mmRecevoir=async(provider)=>{if(provider==='coin'){const montant=prompt("💰 Montant à déposer (FCFA) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide (min 100 FCFA)");return;}const msg=`Bonjour, je souhaite acheter ${montant} FCFA de AKIT Coins.\nMon ID: ${UC.id}\nNom: ${UC.prenom} ${UC.nom}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');alert("✅ Après confirmation du paiement, vos Coins seront crédités sous 5 minutes.");return;}if(!mmState[provider]?.connected){alert("❌ Connectez d'abord votre compte "+provider.toUpperCase());return;}const montant=prompt(`💰 Montant à recevoir (FCFA, min 100) :`);if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Montant invalide");return;}const amount=parseInt(montant);try{const token=await campayRequest();if(!token)throw new Error("Connexion Campay impossible");const reference=`AKIT_${UC.id.substring(0,8)}_${Date.now()}`;const resp=await fetch(`${CAMPAY_CONFIG.BASE_URL}/api/collect/`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Token ${token}`},body:JSON.stringify({amount:amount.toString(),currency:"XAF",from:mmState[provider].phone,description:`Dépôt AKIT-CHAT - ${UC.prenom}`,external_reference:reference})});const data=await resp.json();if(data.reference||data.operator_reference){const ref=data.reference||data.operator_reference;alert(`📱 Validez le paiement sur votre téléphone !\n\nNuméro : ${mmState[provider].phone}\nMontant : ${amount.toLocaleString()} FCFA`);attendreConfirmation(ref,token,async(statut)=>{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].balance=(mmState[provider].balance||0)+amount;mmState[provider].hist.push({type:'in',label:`Dépôt ${provider.toUpperCase()}`,amount,date:now,ref});await saveMM();refreshMMDisplay();alert(`✅ ${amount.toLocaleString()} FCFA reçus !`);},(errMsg)=>{alert("❌ "+errMsg);});}else{throw new Error(data.message||data.detail||JSON.stringify(data));}}catch(e){alert("❌ Erreur paiement : "+e.message);}};
 window.mmEnvoyer=async(provider)=>{ferm("ovMobileMoney");document.getElementById("sendMoneyTitle").textContent=`💸 Envoyer via ${provider.toUpperCase()}`;window._sendProvider=provider;document.getElementById("sendMoneyDest").value="";document.getElementById("sendMoneyAmount").value="";document.getElementById("sendMoneyNote").value="";ouv("ovSendMoney");};
 window.confirmerEnvoi=async()=>{const dest=document.getElementById("sendMoneyDest").value.trim();const amount=parseInt(document.getElementById("sendMoneyAmount").value);const note=document.getElementById("sendMoneyNote").value.trim();const provider=window._sendProvider||'om';if(!dest){alert("⚠️ Entrez le numéro destinataire");return;}if(!amount||amount<100){alert("⚠️ Montant minimum : 100 FCFA");return;}let destNum=dest.replace(/\s/g,'').replace(/^0/,'');if(!destNum.startsWith('237')&&destNum.length<=9)destNum='237'+destNum;if(provider==='coin'){if((UC.akit_coin||0)<amount){alert("❌ Solde AKIT Coin insuffisant");return;}if(!confirm(`Envoyer ${amount.toLocaleString()} AKIT Coins à ${dest} ?`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="Envoi...";try{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState.coin.balance-=amount;mmState.coin.hist.push({type:'out',label:`Envoi à ${dest}${note?' - '+note:''}`,amount,date:now});UC.akit_coin=mmState.coin.balance;
 await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});
