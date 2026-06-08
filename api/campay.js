@@ -1,38 +1,41 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { endpoint } = req.query;
-  if (!endpoint) return res.status(400).json({ error: 'endpoint manquant' });
-
-  const CAMPAY_TOKEN = "03f1cee7cddfed67c64eef581cddc1ad6f050db7";
-  const url = `https://campay.net/${endpoint}`;
+  const CAMPAY_URL = 'https://demo.campay.net/api';
 
   try {
-    const options = {
-      method: req.method || 'GET',
+    // Étape 1 : obtenir le token
+    const tokenRes = await fetch(`${CAMPAY_URL}/token/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username:  "GYOBdPs75TL9rivaLaF1gUXfZqRiIKM6AZk3pi8_A5sAszE5Mth24ms-1BgYUTcNKSF0woai8Y3SU2BEXXYqRw",
+        password: "bbAC00RJb3DlK9t_LN_WlI8IRvvyb_Lc6ZcBUfUgFJqheFXLHjnbbsT6Bc7WiuvOJcTiB2PGFCD4rbeNF9syRQ",
+      })
+    });
+
+    const tokenData = await tokenRes.json();
+    const token = tokenData.token;
+
+    // Étape 2 : appeler l'endpoint demandé
+    const response = await fetch(`${CAMPAY_URL}/${endpoint}/`, {
+      method: req.method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${CAMPAY_TOKEN}`
-      }
-    };
+        'Authorization': `Token ${token}`
+      },
+      body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+    });
 
-    if (req.method === 'POST') {
-      options.body = JSON.stringify(req.body || {});
-    }
+    const data = await response.json();
+    res.status(200).json(data);
 
-    const response = await fetch(url, options);
-    const text = await response.text();
-    
-    let data;
-    try { data = JSON.parse(text); } 
-    catch { data = { raw: text }; }
-
-    return res.status(response.status).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
