@@ -390,24 +390,24 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
     <div class="sb-nav">
       <div class="sb-sec">Vue d'ensemble</div>
-      <button class="sb-item active" onclick="nav('dashboard',this)"><i class="fas fa-chart-line sb-ico"></i><span class="sb-label">Dashboard</span></button>
-      <button class="sb-item" onclick="nav('activity',this)"><i class="fas fa-bolt sb-ico"></i><span class="sb-label">Temps réel</span></button>
+      <button class="sb-item active" id="sbDash" onclick="nav('dashboard',this)"><i class="fas fa-chart-line sb-ico"></i><span class="sb-label">Dashboard</span></button>
+      <button class="sb-item" id="sbAct" onclick="nav('activity',this)"><i class="fas fa-bolt sb-ico"></i><span class="sb-label">Temps réel</span></button>
 
       <div class="sb-sec">Gestion</div>
-      <button class="sb-item" onclick="nav('users',this)"><i class="fas fa-users sb-ico"></i><span class="sb-label">Utilisateurs</span><span class="sb-bdg" id="bdgU">…</span></button>
-      <button class="sb-item" onclick="nav('posts',this)"><i class="fas fa-newspaper sb-ico"></i><span class="sb-label">Publications</span><span class="sb-bdg" id="bdgP">…</span></button>
-      <button class="sb-item" onclick="nav('stories',this)"><i class="fas fa-circle-play sb-ico"></i><span class="sb-label">Stories</span></button>
-      <button class="sb-item" onclick="nav('reports',this)"><i class="fas fa-flag sb-ico" style="color:var(--red2)"></i><span class="sb-label">Signalements</span></button>
+      <button class="sb-item" id="sbUsers" onclick="nav('users',this)"><i class="fas fa-users sb-ico"></i><span class="sb-label">Utilisateurs</span><span class="sb-bdg" id="bdgU">…</span></button>
+      <button class="sb-item" id="sbPosts"  onclick="nav('posts',this)"><i class="fas fa-newspaper sb-ico"></i><span class="sb-label">Publications</span><span class="sb-bdg" id="bdgP">…</span></button>
+      <button class="sb-item"  id="sbStories"  onclick="nav('stories',this)"><i class="fas fa-circle-play sb-ico"></i><span class="sb-label">Stories</span></button>
+      <button class="sb-item" id="sbReports"  onclick="nav('reports',this)"><i class="fas fa-flag sb-ico" style="color:var(--red2)"></i><span class="sb-label">Signalements</span></button>
 
       <div class="sb-sec">Finance</div>
-      <button class="sb-item" onclick="nav('bank',this)"><i class="fas fa-vault sb-ico" style="color:var(--yellow)"></i><span class="sb-label">Banque AKIT</span></button>
-      <button class="sb-item" onclick="nav('transactions',this)"><i class="fas fa-arrow-right-arrow-left sb-ico"></i><span class="sb-label">Transactions</span></button>
-      <button class="sb-item" onclick="nav('mobilemoney',this)"><i class="fas fa-mobile-screen sb-ico" style="color:var(--orange)"></i><span class="sb-label">Mobile Money</span></button>
+      <button class="sb-item" id="sbBank"  onclick="nav('bank',this)"><i class="fas fa-vault sb-ico" style="color:var(--yellow)"></i><span class="sb-label">Banque AKIT</span></button>
+      <button class="sb-item" id="sbTx"  onclick="nav('transactions',this)"><i class="fas fa-arrow-right-arrow-left sb-ico"></i><span class="sb-label">Transactions</span></button>
+      <button class="sb-item"id="sbMM" onclick="nav('mobilemoney',this)"><i class="fas fa-mobile-screen sb-ico" style="color:var(--orange)"></i><span class="sb-label">Mobile Money</span></button>
 
       <div class="sb-sec">Système</div>
-      <button class="sb-item" onclick="nav('roles',this)"><i class="fas fa-shield-halved sb-ico" style="color:var(--accent2)"></i><span class="sb-label">Rôles & Permissions</span></button>
-      <button class="sb-item" onclick="nav('settings',this)"><i class="fas fa-sliders sb-ico"></i><span class="sb-label">Paramètres</span></button>
-      <button class="sb-item" onclick="nav('logs',this)"><i class="fas fa-terminal sb-ico"></i><span class="sb-label">Logs système</span></button>
+      <button class="sb-item"id="sbRoles" onclick="nav('roles',this)"><i class="fas fa-shield-halved sb-ico" style="color:var(--accent2)"></i><span class="sb-label">Rôles & Permissions</span></button>
+      <button class="sb-item" id="sbSet"  onclick="nav('settings',this)"><i class="fas fa-sliders sb-ico"></i><span class="sb-label">Paramètres</span></button>
+      <button class="sb-item" id="sbLogs"  onclick="nav('logs',this)"><i class="fas fa-terminal sb-ico"></i><span class="sb-label">Logs système</span></button>
     </div>
     <div class="sb-bottom">
       <div class="sb-user">
@@ -450,27 +450,38 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <div class="feed" id="feed"><div class="loading"><div class="spinner"></div> Chargement...</div></div>
 
         <div class="stitle"><span>Actions rapides</span></div>
-        <div class="qa-grid">
-          <button class="qa-card" onclick="nav('users',document.querySelector('[onclick*=\"nav(\'users'\"]'))">
-            <div class="qa-icon">👥</div><div class="qa-name">Gérer les users</div><div class="qa-desc">Voir, bannir, promouvoir</div>
-          </button>
-          <button class="qa-card" onclick="openBroadcast()">
-            <div class="qa-icon">📢</div><div class="qa-name">Broadcast</div><div class="qa-desc">Notifier tous les utilisateurs</div>
-          </button>
-          <button class="qa-card" onclick="nav('bank',document.querySelector('[onclick*=\"nav(\'bank'\"]'))">
-            <div class="qa-icon">🏦</div><div class="qa-name">Banque AKIT</div><div class="qa-desc">Gérer les finances</div>
-          </button>
-          <button class="qa-card" onclick="exportUsers()">
-            <div class="qa-icon">📊</div><div class="qa-name">Exporter données</div><div class="qa-desc">CSV complet</div>
-          </button>
-          <button class="qa-card" onclick="nav('roles',document.querySelector('[onclick*=\"nav(\'roles'\"]'))">
-            <div class="qa-icon">🛡️</div><div class="qa-name">Rôles & Permissions</div><div class="qa-desc">Gérer les accès</div>
-          </button>
-          <button class="qa-card" onclick="nav('logs',document.querySelector('[onclick*=\"nav(\'logs'\"]'))">
-            <div class="qa-icon">🖥️</div><div class="qa-name">Logs système</div><div class="qa-desc">Voir toute l'activité admin</div>
-          </button>
-        </div>
-      </div>
+  <div class="qa-grid">
+  <button class="qa-card" onclick="nav('users', document.getElementById('sbUsers'))">
+    <div class="qa-icon">👥</div>
+    <div class="qa-name">Gérer les users</div>
+    <div class="qa-desc">Voir, bannir, promouvoir</div>
+  </button>
+  <button class="qa-card" onclick="openBroadcast()">
+    <div class="qa-icon">📢</div>
+    <div class="qa-name">Broadcast</div>
+    <div class="qa-desc">Notifier tous les utilisateurs</div>
+  </button>
+  <button class="qa-card" onclick="nav('bank', document.getElementById('sbBank'))">
+    <div class="qa-icon">🏦</div>
+    <div class="qa-name">Banque AKIT</div>
+    <div class="qa-desc">Gérer les finances</div>
+  </button>
+  <button class="qa-card" onclick="exportUsers()">
+    <div class="qa-icon">📊</div>
+    <div class="qa-name">Exporter données</div>
+    <div class="qa-desc">CSV complet</div>
+  </button>
+  <button class="qa-card" onclick="nav('roles', document.getElementById('sbRoles'))">
+    <div class="qa-icon">🛡️</div>
+    <div class="qa-name">Rôles & Permissions</div>
+    <div class="qa-desc">Gérer les accès</div>
+  </button>
+  <button class="qa-card" onclick="nav('logs', document.getElementById('sbLogs'))">
+    <div class="qa-icon">🖥️</div>
+    <div class="qa-name">Logs système</div>
+    <div class="qa-desc">Voir toute l'activité admin</div>
+  </button>
+</div>
 
       <!-- ACTIVITY -->
       <div class="panel" id="panel-activity">
