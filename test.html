@@ -1801,7 +1801,6 @@ window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const conte
 
 // ===== MOBILE MONEY =====
 const CAMPAY_CONFIG={username:"GYOBdPs75TL9rivaLaF1gUXfZqRiIKM6AZk3pi8_A5sAszE5Mth24ms-1BgYUTcNKSF0woai8Y3SU2BEXXYqRw",password:"bbAC00RJb3DlK9t_LN_WlI8IRvvyb_Lc6ZcBUfUgFJqheFXLHjnbbsT6Bc7WiuvOJcTiB2PGFCD4rbeNF9syRQ",BASE_URL:"https://campay.net"};
-async function getCampayToken(){try{const resp=await fetch(`${CAMPAY_CONFIG.BASE_URL}/api/token/`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:CAMPAY_CONFIG.username,password:CAMPAY_CONFIG.password})});const data=await resp.json();if(data.token)return data.token;return null;}catch(e){return null;}}
 async function verifierStatutCampay(reference,token){try{const resp=await fetch(`${CAMPAY_CONFIG.BASE_URL}/api/transaction/${reference}/`,{headers:{"Authorization":`Token ${token}`}});return await resp.json();}catch{return null;}}
 async function attendreConfirmation(reference,token,onSuccess,onEchec){let tentatives=0;const MAX=12;const verifier=async()=>{tentatives++;const statut=await verifierStatutCampay(reference,token);if(statut&&statut.status==="SUCCESSFUL"){onSuccess(statut);return;}if(statut&&statut.status==="FAILED"){onEchec("Paiement refusé.");return;}if(tentatives>=MAX){onEchec("Délai dépassé.");return;}setTimeout(verifier,5000);};setTimeout(verifier,5000);}
 window.openMobileMoney=()=>{ouv("ovMobileMoney");refreshMMDisplay();};
