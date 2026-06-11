@@ -1525,8 +1525,22 @@ onAuthStateChanged(auth,async fireUser=>{
   if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   initUI();renderStories();renderPosts();renderStatutBand();
   window.addEventListener("beforeunload",()=>marquerEnLigne(false));
-
-  onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{const nb=snap.size;majTousBadges('notif',nb);if(nb>prevNotifCount&&prevNotifCount!==-1){document.title=`(${nb}) AKIT-CHAT`;jouerSon(880);}else if(nb===0)document.title="AKIT-CHAT";prevNotifCount=nb;});
+onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{
+  const nb=snap.size;
+  majTousBadges('notif',nb);
+  if(nb===0){
+    document.title="AKIT-CHAT";
+    prevNotifCount=0;
+  } else if(nb>prevNotifCount&&prevNotifCount!==-1){
+    document.title=`(${nb}) AKIT-CHAT`;
+    jouerSon(880);
+    prevNotifCount=nb;
+  } else if(nb<prevNotifCount){
+    // Les notifs ont été lues, on réinitialise
+    prevNotifCount=nb;
+    if(nb===0)document.title="AKIT-CHAT";
+  }
+});
   onSnapshot(query(collection(db,"lastMessages"),where("dest","==",UC.id)),snap=>{let unread=0;snap.forEach(d=>{if(d.data().luDest===false)unread++;});majTousBadges('msg',unread);if(unread>prevMsgCount&&prevMsgCount!==-1&&unread>0)jouerSon(660);prevMsgCount=unread;});
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{setBdg("bdg_amis_sb",snap.size);});
 
@@ -2184,8 +2198,8 @@ window.confirmerEnvoi=async()=>{
 };
 
 // ===== NOTIFICATIONS =====
-window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{if(a.lu!==b.lu)return a.lu?1:-1;const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});await Promise.all(snap.docs.filter(d=>!d.data().lu).map(d=>updateDoc(doc(db,"notifications",d.id),{lu:true})));majTousBadges('notif',0);document.title="AKIT-CHAT";prevNotifCount=0;const icoMap={message:'💬',like:'❤️',comment:'🗨️',ami:'👥',post:'📝',reaction:'⭐',story:'📸',story_vu:'👁',groupe_invite:'👥',groupe_message:'💬',coin:'💰',live:'🔴',defi:'⚔️',statut:'😊',default:'🔔'};liste.innerHTML=notifs.map(n=>`<div class="nf-item" onclick="${n.type==='message'?'openMsg()':n.type==='ami'?'openAmis()':n.type==='coin'?'openCoin()':n.type==='live'?'ouvrirLive()':'scrollTop()'}"><div class="nf-ico">${icoMap[n.type]||icoMap.default}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div></div>`).join("");}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
-async function addNotif(userId,type,texte){try{await addDoc(collection(db,"notifications"),{userId,type,texte,date:serverTimestamp(),lu:false});}catch{}}
+window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),orderBy("date","desc"),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));await Promise.all(snap.docs.filter(d=>!d.data().lu).map(d=>updateDoc(doc(db,"notifications",d.id),{lu:true})));majTousBadges('notif',0);document.title="AKIT-CHAT";prevNotifCount=0;const icoMap={message:'💬',like:'❤️',comment:'🗨️',ami:'👥',post:'📝',reaction:'⭐',story:'📸',story_vu:'👁',groupe_invite:'👥',groupe_message:'💬',coin:'💰',live:'🔴',defi:'⚔️',statut:'😊',default:'🔔'};liste.innerHTML=notifs.map(n=>{let action='';if(n.type==='message'){action=n.fromUid?`ferm('ovNotif');openMsg();setTimeout(()=>openConv('${n.fromUid}','direct'),400)`:`ferm('ovNotif');openMsg()`;}else if(n.type==='groupe_message'){action=`ferm('ovNotif');openMsg();setTimeout(()=>switchMsgTab('groups'),400)`;}else if(n.type==='ami'){action=`ferm('ovNotif');openAmis()`;}else if(n.type==='coin'){action=`ferm('ovNotif');openCoin()`;}else if(n.type==='live'){action=`ferm('ovNotif');ouvrirLive()`;}else if(n.type==='like'||n.type==='comment'||n.type==='post'){action=n.fromUid?`ferm('ovNotif');ouvrirProfilUser('${n.fromUid}')`:`ferm('ovNotif');scrollTop()`;}else if(n.type==='story'||n.type==='story_vu'||n.type==='reaction'){action=n.fromUid?`ferm('ovNotif');ouvrirProfilUser('${n.fromUid}')`:`ferm('ovNotif');scrollTop()`;}else if(n.type==='defi'){action=`ferm('ovNotif');openJeux()`;}else if(n.type==='statut'){action=n.fromUid?`ferm('ovNotif');ouvrirProfilUser('${n.fromUid}')`:`ferm('ovNotif');scrollTop()`;}else{action=`ferm('ovNotif');scrollTop()`;}return `<div class="nf-item ${!n.lu?'unread':''}" onclick="${action}" style="cursor:pointer"><div class="nf-ico">${icoMap[n.type]||icoMap.default}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div>${!n.lu?'<div style="width:8px;height:8px;border-radius:50%;background:var(--bleu);flex-shrink:0;margin-top:4px"></div>':''}</div>`;}).join("");}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
+async function addNotif(userId,type,texte){try{await addDoc(collection(db,"notifications"),{userId,type,texte,fromUid:UC?.id||null,date:serverTimestamp(),lu:false});}catch{}}
 async function addNotifTous(type,texte){const uMap=await getUsers();Object.keys(uMap).forEach(id=>{if(id!==UC.id)addNotif(id,type,texte);});}
 
 // ===== AMIS =====
