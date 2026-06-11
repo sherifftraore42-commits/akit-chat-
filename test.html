@@ -714,7 +714,7 @@ setTimeout(step,300);
 <div id="ovLive">
   <div class="live-stream-area">
     <!-- Vidéo locale (streamer) OU distante (spectateur) -->
-    <video id="liveVideo" autoplay playsinline muted style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1;"></video>
+   <video id="liveVideo" autoplay playsinline muted style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1;transform:scaleX(-1);"></video>
     <div class="live-no-stream" id="liveNoStream" style="z-index:2;display:none;">
       <div style="font-size:48px">📡</div>
       <div>Connexion au live...</div>
@@ -1877,10 +1877,93 @@ if(stEl)stEl.addEventListener('input',function(){document.getElementById('storyT
 const stMusicSel=document.getElementById('storyMusicSelect');
 if(stMusicSel)stMusicSel.addEventListener('change',function(){if(this.value){const parts=this.value.split('|');storyMusicName=parts[0];storyMusicUrl=parts[1];}else{storyMusicName=null;storyMusicUrl=null;}});
 
+let unsubStories = null;
+
 async function renderStories(){
-  const row=document.getElementById("sRow");const addCard=row.querySelector(".add-s");row.innerHTML="";row.appendChild(addCard);
-  const now=Date.now();
-  const[storiesSnap,uMap,livesSnap]=await Promise.all([getDocs(query(collection(db,"stories"),orderBy("date","desc"),limit(80))),getUsers(),getDocs(query(collection(db,"lives"),where("actif","==",true)))]);
+  // Annuler le listener précédent si existant
+  if(unsubStories){ unsubStories(); unsubStories = null; }
+
+  const row = document.getElementById("sRow");
+  const addCard = row.querySelector(".add-s");
+
+  // Listener temps réel sur les stories
+  unsubStories = onSnapshot(
+    query(collection(db,"stories"), orderBy("date","desc"), limit(80)),
+    async (storiesSnap) => {
+      const now = Date.now();
+      const [uMap, livesSnap] = await Promise.all([
+        getUsers(),
+        getDocs(query(collection(db,"lives"), where("actif","==",true)))
+      ]);
+
+      // Reconstruire la ligne stories
+      row.innerHTML = "";
+      row.appendChild(addCard);
+
+      // Lives actifs en premier
+      livesSnap.forEach(d => {
+        const l = {id: d.id, ...d.data()};
+        if(l.userId === UC.id) return;
+        const u = uMap[l.userId] || {prenom:"?"};
+        const av = u.avatarUrl
+          ? `<img src="${u.avatarUrl}"/>`
+          : `<span class="sc-ring-i">${(u.prenom?.[0]||'?').toUpperCase()}</span>`;
+        const card = document.createElement("div");
+        card.className = "s-card";
+        card.onclick = () => rejoindreLive(l.id, l);
+        card.innerHTML = `
+          <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a0a,#2d0000)"></div>
+          <div class="sc-ov"></div>
+          <div class="sc-ring" style="border-color:var(--live-red)">${av}</div>
+          <div style="position:absolute;top:4px;left:4px;background:var(--live-red);color:#fff;border-radius:4px;padding:2px 5px;font-size:8px;font-weight:800;z-index:3">LIVE</div>
+          <div class="sc-name">${u.prenom||"?"}</div>
+        `;
+        row.appendChild(card);
+      });
+
+      // Grouper stories par userId
+      const gr = {};
+      storiesSnap.forEach(d => {
+        const s = {id: d.id, ...d.data()};
+        const dt = s.date?.toDate ? s.date.toDate() : new Date(s.date);
+        if(now - dt.getTime() > 86400000) return; // expirées > 24h
+        if(!gr[s.userId]) gr[s.userId] = [];
+        gr[s.userId].push(s);
+      });
+
+      // Afficher les stories
+      Object.keys(gr).forEach(uid => {
+        const stories = gr[uid];
+        const user = uMap[uid] || {prenom:"?"};
+        const nonVu = stories.some(s => !(s.vuPar||[]).includes(UC.id));
+        const isOwn = uid === UC.id;
+        const last = stories[0];
+        const ringC = user.avatarUrl
+          ? `<img src="${user.avatarUrl}"/>`
+          : `<span class="sc-ring-i">${(user.prenom?.[0]||"?").toUpperCase()}</span>`;
+        const card = document.createElement("div");
+        card.className = "s-card";
+        card.onclick = () => openSV(stories, 0);
+        card.innerHTML = `
+          ${last.imgUrl
+            ? `<img class="sc-bg" src="${last.imgUrl}"/>`
+            : `<div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>`
+          }
+          <div class="sc-ov"></div>
+          <div class="sc-ring" style="border-color:${nonVu && !isOwn ? "var(--bleu)" : "#aaa"}">${ringC}</div>
+          ${isOwn
+            ? `<div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;color:rgba(255,255,255,.75);font-size:8px;z-index:2">👁 ${stories.reduce((a,s) => a+(s.vues||0), 0)}</div>`
+            : ""
+          }
+          <div class="sc-name">${user.prenom||"?"}</div>
+          ${nonVu && !isOwn ? '<div class="sc-dot"></div>' : ""}
+          ${user.enLigne && !isOwn ? '<div class="online-dot"></div>' : ""}
+        `;
+        row.appendChild(card);
+      });
+    }
+  );
+}
   // Lives en premier
   livesSnap.forEach(d=>{const l={id:d.id,...d.data()};if(l.userId===UC.id)return;const u=uMap[l.userId]||{prenom:"?"};const av=u.avatarUrl?`<img src="${u.avatarUrl}"/>`:`<span class="sc-ring-i">${(u.prenom?.[0]||'?').toUpperCase()}</span>`;const card=document.createElement("div");card.className="s-card";card.onclick=()=>rejoindreLive(l.id,l);card.innerHTML=`<div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a0a,#2d0000)"></div><div class="sc-ov"></div><div class="sc-ring" style="border-color:var(--live-red)">${av}</div><div style="position:absolute;top:4px;left:4px;background:var(--live-red);color:#fff;border-radius:4px;padding:2px 5px;font-size:8px;font-weight:800;z-index:3">LIVE</div><div class="sc-name">${u.prenom||"?"}</div>`;row.appendChild(card);});
   const gr={};
