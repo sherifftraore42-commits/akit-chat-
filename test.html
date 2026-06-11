@@ -229,6 +229,7 @@ input,textarea{font-family:var(--font)}
 @media(max-width:640px){
   .modal{max-width:100% !important;width:100% !important;height:100% !important;max-height:100% !important;border-radius:0 !important;margin:0 !important;}
   .ov{align-items:stretch !important;padding:0 !important;}
+  #ovMarketplace .modal{max-width:100% !important;height:92vh !important;border-radius:20px 20px 0 0 !important;}
 }
 @keyframes su{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .m-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-bottom:0.5px solid var(--gris2);flex-shrink:0}
@@ -260,7 +261,8 @@ input,textarea{font-family:var(--font)}
 .live-send-btn{background:var(--live-red);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .gift-float{position:fixed;pointer-events:none;z-index:11000;font-size:32px;animation:giftFloat 2s ease-out forwards;}
 @keyframes giftFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-200px) scale(1.5)}}
-
+#liveLocalVideo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+.live-top-bar,.live-bottom{position:absolute;z-index:5;}
 /* JEUX */
 .game-card{background:var(--blanc);border-radius:16px;overflow:hidden;cursor:pointer;border:0.5px solid var(--gris2);transition:transform .2s;box-shadow:var(--ombre);}
 .game-card:hover{transform:translateY(-3px);}
@@ -707,7 +709,7 @@ setTimeout(step,300);
 <!-- LIVE OVERLAY -->
 <div id="ovLive">
   <div class="live-stream-area">
-    <video id="liveLocalVideo" autoplay playsinline muted></video>
+    <video id="liveLocalVideo" autoplay playsinline webkit-playsinline muted x5-video-player-type="h5" style="object-fit:cover;width:100%;height:100%;position:absolute;top:0;left:0"></video>
     <div class="live-top-bar">
       <div style="display:flex;align-items:center;gap:8px">
         <div class="live-badge-top">🔴 LIVE</div>
@@ -824,6 +826,8 @@ setTimeout(step,300);
         <button class="plus-menu-item" onclick="closePlusMenu();openAddStory()"><div class="pm-ico-wrap" style="background:#e8f5e9"><i class="fa-solid fa-circle-plus" style="color:#1D9E75"></i></div> Nouvelle Story</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openLeaderboard()"><div class="pm-ico-wrap" style="background:#fffde7"><i class="fa-solid fa-trophy" style="color:var(--akit-yellow)"></i></div> Classement</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openEarn()"><div class="pm-ico-wrap" style="background:#e8ffe8"><i class="fa-solid fa-bolt" style="color:var(--akit-green)"></i></div> Gagner des Coins</button>
+       <button class="plus-menu-item" onclick="closePlusMenu();openMarketplace()"><div class="pm-ico-wrap" style="background:#e8f5e9"><i class="fa-solid fa-store" style="color:#1D9E75"></i></div> Marketplace</button>
+<button class="plus-menu-item" onclick="closePlusMenu();openClaude()"><div class="pm-ico-wrap" style="background:#ede9fe"><i class="fa-solid fa-brain" style="color:#7c3aed"></i></div> Claud-akit IA</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openParam()"><div class="pm-ico-wrap" style="background:#f3f4f6"><i class="fa-solid fa-gear" style="color:var(--texte2)"></i></div> Réglages</button>
       </div>
     </div>
@@ -1088,7 +1092,7 @@ setTimeout(step,300);
 
 <!-- MARKETPLACE -->
 <div class="ov" id="ovMarketplace" onclick="closeSiDehors(event,'ovMarketplace')">
-  <div class="modal" style="max-width:520px">
+  <div class="modal" style="max-width:520px;width:100%">
     <div class="m-head"><h2><i class="fa-solid fa-store" style="color:#1D9E75;margin-right:7px"></i>Marketplace</h2>
     <div style="display:flex;gap:6px">
       <button onclick="ouvrirVente()" style="background:var(--bleu);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Vendre</button>
@@ -1610,7 +1614,13 @@ window.demarrerLive=async()=>{
     liveStream=stream;
     document.getElementById('liveLocalVideo').srcObject=stream;
     document.getElementById('ovLive').classList.add('open');
-    document.getElementById('liveTitleDisplay').textContent=titre;
+document.getElementById('liveTitleDisplay').textContent=titre;
+// Forcer la lecture après affichage
+const liveVid = document.getElementById('liveLocalVideo');
+liveVid.srcObject = stream;
+setTimeout(async () => {
+  try { await liveVid.play(); } catch(e) { console.warn('autoplay blocked:', e); }
+}, 100);
     document.getElementById('liveViewerCount').textContent='0';
     document.getElementById('liveCommentsList').innerHTML='';
     liveSec=0;
@@ -1939,6 +1949,11 @@ window.rejoindreLive=async(liveId,liveData)=>{
   });
   if(window._liveViewUnsub)window._liveViewUnsub();
   window._liveViewUnsub=onSnapshot(doc(db,"lives",liveId),snap2=>{if(snap2.exists())document.getElementById('liveViewerCount').textContent=(snap2.data().viewers||[]).length;});
+// Forcer reprise si vidéo locale active
+const lv = document.getElementById('liveLocalVideo');
+if(lv && lv.srcObject) {
+  setTimeout(async()=>{ try{await lv.play();}catch{} }, 150);
+}
 };
 
 window.openAddStory=()=>{storyFile=null;storyTextPos='top';storyTextColor='#ffffff';document.getElementById("stPrev").style.display="none";document.getElementById("dropCont").style.display="block";document.getElementById("btnPostSt").disabled=true;document.getElementById("inpStory").value="";document.getElementById("storyTextInput").value="";document.getElementById("storyTextCount").textContent="0";ouv("ovAddS");};
