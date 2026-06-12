@@ -1998,7 +1998,10 @@ window.publierStatut=async()=>{
   addNotifTous("statut",`${UC.prenom} se sent : ${valeur}`);jouerSon(520);
 };
 window.supprimerStatut=async()=>{await updateDoc(doc(db,"users",UC.id),{statut:null,statutExpire:null});UC.statut=null;if(uMapCache)uMapCache[UC.id]={...uMapCache[UC.id],statut:null};renderStatutBand();ferm('ovStatut');};
-async function renderStatutBand(){const band=document.getElementById('statutDisplay');if(!band)return;const now=Date.now();const uMap=await getUsers();const items=[];if(UC.statut&&(!UC.statutExpire||new Date(UC.statutExpire).getTime()>now))items.push({nom:"Moi",statut:UC.statut,uid:UC.id});Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>now))items.push({nom:u.prenom||"?",statut:u.statut,uid:id});});if(items.length===0){band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i> Partager mon humeur</button>`;return;}band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i></button>`+items.slice(0,5).map(i=>`<div class="statut-bubble active" onclick="ouvrirProfilUser('${i.uid}')" title="${i.nom}">${i.statut}</div>`).join('');}
+async function renderStatutBand(){const band=document.getElementById('statutDisplay');if(!band)return;const now=Date.now();const uMap=await getUsers();const items=[];
+if(UC.statut&&(!UC.statutExpire||new Date(UC.statutExpire).getTime()>now))items.push({nom:"Moi",statut:UC.statut,uid:UC.id});Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>now))items.push({nom:u.prenom||"?",statut:u.statut,uid:id});});
+if(items.length===0){band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i> Partager mon humeur</button>`;
+return;}band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i></button>`+items.slice(0,5).map(i=>`<div class="statut-bubble active" onclick="ouvrirProfilUser('${i.uid}')" title="${i.nom}">${i.statut}</div>`).join('');}
 
 // ===== LIVE =====
 window.ouvrirLive=()=>{ouv('ovStartLive');document.getElementById('liveTitleInput').value='';};
