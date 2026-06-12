@@ -2467,8 +2467,65 @@ window.partagerAutre=async()=>{const lien=document.getElementById("prrLink").val
 // ===== UTILITAIRES =====
 window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.location.replace("index.html");};
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
-window.appelerAudio=()=>alert("📞 Appel audio en développement.");
+window.appelerAudio = async () => {
+  const uid = document.getElementById("cvUid").value;
+  if (!uid) return;
 
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+
+    const pc = new RTCPeerConnection(ICE_SERVERS);
+    window._audioCallPC = pc;
+
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+    const callId = [UC.id, uid].sort().join("_") + "_audiocall";
+
+    pc.onicecandidate = async (e) => {
+      if (e.candidate) {
+        await addDoc(collection(db, "audioCalls", callId, "callerCandidates"), e.candidate.toJSON());
+      }
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    await setDoc(doc(db, "audioCalls", callId), {
+      callerId: UC.id,
+      calleeId: uid,
+      offer: { type: offer.type, sdp: offer.sdp },
+      answer: null,
+      actif: true,
+      date: serverTimestamp()
+    });
+
+    addNotif(uid, "message", `📞 ${UC.prenom} vous appelle !`);
+
+    // Écouter l'answer
+    const unsub = onSnapshot(doc(db, "audioCalls", callId), async snap => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (data.answer && pc.signalingState === "have-local-offer") {
+        await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+        unsub();
+      }
+    });
+
+    // Écouter les ICE du destinataire
+    onSnapshot(collection(db, "audioCalls", callId, "calleeCandidates"), snap => {
+      snap.docChanges().forEach(change => {
+        if (change.type === "added") {
+          pc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(() => {});
+        }
+      });
+    });
+
+    alert("📞 Appel en cours... En attente de réponse.");
+
+  } catch (e) {
+    alert("❌ Micro inaccessible : " + e.message);
+  }
+};
 // BLOQUER RETOUR
 (function(){history.pushState(null,'',location.href);history.pushState(null,'',location.href);window.addEventListener('popstate',()=>history.pushState(null,'',location.href));document.addEventListener('touchstart',e=>{if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20)e.preventDefault();},{passive:false});})();
 
