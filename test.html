@@ -138,8 +138,8 @@ input,textarea{font-family:var(--font)}
 .sc-ring-i{color:#fff;font-weight:700;font-size:12px}
 .sc-name{position:absolute;bottom:5px;left:0;right:0;text-align:center;color:#fff;font-size:9px;font-weight:600;z-index:2;padding:0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sc-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#E24B4A;border:1.5px solid #fff;z-index:3}
-.online-dot{position:absolute;bottom:5px;right:5px;width:9px;height:9px;border-radius:50%;background:#43e97b;border:2px solid #fff;z-index:3}
-
+.online-dot{position:absolute;bottom:5px;right:5px;width:9px;height:9px;border-radius:50%;background:#E24B4A;border:2px solid #fff;z-index:3}
+.presence-dot{position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;border:2px solid var(--blanc);z-index:3}
 /* STATUT */
 .statut-band{background:linear-gradient(135deg,var(--blanc),#f0f4ff);border:0.5px solid var(--gris2);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--ombre)}
 .statut-bubble{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--bleu3),#e0e7ff);border:1px solid rgba(91,76,245,.2);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--bleu);cursor:pointer;transition:all .2s;white-space:nowrap;}
@@ -348,8 +348,7 @@ input,textarea{font-family:var(--font)}
 .cv-item:hover{background:var(--gris)}
 .cv-av{width:44px;height:44px;border-radius:50%;background:var(--bleu);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;overflow:hidden;position:relative}
 .cv-av img{width:100%;height:100%;object-fit:cover}
-.cv-on{position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#43e97b;border:2px solid var(--blanc)}
-.cv-info{flex:1;min-width:0}
+ .cv-info{flex:1;min-width:0}
 .cv-nom{font-size:14px;font-weight:600;color:var(--texte)}
 .cv-last{font-size:12px;color:var(--texte2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cv-bdg{background:var(--bleu);color:#fff;width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
@@ -1492,7 +1491,19 @@ window.ouv=ouv;window.ferm=ferm;
 window.closeSiDehors=(e,id)=>{if(e.target===document.getElementById(id))ferm(id);};
 function fmtDate(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);if(isNaN(dt))return "";return dt.toLocaleDateString("fr-FR")+" · "+dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
 function fmtHeure(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);return isNaN(dt)?"":dt.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
-function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
+function getPresenceInfo(u){
+  const now=Date.now();
+  const dv=u.dernierVu?.toDate?u.dernierVu.toDate():(u.dernierVu?new Date(u.dernierVu):null);
+  if(u.enLigne) return {dot:'#E24B4A', label:'🔴 En ligne'}; // rouge
+  if(dv && (now-dv.getTime())<5*60000) return {dot:'#FF8C00', label:'🟠 Vu à l\'instant'}; // orange <5min
+  if(dv){
+    const diffJours=Math.floor((now-dv.getTime())/86400000);
+    if(diffJours===0) return {dot:null, label:'Vu à '+dv.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})};
+    return {dot:null, label:'Vu le '+dv.toLocaleDateString("fr-FR")};
+  }
+  return {dot:null, label:'Hors ligne'};
+}
+  function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
 function animerReaction(emoji){const pop=document.createElement("div");pop.className="react-pop";pop.textContent=emoji;pop.style.left=Math.random()*60+20+"%";pop.style.bottom="80px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);}
 
 // BADGES
@@ -1510,7 +1521,7 @@ document.addEventListener('click',e=>{const btn=document.getElementById('bnPlusB
 // SEARCH
 window.ouvrirSearch=()=>{document.getElementById('searchOverlay').classList.add('open');document.getElementById('searchModal').style.display='block';document.getElementById('searchResults').innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Tapez pour rechercher...</p>`;setTimeout(()=>document.getElementById('searchInp').focus(),100);};
 window.fermerSearch=()=>{document.getElementById('searchOverlay').classList.remove('open');document.getElementById('searchModal').style.display='none';document.getElementById('searchInp').value='';};
-window.rechercherUsers=async q=>{const res=document.getElementById('searchResults');if(!q.trim()){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Tapez pour rechercher...</p>`;return;}const uMap=await getUsers();const found=Object.entries(uMap).filter(([id,u])=>id!==UC?.id&&`${u.prenom||''} ${u.nom||''}`.toLowerCase().includes(q.toLowerCase())).map(([id,u])=>({id,...u}));if(found.length===0){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Aucun résultat</p>`;return;}res.innerHTML=found.map(u=>`<div class="s-item" onclick="ouvrirProfilUser('${u.id}');fermerSearch()"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase()}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${u.prenom||''} ${u.nom||''}</div><div style="font-size:12px;color:var(--texte2)">${u.enLigne?'🟢 En ligne':'⚫ Hors ligne'}</div></div></div>`).join('');};
+window.rechercherUsers=async q=>{const res=document.getElementById('searchResults');if(!q.trim()){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Tapez pour rechercher...</p>`;return;}const uMap=await getUsers();const found=Object.entries(uMap).filter(([id,u])=>id!==UC?.id&&`${u.prenom||''} ${u.nom||''}`.toLowerCase().includes(q.toLowerCase())).map(([id,u])=>({id,...u}));if(found.length===0){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Aucun résultat</p>`;return;}res.innerHTML=found.map(u=>`<div class="s-item" onclick="fermerSearch();openMsg();setTimeout(()=>openConv('${u.id}','direct'),300)"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase()}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${u.prenom||''} ${u.nom||''}</div><div style="font-size:12px;color:var(--texte2)">${getPresenceInfo(u).label}</div></div></div>`).join('');};
 
 // ===== AUTH =====
 onAuthStateChanged(auth,async fireUser=>{
@@ -1971,7 +1982,7 @@ async function renderStories(){
           }
           <div class="sc-name">${user.prenom||"?"}</div>
           ${nonVu && !isOwn ? '<div class="sc-dot"></div>' : ""}
-          ${user.enLigne && !isOwn ? '<div class="online-dot"></div>' : ""}
+          ${(()=>{const pres=getPresenceInfo(user);return(pres.dot&&!isOwn)?`<div class="online-dot" style="background:${pres.dot}"></div>`:'';})()}
         `;
         row.appendChild(card);
       });
@@ -2107,12 +2118,15 @@ async function loadConvs(q){
   lmSnap2.docs.forEach(d=>{const data=d.data();const key=data.dest;if(!lmMap[key]||lmMap[key].date?.toMillis?.()<data.date?.toMillis?.())lmMap[key]=data;});
   users=users.map(u=>{const lm=lmMap[u.id];const hasUnread=lm&&lm.dest===UC.id&&lm.luDest===false;return {...u,_hasUnread:hasUnread,_lastMsgDate:lm?.date?.toDate?lm.date.toDate():new Date(0),_lastMsg:lm?.contenu||""};});
   users.sort((a,b)=>{if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;return b._lastMsgDate-a._lastMsgDate;});
-  liste.innerHTML=users.map(u=>`<div class="cv-item" onclick="openConv('${u.id}','direct')" style="${u._hasUnread?'background:var(--bleu3);border-left:3px solid var(--bleu);':''}">
-    <div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}${u.enLigne?'<div class="cv-on"></div>':""}</div>
-    <div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${u._hasUnread?`📩 ${u._lastMsg?u._lastMsg.substring(0,28)+'...':'Nouveau message'}`:u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div>
+ liste.innerHTML=users.map(u=>{
+  const pres=getPresenceInfo(u);
+  const dotHtml=pres.dot?`<div class="presence-dot" style="background:${pres.dot}"></div>`:"";
+  const lastLine=u._hasUnread?`📩 ${u._lastMsg?u._lastMsg.substring(0,28)+'...':'Nouveau message'}`:pres.label;
+  return `<div class="cv-item" onclick="openConv('${u.id}','direct')" style="${u._hasUnread?'background:var(--bleu3);border-left:3px solid var(--bleu);':''}">
+    <div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}${dotHtml}</div>
+    <div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${lastLine}</div></div>
     ${u._hasUnread?'<div class="cv-bdg">●</div>':""}
-  </div>`).join("");
-}
+  </div>`;}).join("");
 window.srchConv=q=>loadConvs(q);
 window.switchMsgTab=(tab)=>{const isConv=tab==='conv';document.getElementById('tabConv').classList.toggle('act',isConv);document.getElementById('tabGroups').classList.toggle('act',!isConv);document.getElementById('listeCv').style.display=isConv?'block':'none';document.getElementById('listeGroupes').style.display=isConv?'none':'block';if(!isConv)loadGroupesList();};
 window.toggleDisappear=(el)=>{el.classList.toggle('on');isDisappear=el.classList.contains('on');};
@@ -2120,7 +2134,7 @@ window.toggleDisappear=(el)=>{el.classList.toggle('on');isDisappear=el.classList
 window.openConv=async(uid,type='direct')=>{
   const uMap=await getUsers();const u=uMap[uid];if(!u)return;
   if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}
-  document.getElementById("cvNom").textContent=`${u.prenom||""} ${u.nom||""}`;document.getElementById("cvStatus").textContent=u.enLigne?"🟢":"";
+  document.getElementById("cvNom").textContent=`${u.prenom||""} ${u.nom||""}`;const presOpen=getPresenceInfo(u); document.getElementById("cvStatus").textContent=presOpen.dot==='#E24B4A'?"🔴":presOpen.dot==='#FF8C00'?"🟠":"";
   document.getElementById("cvUid").value=uid;document.getElementById("cvType").value=type;
   document.getElementById("listeCv").style.display="none";document.getElementById("listeGroupes").style.display="none";
   document.getElementById("zoneCv").classList.add("open");
@@ -2238,7 +2252,7 @@ window.confirmChgs=async()=>{try{if(pendAvFile){UC.avatarUrl=await uploadCloudin
 window.cancelChgs=()=>{pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");};
 
 // PROFIL AUTRE USER
-window.ouvrirProfilUser=async uid=>{if(!uid)return;if(uid===UC.id){window.openProfil();return;}const uMap=await getUsers();const u=uMap[uid];if(!u)return;document.getElementById("upTitle").textContent=`${u.prenom||""} ${u.nom||""}`;document.getElementById("upNom").innerHTML=`${u.prenom||""} ${u.nom||""} <span class="new-prf-check">✓</span>${u.modeCreateur?'⭐':''}`;document.getElementById("upOnline").textContent=u.enLigne?"🟢 En ligne":"⚫ Hors ligne";document.getElementById("upBio").textContent=u.bio||"Membre AKIT-CHAT";const statutEl=document.getElementById("upStatutDisplay");if(u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>Date.now())){statutEl.innerHTML=`<span style="font-size:13px;color:rgba(255,255,255,.7)">${u.statut}</span>`;}else if(statutEl)statutEl.innerHTML='';const cover=document.getElementById("upCover");if(u.coverUrl)cover.style.background=`url('${u.coverUrl}') center/cover`;else cover.style.background="linear-gradient(135deg,#0d2b1a,#1a3a2a)";const avEl=document.getElementById("upAvEl");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`:(u.prenom?.[0]?.toUpperCase()||'U');const[spSnap,saSnap]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",uid))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);document.getElementById("upPosts").textContent=spSnap.size;let cnt=0;saSnap.forEach(d=>{const a=d.data();if(a.user_id===uid||a.ami_id===uid)cnt++;});document.getElementById("upAmis").textContent=cnt;document.getElementById("upAbonnes").textContent=Math.floor(cnt*1.5+spSnap.size*3);let ph='';spSnap.forEach(d=>{const p=d.data();const hasImg=p.mediaUrl&&p.mediaType==="img";ph+=`<div class="new-prf-post-card" onclick="${hasImg?`openLightbox('${p.mediaUrl}')`:``}"><div style="width:100%;height:100%;background:var(--dark3);display:flex;align-items:center;justify-content:center">${hasImg?`<img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover"/>`:p.texte?`<p style="padding:12px;font-size:12px;color:rgba(255,255,255,.6);text-align:center">${p.texte.substring(0,60)}</p>`:`<i class="fa-solid fa-file" style="color:rgba(255,255,255,.2);font-size:24px"></i>`}</div></div>`;});document.getElementById("upPostsList").innerHTML=ph||`<p style='color:rgba(255,255,255,.4);font-size:12px;padding:8px;text-align:center;grid-column:1/-1'>Aucune publication.</p>`;document.getElementById("upBtnMsg").onclick=()=>{ferm("ovUserProfil");window.openMsg();setTimeout(()=>window.openConv(uid,"direct"),400);};document.getElementById("upBtnAdd").onclick=()=>window.demandeAmi(uid);ouv("ovUserProfil");};
+window.ouvrirProfilUser=async uid=>{if(!uid)return;if(uid===UC.id){window.openProfil();return;}const uMap=await getUsers();const u=uMap[uid];if(!u)return;document.getElementById("upTitle").textContent=`${u.prenom||""} ${u.nom||""}`;document.getElementById("upNom").innerHTML=`${u.prenom||""} ${u.nom||""} <span class="new-prf-check">✓</span>${u.modeCreateur?'⭐':''}`;document.getElementById("upOnline").textContent=getPresenceInfo(u).label;document.getElementById("upBio").textContent=u.bio||"Membre AKIT-CHAT";const statutEl=document.getElementById("upStatutDisplay");if(u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>Date.now())){statutEl.innerHTML=`<span style="font-size:13px;color:rgba(255,255,255,.7)">${u.statut}</span>`;}else if(statutEl)statutEl.innerHTML='';const cover=document.getElementById("upCover");if(u.coverUrl)cover.style.background=`url('${u.coverUrl}') center/cover`;else cover.style.background="linear-gradient(135deg,#0d2b1a,#1a3a2a)";const avEl=document.getElementById("upAvEl");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`:(u.prenom?.[0]?.toUpperCase()||'U');const[spSnap,saSnap]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",uid))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);document.getElementById("upPosts").textContent=spSnap.size;let cnt=0;saSnap.forEach(d=>{const a=d.data();if(a.user_id===uid||a.ami_id===uid)cnt++;});document.getElementById("upAmis").textContent=cnt;document.getElementById("upAbonnes").textContent=Math.floor(cnt*1.5+spSnap.size*3);let ph='';spSnap.forEach(d=>{const p=d.data();const hasImg=p.mediaUrl&&p.mediaType==="img";ph+=`<div class="new-prf-post-card" onclick="${hasImg?`openLightbox('${p.mediaUrl}')`:``}"><div style="width:100%;height:100%;background:var(--dark3);display:flex;align-items:center;justify-content:center">${hasImg?`<img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover"/>`:p.texte?`<p style="padding:12px;font-size:12px;color:rgba(255,255,255,.6);text-align:center">${p.texte.substring(0,60)}</p>`:`<i class="fa-solid fa-file" style="color:rgba(255,255,255,.2);font-size:24px"></i>`}</div></div>`;});document.getElementById("upPostsList").innerHTML=ph||`<p style='color:rgba(255,255,255,.4);font-size:12px;padding:8px;text-align:center;grid-column:1/-1'>Aucune publication.</p>`;document.getElementById("upBtnMsg").onclick=()=>{ferm("ovUserProfil");window.openMsg();setTimeout(()=>window.openConv(uid,"direct"),400);};document.getElementById("upBtnAdd").onclick=()=>window.demandeAmi(uid);ouv("ovUserProfil");};
 
 // ===== CLAUDE AI =====
 window.openClaude=()=>ouv("ovClaude");
