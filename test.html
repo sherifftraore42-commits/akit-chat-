@@ -1494,8 +1494,8 @@ function fmtHeure(d){if(!d)return "";const dt=d?.toDate?d.toDate():new Date(d);r
 function getPresenceInfo(u){
   const now=Date.now();
   const dv=u.dernierVu?.toDate?u.dernierVu.toDate():(u.dernierVu?new Date(u.dernierVu):null);
-  if(u.enLigne) return {dot:'#E24B4A', label:'🔴 En ligne'}; // rouge
-  if(dv && (now-dv.getTime())<5*60000) return {dot:'#FF8C00', label:'🟠 Vu à l\'instant'}; // orange <5min
+  if(dv && (now-dv.getTime())<60000) return {dot:'#E24B4A', label:'🔴 En ligne'}; // actif dans les 60 dernières secondes
+  if(dv && (now-dv.getTime())<5*60000) return {dot:'#FF8C00', label:'🟠 Vu à l\'instant'}; // <5min
   if(dv){
     const diffJours=Math.floor((now-dv.getTime())/86400000);
     if(diffJours===0) return {dot:null, label:'Vu à '+dv.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})};
@@ -1531,11 +1531,13 @@ onAuthStateChanged(auth,async fireUser=>{
   UC.id=fireUser.uid;
   if(!snap.exists())await setDoc(doc(db,"users",UC.id),UC);
   updateDoc(doc(db,"users",UC.id),{enLigne:true,dernierVu:serverTimestamp()}).catch(()=>{});
+  setInterval(()=>{ if(UC) updateDoc(doc(db,"users",UC.id),{dernierVu:serverTimestamp()}).catch(()=>{}); }, 30000);
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&UC) updateDoc(doc(db,"users",UC.id),{dernierVu:serverTimestamp()}).catch(()=>{}); });
   if(UC.akit_coin===undefined){UC.akit_coin=0;updateDoc(doc(db,"users",UC.id),{akit_coin:0}).catch(()=>{});}
   mmState.coin.balance=UC.akit_coin||0;
   if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   initUI();renderStories();renderPosts();renderStatutBand();
-  window.addEventListener("beforeunload",()=>marquerEnLigne(false));
+  window.addEventListener("beforeunload",()=>marquerEnLigne(false));   document.addEventListener('visibilitychange',()=>{ if(document.hidden&&UC) marquerEnLigne(false); });
 onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{
   const nb=snap.size;
   majTousBadges('notif',nb);
