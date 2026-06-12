@@ -2126,7 +2126,7 @@ async function loadConvs(q){
     <div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||"U").toUpperCase()}${dotHtml}</div>
     <div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${lastLine}</div></div>
     ${u._hasUnread?'<div class="cv-bdg">●</div>':""}
-  </div>`;}).join("");
+  </div>`;}).join("");}
 window.srchConv=q=>loadConvs(q);
 window.switchMsgTab=(tab)=>{const isConv=tab==='conv';document.getElementById('tabConv').classList.toggle('act',isConv);document.getElementById('tabGroups').classList.toggle('act',!isConv);document.getElementById('listeCv').style.display=isConv?'block':'none';document.getElementById('listeGroupes').style.display=isConv?'none':'block';if(!isConv)loadGroupesList();};
 window.toggleDisappear=(el)=>{el.classList.toggle('on');isDisappear=el.classList.contains('on');};
