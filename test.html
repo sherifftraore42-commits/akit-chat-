@@ -1439,6 +1439,14 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const CL_CLOUD="dvv8gytfp",CL_PRESET="akit_chat_upload";
+  
+  const ICE_SERVERS = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+  ]
+};
 
 // ===== COMPRESSION =====
 function compresserImage(file,maxW=900,qualite=0.72){return new Promise(resolve=>{if(!file.type.startsWith('image/')){resolve(file);return;}const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{const canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);canvas.toBlob(blob=>{resolve(new File([blob],file.name.replace(/\.[^/.]+$/,'.jpg'),{type:'image/jpeg'}));},'image/jpeg',qualite);};img.onerror=()=>resolve(file);img.src=e.target.result;};reader.onerror=()=>resolve(file);reader.readAsDataURL(file);});}
@@ -1632,38 +1640,150 @@ async function renderStatutBand(){
 
 // ===== LIVE =====
 window.ouvrirLive=()=>{ouv('ovStartLive');document.getElementById('liveTitleInput').value='';};
-window.demarrerLive=async()=>{
-  const titre=document.getElementById('liveTitleInput').value.trim()||`Live de ${UC.prenom}`;
+window.demarrerLive = async () => {
+  const titre = document.getElementById('liveTitleInput').value.trim() || `Live de ${UC.prenom}`;
   ferm('ovStartLive');
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true});
-    liveStream=stream;
-    const vid=document.getElementById('liveVideo');
-    vid.srcObject=stream;vid.muted=true;
+
+  try {
+    // 1. Obtenir la caméra/micro
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: true
+    });
+    liveStream = stream;
+
+    // 2. Afficher localement
+    const vid = document.getElementById('liveVideo');
+    vid.srcObject = stream;
+    vid.muted = true;
+    vid.style.transform = 'scaleX(-1)';
     document.getElementById('ovLive').classList.add('open');
-    document.getElementById('liveTitleDisplay').textContent=titre;
-    document.getElementById('liveNoStream').style.display='none';
-    setTimeout(async()=>{try{await vid.play();}catch(e){console.warn(e);}},100);
-    document.getElementById('liveViewerCount').textContent='0';
-    document.getElementById('liveCommentsList').innerHTML='';
-    const liveRef=await addDoc(collection(db,"lives"),{userId:UC.id,nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",titre,viewers:[],coins:0,date:serverTimestamp(),actif:true});
-    currentLiveId=liveRef.id;currentLiveData={id:liveRef.id,titre,userId:UC.id};
-    if(window._liveUnsub)window._liveUnsub();
-    window._liveUnsub=onSnapshot(doc(db,"lives",liveRef.id),s=>{if(s.exists())document.getElementById('liveViewerCount').textContent=(s.data().viewers||[]).length;});
-    if(window._liveComUnsub)window._liveComUnsub();
-    window._liveComUnsub=onSnapshot(query(collection(db,"liveComments",liveRef.id,"msgs"),orderBy("date","asc"),limit(50)),s=>{const list=document.getElementById('liveCommentsList');list.innerHTML='';s.docs.forEach(d=>{const m=d.data();const av=m.avatarUrl?`<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:(m.nom?.[0]||'?').toUpperCase();list.innerHTML+=`<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom||'?'}</div>${m.texte}</div></div>`;});list.scrollTop=list.scrollHeight;});
-    addNotifTous("live",`🔴 ${UC.prenom} est en live ! "${titre}"`);
-  }catch(e){alert("❌ Caméra inaccessible : "+e.message);}
+    document.getElementById('liveTitleDisplay').textContent = titre;
+    document.getElementById('liveNoStream').style.display = 'none';
+    await vid.play().catch(() => {});
+
+    // 3. Créer le document Live dans Firebase
+    const liveRef = await addDoc(collection(db, 'lives'), {
+      userId: UC.id,
+      nom: `${UC.prenom} ${UC.nom}`,
+      avatarUrl: UC.avatarUrl || '',
+      titre,
+      viewers: [],
+      coins: 0,
+      date: serverTimestamp(),
+      actif: true,
+      offer: null,       // sera rempli ci-dessous
+      answer: null,
+    });
+    currentLiveId = liveRef.id;
+
+    // 4. Créer la connexion WebRTC (streamer = offrant)
+    window._peerConnections = window._peerConnections || {};
+    const pc = new RTCPeerConnection(ICE_SERVERS);
+    window._streamerPC = pc;
+
+    // Ajouter les pistes locales
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+    // Collecter les ICE candidates du streamer → Firebase
+    pc.onicecandidate = async (event) => {
+      if (event.candidate) {
+        await addDoc(
+          collection(db, 'lives', liveRef.id, 'streamerCandidates'),
+          event.candidate.toJSON()
+        );
+      }
+    };
+
+    // Créer l'offer
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // Stocker l'offer dans Firebase
+    await updateDoc(doc(db, 'lives', liveRef.id), {
+      offer: { type: offer.type, sdp: offer.sdp }
+    });
+
+    // Écouter les answers des spectateurs
+    if (window._liveAnswerUnsub) window._liveAnswerUnsub();
+    window._liveAnswerUnsub = onSnapshot(doc(db, 'lives', liveRef.id), async (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (data.answer && pc.signalingState === 'have-local-offer') {
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+        } catch (e) {
+          console.warn('setRemoteDescription answer:', e);
+        }
+      }
+    });
+
+    // Écouter les ICE candidates des spectateurs
+    if (window._liveViewerCandUnsub) window._liveViewerCandUnsub();
+    window._liveViewerCandUnsub = onSnapshot(
+      collection(db, 'lives', liveRef.id, 'viewerCandidates'),
+      (snap) => {
+        snap.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const cand = new RTCIceCandidate(change.doc.data());
+            pc.addIceCandidate(cand).catch(e => console.warn('addIceCandidate:', e));
+          }
+        });
+      }
+    );
+
+    // Écouter le compteur de viewers
+    if (window._liveUnsub) window._liveUnsub();
+    window._liveUnsub = onSnapshot(doc(db, 'lives', liveRef.id), s => {
+      if (s.exists()) document.getElementById('liveViewerCount').textContent = (s.data().viewers || []).length;
+    });
+
+    // Écouter les commentaires
+    if (window._liveComUnsub) window._liveComUnsub();
+    window._liveComUnsub = onSnapshot(
+      query(collection(db, 'liveComments', liveRef.id, 'msgs'), orderBy('date', 'asc'), limit(50)),
+      (s) => {
+        const list = document.getElementById('liveCommentsList');
+        list.innerHTML = '';
+        s.docs.forEach(d => {
+          const m = d.data();
+          const av = m.avatarUrl
+            ? `<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
+            : (m.nom?.[0] || '?').toUpperCase();
+          list.innerHTML += `<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom || '?'}</div>${m.texte}</div></div>`;
+        });
+        list.scrollTop = list.scrollHeight;
+      }
+    );
+
+    addNotifTous('live', `🔴 ${UC.prenom} est en live ! "${titre}"`);
+
+  } catch (e) {
+    alert('❌ Caméra inaccessible : ' + e.message);
+  }
 };
-window.terminerLive=async()=>{
-  if(liveStream)liveStream.getTracks().forEach(t=>t.stop());liveStream=null;
+window.terminerLive = async () => {
+  // Fermer la connexion WebRTC
+  if (window._streamerPC) { window._streamerPC.close(); window._streamerPC = null; }
+  if (window._viewerPC) { window._viewerPC.close(); window._viewerPC = null; }
+
+  // Arrêter la caméra
+  if (liveStream) { liveStream.getTracks().forEach(t => t.stop()); liveStream = null; }
+
+  // Nettoyer l'UI
   document.getElementById('ovLive').classList.remove('open');
-  document.getElementById('liveVideo').srcObject=null;
-  if(window._liveUnsub){window._liveUnsub();window._liveUnsub=null;}
-  if(window._liveComUnsub){window._liveComUnsub();window._liveComUnsub=null;}
-  if(window._liveViewUnsub){window._liveViewUnsub();window._liveViewUnsub=null;}
-  if(currentLiveId){try{await updateDoc(doc(db,"lives",currentLiveId),{actif:false});}catch{}}
-  currentLiveId=null;currentLiveData=null;
+  document.getElementById('liveVideo').srcObject = null;
+
+  // Annuler les listeners
+  ['_liveUnsub', '_liveComUnsub', '_liveAnswerUnsub', '_liveViewerCandUnsub', '_liveViewUnsub'].forEach(k => {
+    if (window[k]) { window[k](); window[k] = null; }
+  });
+
+  // Marquer le live comme terminé dans Firebase
+  if (currentLiveId) {
+    try { await updateDoc(doc(db, 'lives', currentLiveId), { actif: false }); } catch {}
+  }
+  currentLiveId = null;
 };
 window.envoyerCommentaireLive=async()=>{
   const inp=document.getElementById('liveInp');const texte=inp.value.trim();if(!texte||!currentLiveId)return;
@@ -1679,22 +1799,100 @@ window.envoyerCadeau=async(emoji,cout)=>{
   await addDoc(collection(db,"liveComments",currentLiveId,"msgs"),{nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte:`envoie ${emoji} (${cout} coins)`,gift:true,date:serverTimestamp()});
   const floatEl=document.createElement('div');floatEl.className='gift-float';floatEl.textContent=emoji;floatEl.style.left=Math.random()*60+20+"%";floatEl.style.bottom='120px';document.body.appendChild(floatEl);setTimeout(()=>floatEl.remove(),2000);
 };
-window.rejoindreLive=async(liveId,liveData)=>{
-  try{await updateDoc(doc(db,"lives",liveId),{viewers:arrayUnion(UC.id)});}catch{}
-  currentLiveId=liveId;currentLiveData={id:liveId,...liveData};
-  document.getElementById('liveVideo').srcObject=null;
-  document.getElementById('liveNoStream').style.display='flex';
+window.rejoindreLive = async (liveId, liveData) => {
+  // Ajouter le viewer
+  try { await updateDoc(doc(db, 'lives', liveId), { viewers: arrayUnion(UC.id) }); } catch {}
+  currentLiveId = liveId;
+
+  // Afficher l'overlay
+  const vid = document.getElementById('liveVideo');
+  vid.srcObject = null;
+  vid.style.transform = 'none'; // pas de miroir pour le spectateur
+  vid.muted = false;
+  document.getElementById('liveNoStream').style.display = 'flex';
+  document.getElementById('liveNoStream').innerHTML = '<div style="font-size:48px">📡</div><div>Connexion en cours...</div>';
   document.getElementById('ovLive').classList.add('open');
-  document.getElementById('liveTitleDisplay').textContent=liveData.titre||'Live';
-  document.getElementById('liveCommentsList').innerHTML='';
-  if(window._liveComUnsub)window._liveComUnsub();
-  window._liveComUnsub=onSnapshot(query(collection(db,"liveComments",liveId,"msgs"),orderBy("date","asc"),limit(50)),s=>{
-    const list=document.getElementById('liveCommentsList');list.innerHTML='';
-    s.docs.forEach(d=>{const m=d.data();const av=m.avatarUrl?`<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:(m.nom?.[0]||'?').toUpperCase();const giftStyle=m.gift?'color:var(--akit-yellow);font-weight:700':'';list.innerHTML+=`<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom||'?'}</div><span style="${giftStyle}">${m.texte}</span></div></div>`;});
-    list.scrollTop=list.scrollHeight;
+  document.getElementById('liveTitleDisplay').textContent = liveData.titre || 'Live';
+
+  // Créer la connexion WebRTC (spectateur = répondant)
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  window._viewerPC = pc;
+
+  // Quand on reçoit les pistes du streamer → les afficher
+  pc.ontrack = (event) => {
+    if (event.streams && event.streams[0]) {
+      vid.srcObject = event.streams[0];
+      vid.muted = false;
+      document.getElementById('liveNoStream').style.display = 'none';
+      vid.play().catch(() => {});
+    }
+  };
+
+  // ICE candidates du spectateur → Firebase
+  pc.onicecandidate = async (event) => {
+    if (event.candidate) {
+      await addDoc(
+        collection(db, 'lives', liveId, 'viewerCandidates'),
+        event.candidate.toJSON()
+      );
+    }
+  };
+
+  // Récupérer l'offer du streamer
+  const liveSnap = await getDoc(doc(db, 'lives', liveId));
+  if (!liveSnap.exists() || !liveSnap.data().offer) {
+    alert('❌ Live introuvable ou pas encore prêt.');
+    return;
+  }
+  const offer = liveSnap.data().offer;
+
+  // Appliquer l'offer + créer l'answer
+  await pc.setRemoteDescription(new RTCSessionDescription(offer));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  // Stocker l'answer dans Firebase
+  await updateDoc(doc(db, 'lives', liveId), {
+    answer: { type: answer.type, sdp: answer.sdp }
   });
-  if(window._liveViewUnsub)window._liveViewUnsub();
-  window._liveViewUnsub=onSnapshot(doc(db,"lives",liveId),s=>{if(s.exists())document.getElementById('liveViewerCount').textContent=(s.data().viewers||[]).length;});
+
+  // Écouter les ICE candidates du streamer
+  if (window._liveViewUnsub) window._liveViewUnsub();
+  window._liveViewUnsub = onSnapshot(
+    collection(db, 'lives', liveId, 'streamerCandidates'),
+    (snap) => {
+      snap.docChanges().forEach(change => {
+        if (change.type === 'added') {
+          pc.addIceCandidate(new RTCIceCandidate(change.doc.data()))
+            .catch(e => console.warn('viewer addIceCandidate:', e));
+        }
+      });
+    }
+  );
+
+  // Écouter les commentaires
+  if (window._liveComUnsub) window._liveComUnsub();
+  window._liveComUnsub = onSnapshot(
+    query(collection(db, 'liveComments', liveId, 'msgs'), orderBy('date', 'asc'), limit(50)),
+    (s) => {
+      const list = document.getElementById('liveCommentsList');
+      list.innerHTML = '';
+      s.docs.forEach(d => {
+        const m = d.data();
+        const av = m.avatarUrl
+          ? `<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
+          : (m.nom?.[0] || '?').toUpperCase();
+        const giftStyle = m.gift ? 'color:var(--akit-yellow);font-weight:700' : '';
+        list.innerHTML += `<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom || '?'}</div><span style="${giftStyle}">${m.texte}</span></div></div>`;
+      });
+      list.scrollTop = list.scrollHeight;
+    }
+  );
+
+  // Compteur viewers
+  onSnapshot(doc(db, 'lives', liveId), s => {
+    if (s.exists()) document.getElementById('liveViewerCount').textContent = (s.data().viewers || []).length;
+  });
 };
 function renderLiveStories(lives){
   const actifs=lives.filter(l=>l.actif&&l.userId!==UC?.id);
