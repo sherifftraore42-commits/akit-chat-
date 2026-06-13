@@ -1613,9 +1613,86 @@ window.fermerSearch=()=>{document.getElementById('searchOverlay').classList.remo
 window.rechercherUsers=async q=>{const res=document.getElementById('searchResults');if(!q.trim()){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Tapez pour rechercher...</p>`;return;}const uMap=await getUsers();const found=Object.entries(uMap).filter(([id,u])=>id!==UC?.id&&`${u.prenom||''} ${u.nom||''}`.toLowerCase().includes(q.toLowerCase())).map(([id,u])=>({id,...u}));if(found.length===0){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Aucun résultat</p>`;return;}res.innerHTML=found.map(u=>`<div class="s-item" onclick="fermerSearch();openMsg();setTimeout(()=>openConv('${u.id}','direct'),300)"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase()}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${u.prenom||''} ${u.nom||''}</div><div style="font-size:12px;color:var(--texte2)">${getPresenceInfo(u).label}</div></div></div>`).join('');};
 
 // ===== AUTH =====
-onAuthStateChanged(auth,async fireUser=>{
-  if(!fireUser){window.location.replace("index.html");return;}
-  const snap=await getDoc(doc(db,"users",fireUser.uid));
+onAuthStateChanged(auth, async fireUser => {
+  if (!fireUser) { window.location.replace("index.html"); return; }
+
+  const snap = await getDoc(doc(db, "users", fireUser.uid));
+
+  // Compte supprimé ou inexistant
+  if (!snap.exists()) {
+    await signOut(auth);
+    alert("❌ Votre compte a été supprimé par l'administrateur.");
+    window.location.replace("index.html");
+    return;
+  }
+
+  const userData = snap.data();
+
+  // Compte banni
+  if (userData.banni || userData.supprime) {
+    await signOut(auth);
+    alert("❌ " + (userData.supprime 
+      ? "Votre compte a été supprimé du réseau par l'administrateur." 
+      : "Votre compte a été suspendu. Contactez l'administrateur."));
+    window.location.replace("index.html");
+    return;
+  }
+
+  UC = { ...userData, id: fireUser.uid };
+
+  // ✅ SURVEILLANCE EN TEMPS RÉEL — détecte suppression/bannissement immédiat
+  const { onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  
+  const unsubWatch = onSnapshot(doc(db, "users", fireUser.uid), async (snap2) => {
+    // Document supprimé de Firestore
+    if (!snap2.exists()) {
+      unsubWatch();
+      await signOut(auth);
+      // Afficher message et rediriger
+      document.body.innerHTML = `
+        <div style="position:fixed;inset:0;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:Poppins,sans-serif;text-align:center;padding:20px;">
+          <div style="font-size:64px">🚫</div>
+          <div style="font-size:22px;font-weight:800;color:#fff">Compte supprimé</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.6);max-width:320px;line-height:1.7">
+            Votre compte a été supprimé du réseau AKIT-CHAT par l'administrateur.<br><br>
+            Toutes vos données ont été effacées définitivement.
+          </div>
+          <button onclick="window.location.replace('index.html')" 
+            style="background:#5B4CF5;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px">
+            Retour à l'accueil
+          </button>
+        </div>`;
+      return;
+    }
+
+    const d2 = snap2.data();
+
+    // Document existe mais marqué supprimé ou banni
+    if (d2.supprime || d2.banni) {
+      unsubWatch();
+      await signOut(auth);
+      document.body.innerHTML = `
+        <div style="position:fixed;inset:0;background:#0a0f1e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;font-family:Poppins,sans-serif;text-align:center;padding:20px;">
+          <div style="font-size:64px">${d2.supprime ? '🚫' : '🔒'}</div>
+          <div style="font-size:22px;font-weight:800;color:#fff">${d2.supprime ? 'Compte supprimé' : 'Compte suspendu'}</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.6);max-width:320px;line-height:1.7">
+            ${d2.supprime 
+              ? 'Votre compte a été supprimé du réseau AKIT-CHAT par l\'administrateur.' 
+              : 'Votre compte a été suspendu. Contactez l\'administrateur pour plus d\'informations.'}
+          </div>
+          <button onclick="window.location.replace('index.html')" 
+            style="background:#5B4CF5;color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px">
+            Retour à l'accueil
+          </button>
+        </div>`;
+      return;
+    }
+  });
+
+  // Suite normale de l'initialisation...
+  // (le reste de votre code initUI(), renderStories(), etc.)
+  mmState.coin.balance = UC.akit_coin || 0;
+  // ... votre code existant continue ici
   UC=snap.exists()?snap.data():{id:fireUser.uid,nom:"",prenom:fireUser.displayName||"Utilisateur",email:fireUser.email,avatarUrl:null,coverUrl:null,bio:"",enLigne:true,date_inscription:new Date().toISOString(),akit_coin:0};
   UC.id=fireUser.uid;
   if(!snap.exists())await setDoc(doc(db,"users",UC.id),UC);
