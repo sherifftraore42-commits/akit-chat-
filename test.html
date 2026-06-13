@@ -877,7 +877,7 @@ setTimeout(step,300);
     <div class="sv-bottom-bar">
       <div class="sv-actions-row">
         <input class="sv-comment-inp" id="svCInp" placeholder="Répondre à cette story..." onfocus="pauseStory()" onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()" onkeydown="if(event.key==='Enter')sendSvC()"/>
-        <button class="sv-more-btn" onclick="toggleSvOptions()" id="svMoreBtn"><i class="fas fa-ellipsis-h"></i></button>
+        <button class="sv-more-btn" onclick="toggleSvOptions()" id="svMoreBtn" style="display:none"><i class="fas fa-ellipsis-h"></i></button>
         <button class="sv-send-btn" onclick="sendSvC()"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
@@ -2348,9 +2348,28 @@ async function affSV(){
   else musicBadge.style.display='none';
   afficherReactionsStory(s);
   const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVu");
+  // Afficher bouton "..." seulement au propriétaire
+const moreBtn=document.getElementById('svMoreBtn');
+if(moreBtn)moreBtn.style.display=isOwn?'flex':'none';
+// Fermer le menu options si on change de story
+document.getElementById('svOptionsMenu').style.display='none';
+document.getElementById('svCPanel').classList.remove('open');
+document.getElementById('svViewsPanel').classList.remove('open');
   if(isOwn){vuEl.textContent=`👁 ${s.vues||0} vue(s)`;vuEl.classList.add("show");}else vuEl.classList.remove("show");
   getDoc(doc(db,"users",s.userId)).then(ud=>{const u=ud.exists()?ud.data():{prenom:"?"};document.getElementById("svNm").textContent=`${u.prenom||""} ${u.nom||""}`.trim();const avEl=document.getElementById("svAv2");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}"/>`: `<span style="color:#fff;font-weight:700;font-size:12px">${(u.prenom?.[0]||"?").toUpperCase()}</span>`;});
-  if(!isOwn&&!(s.vuPar||[]).includes(UC.id)){updateDoc(doc(db,"stories",s.id),{vues:(s.vues||0)+1,vuPar:[...(s.vuPar||[]),UC.id]});svData[svIdx].vues=(s.vues||0)+1;svData[svIdx].vuPar=[...(s.vuPar||[]),UC.id];}
+  if(!isOwn&&!(s.vuPar||[]).includes(UC.id)){
+  const newVuPar=[...(s.vuPar||[]),UC.id];
+  const newVues=(s.vues||0)+1;
+  await updateDoc(doc(db,"stories",s.id),{
+    vues:newVues,
+    vuPar:newVuPar
+  });
+  // Mettre à jour localement aussi
+  svData[svIdx].vues=newVues;
+  svData[svIdx].vuPar=newVuPar;
+  // Mettre à jour le compteur affiché
+  document.getElementById('svVuCount').textContent=newVuPar.filter(id=>id!==s.userId).length;
+}
   if(!isOwn){const notifKey=`story_vu_${s.id}`;if(!sessionStorage.getItem(notifKey)){sessionStorage.setItem(notifKey,'1');addNotif(s.userId,"story_vu",`👁 ${UC.prenom} a vu votre story`);}}
   const bar=document.getElementById("svPr");bar.innerHTML="";svData.forEach((_,i)=>{const seg=document.createElement("div");seg.className="sp-s";const fill=document.createElement("div");fill.className="sp-f";fill.id=`spf${i}`;if(i<svIdx)fill.style.width="100%";seg.appendChild(fill);bar.appendChild(seg);});
   // Bouton supprimer sa propre story
