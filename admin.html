@@ -1190,8 +1190,14 @@ window.deleteUser = async function(uid, name) {
     for (const d of lmSnap1.docs) await deleteDoc(doc(db, 'lastMessages', d.id));
     const lmSnap2 = await getDocs(query(collection(db, 'lastMessages'), where('dest', '==', uid)));
     for (const d of lmSnap2.docs) await deleteDoc(doc(db, 'lastMessages', d.id));
-
-await updateDoc(doc(db, 'users', uid), { banni: true });
+    try {
+      await setDoc(doc(db, 'users', uid), { 
+        supprime: true, 
+        banni: true,
+        supprimeAt: new Date().toISOString()
+      }, { merge: true });
+    } catch(e) {}
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await deleteDoc(doc(db, 'users', uid));
 
     // Mise à jour locale immédiate
