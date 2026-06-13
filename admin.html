@@ -434,8 +434,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
 
     <div class="content">
-      <div class="content">
-
   <!-- BOUTON RETOUR GLOBAL -->
   <button class="back-btn" id="backBtn" onclick="goBack()">
     <i class="fas fa-arrow-left"></i> Retour
@@ -954,21 +952,6 @@ window.goBack = function() {
   }
 
   addLog('Retour : ' + (panelTitles[prevId] || prevId));
-};
-
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
-  const panel = document.getElementById('panel-' + id);
-  if (panel) panel.classList.add('active');
-  if (btn) btn.classList.add('active');
-  document.getElementById('tbTitle').textContent = panelTitles[id] || id;
-  addLog('Navigation : ' + (panelTitles[id] || id));
-  if (id === 'posts') loadPosts();
-  else if (id === 'stories') loadStories();
-  else if (id === 'activity') loadActivity();
-  else if (id === 'transactions') loadTransactions();
-  else if (id === 'mobilemoney') loadMMPanel();
-  else if (id === 'roles') loadRoles();
 };
 // HELPERS
 function fmtDate(d) {
