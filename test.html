@@ -2848,6 +2848,25 @@ window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behav
 
 // BLOQUER RETOUR
 (function(){history.pushState(null,'',location.href);history.pushState(null,'',location.href);window.addEventListener('popstate',()=>history.pushState(null,'',location.href));document.addEventListener('touchstart',e=>{if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20)e.preventDefault();},{passive:false});})();
+window.sendSvC2 = async () => {
+  const inp = document.getElementById("svCInp2");
+  const texte = inp.value.trim();
+  if (!texte) return;
+  const s = svData[svIdx];
+  const c = {
+    user: `${UC.prenom} ${UC.nom}`,
+    avatarUrl: UC.avatarUrl || "",
+    texte,
+    time: "Maintenant",
+    userId: UC.id
+  };
+  const newC = [...(s.comments || []), c];
+  await updateDoc(doc(db, "stories", s.id), { comments: newC });
+  svData[svIdx].comments = newC;
+  document.getElementById("svCC").textContent = newC.length;
+  addNotif(s.userId, "comment_story", `${UC.prenom} a commenté votre story`);
+  inp.value = "";
+};
 </script>
 </body>
 </html>
