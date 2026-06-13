@@ -1046,8 +1046,13 @@ setTimeout(step,300);
 
   <nav class="bottom-nav">
     <button class="bn-btn actif" onclick="scrollTop()"><i class="fa-solid fa-house"></i><span>Accueil</span></button>
-    <button class="bn-btn" id="bnVideos" onclick="ouvrirVideos()">
-  <i class="fa-solid fa-clapperboard-play" style="color:#E24B4A;font-size:24px"></i>
+<button class="bn-btn" id="bnVideos" onclick="ouvrirVideos()">
+  <div style="position:relative;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin:0 auto">
+    <i class="fa-solid fa-photo-film" style="font-size:20px;background:linear-gradient(135deg,#E24B4A,#7c3aed);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent"></i>
+    <div style="position:absolute;bottom:-3px;right:-3px;width:11px;height:11px;background:linear-gradient(135deg,#E24B4A,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--blanc)">
+      <i class="fa-solid fa-play" style="font-size:5px;color:#fff;margin-left:0.5px"></i>
+    </div>
+  </div>
   <span>Vidéos</span>
 </button>
     <div class="bn-plus-btn" id="bnPlusBtn" onclick="togglePlusMenu()">
@@ -1624,7 +1629,7 @@ let postFile=null,postType=null,storyFile=null;
 let pendAvFile=null,pendCoverFile=null;
 let unsubPosts=null,unsubMsgs=null,unsubTyping=null;
 let prevNotifCount=-1,prevMsgCount=-1;
-const POSTS_PER_PAGE=10;
+const POSTS_PER_PAGE=6;
 let lastPostDoc=null,allPostsLoaded=false;
 let typingTimeout=null,isDisappear=false;
 let replyMsg=null,replyMsgFrom=null;
@@ -1632,7 +1637,7 @@ let mediaRecorder=null,audioChunks=[],recordInterval=null,recordSec=0,isRecordin
 let waveAnimFrame=null,wavePoints=[];
 const REACTIONS=['❤️','🔥','👏','😮','😍'],REACT_IDS=['heart','fire','clap','wow','love'];
 let uMapCache=null,uMapCacheTime=0;
-const CACHE_TTL=60000;
+const CACHE_TTL=300000;
 let membresGroupeSelectionnes=new Set(),tousMembresGroupe=[];
 let liveStream=null,currentLiveData=null,currentLiveId=null;
 let storyTextPos='top',storyTextColor='#ffffff';
@@ -2649,12 +2654,11 @@ function buildVideoCard(v, i, uMap) {
     flex-shrink:0;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;">
 
     <video
-      src="${v.videoUrl}"
-      style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
-      loop playsinline preload="metadata"
+      data-src="${v.videoUrl}"
+      style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;background:#0a0a0a"
+      loop playsinline preload="none"
       onclick="toggleVideoPlay(this)"
     ></video>
-
     <!-- Overlay dégradé bas -->
     <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 50%);pointer-events:none"></div>
 
@@ -2682,45 +2686,45 @@ function buildVideoCard(v, i, uMap) {
     </div>
 
     <!-- Actions droite -->
-    <div style="position:absolute;bottom:100px;right:12px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:5">
+    <!-- Actions droite - design unique AKIT -->
+    <div style="position:absolute;bottom:100px;right:10px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:5">
       <!-- Like -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-        <button onclick="likerShortVideo('${v.id}',${i},this)" style="
-          width:48px;height:48px;border-radius:50%;
-          background:${isLiked ? 'rgba(226,75,74,.35)' : 'rgba(255,255,255,.15)'};
-          border:none;color:${isLiked ? '#E24B4A' : '#fff'};font-size:22px;cursor:pointer;
-          backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;
-          transition:transform .2s,background .2s" id="likeBtn_${v.id}">
+        <button onclick="likerShortVideo('${v.id}',${i},this)" id="likeBtn_${v.id}" style="
+          width:50px;height:50px;border-radius:16px;
+          background:${isLiked ? 'linear-gradient(135deg,#E24B4A,#FF8C00)' : 'rgba(255,255,255,.10)'};
+          border:1px solid rgba(255,255,255,.18);color:#fff;font-size:21px;cursor:pointer;
+          backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;
+          transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s">
           <i class="fas fa-heart"></i>
         </button>
-        <span style="color:#fff;font-size:12px;font-weight:700" id="likeCount_${v.id}">${v.likes || 0}</span>
+        <span style="color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.6)" id="likeCount_${v.id}">${v.likes || 0}</span>
       </div>
       <!-- Commenter -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
         <button onclick="ouvrirCommentsVideo('${v.id}')" style="
-          width:48px;height:48px;border-radius:50%;
-          background:rgba(255,255,255,.15);border:none;color:#fff;font-size:20px;cursor:pointer;
-          backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center">
+          width:50px;height:50px;border-radius:16px;
+          background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:20px;cursor:pointer;
+          backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center">
           <i class="fas fa-comment-dots"></i>
         </button>
-        <span style="color:#fff;font-size:12px;font-weight:700">${(v.comments || []).length}</span>
+        <span style="color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.6)" id="cmtCount_${v.id}">${(v.comments || []).length}</span>
       </div>
       <!-- Partager -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
         <button onclick="partagerShortVideo('${v.id}')" style="
-          width:48px;height:48px;border-radius:50%;
-          background:rgba(255,255,255,.15);border:none;color:#fff;font-size:20px;cursor:pointer;
-          backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center">
+          width:50px;height:50px;border-radius:16px;
+          background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:20px;cursor:pointer;
+          backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center">
           <i class="fas fa-share-nodes"></i>
         </button>
-        <span style="color:#fff;font-size:12px;font-weight:700">${v.shares || 0}</span>
+        <span style="color:#fff;font-size:11px;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,.6)" id="shareCount_${v.id}">${v.shares || 0}</span>
       </div>
-      <!-- Disque tournant -->
-      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#333);border:3px solid #fff;display:flex;align-items:center;justify-content:center;animation:spinDisc 4s linear infinite;overflow:hidden">
-        ${v.userAvatar ? `<img src="${v.userAvatar}" style="width:100%;height:100%;object-fit:cover"/>` : `<i class="fas fa-music" style="color:#fff;font-size:14px"></i>`}
-      </div>
-    </div>
-
+      <!-- Avatar avec anneau dégradé tournant (signature AKIT, ni FB ni TikTok) -->
+      <div style="width:48px;height:48px;border-radius:16px;background:conic-gradient(from 0deg,#00FF88,#FFD700,#E24B4A,#7c3aed,#00FF88);padding:3px;animation:spinDisc 5s linear infinite;margin-top:4px">
+        <div style="width:100%;height:100%;border-radius:13px;overflow:hidden;background:#0a0a0a;display:flex;align-items:center;justify-content:center">
+          ${v.userAvatar ? `<img src="${v.userAvatar}" style="width:100%;height:100%;object-fit:cover"/>` : `<span style="color:#fff;font-weight:800;font-size:16px">${(v.userNom?.[0]||'?').toUpperCase()}</span>`}
+        </div></div></div>
     <!-- Barre de vues en haut -->
     <div style="position:absolute;top:68px;left:14px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.35);border-radius:50px;padding:4px 10px;backdrop-filter:blur(4px)">
       <i class="fas fa-eye" style="color:rgba(255,255,255,.7);font-size:11px"></i>
@@ -2728,19 +2732,26 @@ function buildVideoCard(v, i, uMap) {
     </div>
   </div>`;
 }
-
 function setupVideoObserver() {
   if (videoObserver) videoObserver.disconnect();
   videoObserver = new IntersectionObserver((entries) => {
-    entries.forEach(async entry => {
+    entries.forEach(entry => {
       const slide = entry.target;
       const vid = slide.querySelector('video');
       const idx = parseInt(slide.dataset.idx);
-      if (!vid) return;
-
-      if (entry.isIntersecting) {
-        // Pause toutes les autres
-        document.querySelectorAll('#videoFeed video').forEach(v => { if (v !== vid) v.pause(); });
+      if (!vid) return; if (entry.isIntersecting) {
+        if (!vid.src && vid.dataset.src) {
+          vid.src = vid.dataset.src;
+        }
+        document.querySelectorAll('#videoFeed video').forEach(v => {
+          if (v !== vid) {
+            v.pause();
+            if (v.src) {
+              v.removeAttribute('src');
+              v.load();
+            }
+          }
+        });
         vid.play().catch(() => {});
         // Incrémenter les vues
         const v = shortVideosCache[idx];
@@ -2753,7 +2764,7 @@ function setupVideoObserver() {
         vid.pause();
       }
     });
-  }, { threshold: 0.7 });
+  }, { threshold: 0.6, rootMargin: '150% 0px 150% 0px' });
 
   document.querySelectorAll('.short-video-slide').forEach(slide => videoObserver.observe(slide));
 }
@@ -2774,7 +2785,6 @@ window.toggleVideoPlay = (vid) => {
     }
   }
 };
-
 window.likerShortVideo = async (id, idx, btn) => {
   const snap = await getDoc(doc(db, 'shortvideos', id));
   if (!snap.exists()) return;
@@ -2787,17 +2797,18 @@ window.likerShortVideo = async (id, idx, btn) => {
 
   await updateDoc(doc(db, 'shortvideos', id), { likes: newLikes, likedBy: newLikedBy });
 
-  // Mise à jour UI
+  // Mise à jour UI (nouveau style boutons carrés arrondis)
   const countEl = document.getElementById(`likeCount_${id}`);
   if (countEl) countEl.textContent = newLikes;
-  btn.style.color = liked ? '#fff' : '#E24B4A';
-  btn.style.background = liked ? 'rgba(255,255,255,.15)' : 'rgba(226,75,74,.35)';
-  btn.style.transform = 'scale(1.3)';
+  btn.style.background = liked ? 'rgba(255,255,255,.10)' : 'linear-gradient(135deg,#E24B4A,#FF8C00)';
+  btn.style.transform = 'scale(1.25)';
   setTimeout(() => btn.style.transform = 'scale(1)', 200);
 
   if (!liked) {
     animerReaction('❤️');
     if (v.userId !== UC.id) addNotif(v.userId, 'like', `❤️ ${UC.prenom} a aimé ta vidéo`);
+    // Récompense AKIT Coin pour un like
+    await addCoins(2, '❤️ Like vidéo');
   }
 
   // Mettre à jour le cache
@@ -2806,45 +2817,57 @@ window.likerShortVideo = async (id, idx, btn) => {
     shortVideosCache[idx].likedBy = newLikedBy;
   }
 };
-
 window.ouvrirCommentsVideo = async (id) => {
+  document.querySelectorAll('.vid-comment-panel').forEach(el => el.remove());
   const snap = await getDoc(doc(db, 'shortvideos', id));
   if (!snap.exists()) return;
   const v = snap.data();
   const uMap = await getUsers();
   const comments = v.comments || [];
+  const isLiked = (v.likedBy || []).includes(UC.id);
 
   const modal = document.createElement('div');
-  modal.style.cssText = `position:fixed;bottom:0;left:0;right:0;z-index:7000;background:rgba(10,10,10,.97);border-radius:20px 20px 0 0;max-height:65vh;display:flex;flex-direction:column;border-top:.5px solid rgba(255,255,255,.1);animation:su .25s ease`;
+  modal.className = 'vid-comment-panel';
+  modal.style.cssText = `position:fixed;bottom:0;left:0;right:0;z-index:7000;background:rgba(14,14,18,.98);border-radius:22px 22px 0 0;max-height:72vh;display:flex;flex-direction:column;border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -10px 40px rgba(0,0,0,.5);animation:su .25s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px)`;
   modal.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:.5px solid rgba(255,255,255,.08)">
-      <span style="color:#fff;font-size:14px;font-weight:700">💬 Commentaires (${comments.length})</span>
-      <button onclick="this.closest('[style]').remove()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px">✕</button>
+    <div style="display:flex;align-items:center;justify-content:center;padding:10px 0 6px">
+      <div style="width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:4px"></div>
     </div>
-    <div style="flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 18px 12px;border-bottom:.5px solid rgba(255,255,255,.08)">
+      <span style="color:#fff;font-size:15px;font-weight:800">💬 ${comments.length} commentaire${comments.length===1?'':'s'}</span>
+      <button onclick="this.closest('.vid-comment-panel').remove()" style="background:rgba(255,255,255,.08);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px">✕</button>
+    </div>
+    <div id="vidCmtList_${id}" style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:14px">
       ${comments.length === 0
-        ? `<p style="text-align:center;color:rgba(255,255,255,.4);padding:20px">Aucun commentaire</p>`
+        ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,.4)"><div style="font-size:36px;margin-bottom:8px">💬</div><div style="font-size:13px">Aucun commentaire pour l'instant.<br>Soyez le premier à réagir !</div></div>`
         : comments.map(c => {
             const cu = uMap[c.userId] || {};
             const av = cu.avatarUrl ? `<img src="${cu.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>` : (c.userPrenom?.[0] || '?').toUpperCase();
-            return `<div style="display:flex;gap:9px;align-items:flex-start">
-              <div style="width:30px;height:30px;border-radius:50%;background:var(--bleu);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">${av}</div>
-              <div style="background:rgba(255,255,255,.07);border-radius:0 10px 10px 10px;padding:8px 12px;flex:1">
-                <div style="font-size:11px;font-weight:700;color:#00FF88;margin-bottom:3px">${c.userPrenom || '?'}</div>
-                <div style="font-size:13px;color:rgba(255,255,255,.85)">${c.texte}</div>
+            return `<div style="display:flex;gap:10px;align-items:flex-start">
+              <div style="width:34px;height:34px;border-radius:50%;background:var(--bleu);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${av}</div>
+              <div style="flex:1">
+                <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:4px 14px 14px 14px;padding:9px 13px">
+                  <div style="font-size:11px;font-weight:800;color:#00FF88;margin-bottom:3px">${c.userPrenom || '?'}</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,.9);line-height:1.4">${c.texte}</div>
+                </div>
+                <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:4px;margin-left:4px">${c.time||''}</div>
               </div>
             </div>`;
           }).join('')}
     </div>
-    <div style="display:flex;gap:8px;padding:10px 14px;border-top:.5px solid rgba(255,255,255,.08)">
-      <input id="vidCmtInp" placeholder="Ajouter un commentaire..." style="flex:1;background:rgba(255,255,255,.1);border:.5px solid rgba(255,255,255,.15);border-radius:50px;padding:10px 16px;color:#fff;font-size:13px;outline:none"/>
-      <button onclick="envoyerCommentVideo('${id}',this.closest('[style]'))" style="background:linear-gradient(135deg,#E24B4A,#7c3aed);border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="fas fa-paper-plane"></i></button>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-top:.5px solid rgba(255,255,255,.08);padding-bottom:max(12px, env(safe-area-inset-bottom))">
+      <button onclick="likerShortVideo('${id}',-1,this)" style="background:${isLiked?'linear-gradient(135deg,#E24B4A,#FF8C00)':'rgba(255,255,255,.08)'};border:1px solid rgba(255,255,255,.15);color:#fff;width:42px;height:42px;border-radius:14px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-heart"></i></button>
+      <input id="vidCmtInp_${id}" placeholder="Écrire un commentaire..." style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:50px;padding:11px 18px;color:#fff;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')envoyerCommentVideo('${id}',this.closest('.vid-comment-panel'))"/>
+      <button onclick="envoyerCommentVideo('${id}',this.closest('.vid-comment-panel'))" style="background:linear-gradient(135deg,#E24B4A,#7c3aed);border:none;color:#fff;width:44px;height:44px;border-radius:14px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(124,58,237,.4)"><i class="fas fa-paper-plane"></i></button>
     </div>`;
   document.body.appendChild(modal);
+  // Scroll vers le bas pour voir les derniers commentaires
+  const list = modal.querySelector(`#vidCmtList_${id}`);
+  if(list) list.scrollTop = list.scrollHeight;
 };
-
-window.envoyerCommentVideo = async (id, modal) => {
-  const inp = modal.querySelector('#vidCmtInp');
+  window.envoyerCommentVideo = async (id, modal) => {
+  const inp = modal.querySelector(`#vidCmtInp_${id}`);
+  if (!inp) return;
   const texte = inp.value.trim();
   if (!texte) return;
   inp.value = '';
@@ -2853,20 +2876,38 @@ window.envoyerCommentVideo = async (id, modal) => {
   if (!snap.exists()) return;
   const v = snap.data();
   const newCmt = { userId: UC.id, userPrenom: UC.prenom, texte, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) };
-  await updateDoc(doc(db, 'shortvideos', id), { comments: [...(v.comments || []), newCmt] });
+  const newComments = [...(v.comments || []), newCmt];
+  await updateDoc(doc(db, 'shortvideos', id), { comments: newComments });
   if (v.userId !== UC.id) addNotif(v.userId, 'comment', `💬 ${UC.prenom} a commenté ta vidéo`);
+
+  // Récompense AKIT Coin pour un commentaire
+  await addCoins(5, '💬 Commentaire vidéo');
+
+  // Mettre à jour le compteur sur la vidéo en arrière-plan
+  const cmtCountEl = document.getElementById(`cmtCount_${id}`);
+  if (cmtCountEl) cmtCountEl.textContent = newComments.length;
+  const idx = shortVideosCache.findIndex(x => x.id === id);
+  if (idx !== -1) shortVideosCache[idx].comments = newComments;
+
+  // Rafraîchir le panneau sans tout fermer/rouvrir (plus fluide)
   modal.remove();
   ouvrirCommentsVideo(id);
 };
-
 window.partagerShortVideo = async (id) => {
   const url = `https://akit-chat.vercel.app/test.html?video=${id}`;
   if (navigator.share) {
-    try { await navigator.share({ title: 'AKIT-CHAT', url }); } catch {}
+    try { await navigator.share({ title: 'AKIT-CHAT', url }); } catch { return; }
   } else {
     navigator.clipboard.writeText(url).then(() => alert('✅ Lien copié !'));
   }
-  await updateDoc(doc(db, 'shortvideos', id), { shares: 1 }).catch(() => {});
+  const snap = await getDoc(doc(db, 'shortvideos', id));
+  if (!snap.exists()) return;
+  const newShares = (snap.data().shares || 0) + 1;
+  await updateDoc(doc(db, 'shortvideos', id), { shares: newShares }).catch(() => {});
+  const countEl = document.getElementById(`shareCount_${id}`);
+  if (countEl) countEl.textContent = newShares;
+  // Récompense AKIT Coin pour un partage
+  await addCoins(3, '🔁 Partage vidéo');
 };
 </script>
   <!-- ===== OVERLAY VIDEOS TIKTOK-STYLE ===== -->
