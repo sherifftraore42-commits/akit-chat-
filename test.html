@@ -990,8 +990,6 @@ setTimeout(step,300);
       <div class="bn-plus-icon"><i class="fas fa-plus"></i></div>
       <span>Plus</span>
       <div class="plus-menu" id="plusMenu" onclick="event.stopPropagation()">
-        <button class="plus-menu-item" onclick="closePlusMenu();openMsg()"><div class="pm-ico-wrap" style="background:#e8f0fe"><i class="fa-solid fa-message" style="color:var(--bleu)"></i></div> Messages</button>
-        <button class="plus-menu-item" onclick="closePlusMenu();openNotif()"><div class="pm-ico-wrap" style="background:#fce4ec"><i class="fa-solid fa-bell" style="color:#E24B4A"></i></div> Notifications</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openJeux()"><div class="pm-ico-wrap" style="background:#f3e8ff"><i class="fa-solid fa-gamepad" style="color:#7c3aed"></i></div> Jeux & Défis</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openMobileMoney()"><div class="pm-ico-wrap" style="background:#fff3e0"><i class="fa-solid fa-mobile-screen-button" style="color:var(--om-orange)"></i></div> Mobile Money</button>
         <button class="plus-menu-item" onclick="closePlusMenu();openCoin()"><div class="pm-ico-wrap" style="background:#fffde7"><i class="fa-solid fa-coins" style="color:var(--akit-yellow)"></i></div> AKIT Coin</button>
@@ -1598,7 +1596,113 @@ function compresserImage(file,maxW=900,qualite=0.72){return new Promise(resolve=
 const compresserAvatar=f=>compresserImage(f,400,0.8);
 const compresserStory=f=>compresserImage(f,1080,0.75);
 const compresserPost=f=>compresserImage(f,900,0.72);
+// ===== COMPRESSION VIDEO =====
+function compresserVideo(file, maxSizeMo = 15) {
+  return new Promise((resolve, reject) => {
+    const maxBytes = maxSizeMo * 1024 * 1024;
+    
+    // Si la vidéo est déjà petite, on la retourne directement
+    if (file.size <= maxBytes) {
+      resolve(file);
+      return;
+    }
 
+    // Vérifier si le navigateur supporte la compression vidéo
+    if (!window.MediaRecorder) {
+      // Pas de support : on rejette si trop grande
+      if (file.size > 50 * 1024 * 1024) {
+        reject(new Error(`Vidéo trop grande (${(file.size/1024/1024).toFixed(1)}Mo). Maximum 50Mo.`));
+      } else {
+        resolve(file); // On accepte quand même si moins de 50Mo
+      }
+      return;
+    }
+
+    const video = document.createElement('video');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const chunks = [];
+    
+    video.muted = true;
+    video.src = URL.createObjectURL(file);
+    
+    video.onloadedmetadata = () => {
+      // Réduire la résolution si nécessaire
+      let width = video.videoWidth;
+      let height = video.videoHeight;
+      const maxDim = 720; // Max 720p
+      
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round(height * maxDim / width);
+          width = maxDim;
+        } else {
+          width = Math.round(width * maxDim / height);
+          height = maxDim;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Vérifier les codecs supportés
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
+        ? 'video/webm;codecs=vp8'
+        : 'video/webm';
+      
+      const stream = canvas.captureStream(25); // 25 fps
+      const recorder = new MediaRecorder(stream, {
+        mimeType,
+        videoBitsPerSecond: 800000 // 800kbps = bonne qualité, taille réduite
+      });
+      
+      recorder.ondataavailable = e => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      
+      recorder.onstop = () => {
+        URL.revokeObjectURL(video.src);
+        const blob = new Blob(chunks, { type: mimeType });
+        const nomFichier = file.name.replace(/\.[^/.]+$/, '.webm');
+        const fichierCompresse = new File([blob], nomFichier, { type: mimeType });
+        
+        console.log(`Vidéo: ${(file.size/1024/1024).toFixed(1)}Mo → ${(blob.size/1024/1024).toFixed(1)}Mo`);
+        resolve(fichierCompresse);
+      };
+      
+      recorder.onerror = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(file); // En cas d'erreur, on retourne l'original
+      };
+      
+      // Démarrer l'enregistrement
+      recorder.start();
+      video.play();
+      
+      // Dessiner chaque frame sur le canvas
+      const dessinerFrame = () => {
+        if (video.ended || video.paused) {
+          recorder.stop();
+          return;
+        }
+        ctx.drawImage(video, 0, 0, width, height);
+        requestAnimationFrame(dessinerFrame);
+      };
+      
+      video.onplay = () => dessinerFrame();
+      video.onended = () => {
+        setTimeout(() => recorder.stop(), 200);
+      };
+    };
+    
+    video.onerror = () => {
+      URL.revokeObjectURL(video.src);
+      reject(new Error('Impossible de lire la vidéo.'));
+    };
+  });
+}
 function uploadCloudinary(file,folder,progressEl,fillEl){return new Promise((resolve,reject)=>{const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CL_PRESET);fd.append("folder",folder);if(progressEl)progressEl.classList.add("show");const xhr=new XMLHttpRequest();xhr.open("POST",`https://api.cloudinary.com/v1_1/${CL_CLOUD}/auto/upload`);xhr.upload.onprogress=e=>{if(e.lengthComputable&&fillEl)fillEl.style.width=(e.loaded/e.total*100)+"%";};xhr.onload=()=>{if(progressEl)progressEl.classList.remove("show");if(xhr.status===200)resolve(JSON.parse(xhr.responseText).secure_url);else reject(new Error("Upload échoué"));};xhr.onerror=()=>{if(progressEl)progressEl.classList.remove("show");reject(new Error("Erreur réseau"));};xhr.send(fd);});}
 
 // ===== ÉTAT GLOBAL =====
@@ -2322,7 +2426,13 @@ document.addEventListener('click',e=>{if(!e.target.closest('[id^="pmenu_"]')&&!e
 window.voterSondage=async(postId,optIdx)=>{const snap=await getDoc(doc(db,"posts",postId));if(!snap.exists())return;const p=snap.data();const votes={...(p.sondageVotes||{})};votes[optIdx]=(votes[optIdx]||0)+1;await updateDoc(doc(db,"posts",postId),{sondageVotes:votes});};
 window.toggleCmts=id=>document.getElementById(`cmts_${id}`)?.classList.toggle("open");
 window.openComposer=type=>{postFile=null;postType=null;document.getElementById("postTxt").value="";document.getElementById("pmImg").classList.remove("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("inpPhoto").value="";document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
-window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{postFile=file;document.getElementById("pmVid").src=URL.createObjectURL(file);document.getElementById("pmVid").classList.add("sh");document.getElementById("pmImg").classList.remove("sh");}};
+window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{ 
+const tailleMo = (file.size/1024/1024).toFixed(1);   if(file.size > 200*1024*1024){     alert(`❌ Vidéo trop grande (${tailleMo}Mo). Maximum 200Mo.`);     e.target.value='';     return;   } 
+document.getElementById("pmVid").src=URL.createObjectURL(file);   document.getElementById("pmVid").classList.add("sh");   document.getElementById("pmImg").classList.remove("sh");   document.getElementById("btnPub").disabled=true;   document.getElementById("btnPub").textContent="🗜️ Compression...";      try{     if(file.size > 15*1024*1024){
+document.getElementById("postCompInfo").textContent=`🗜️ Compression vidéo (${tailleMo}Mo)...`;       
+  document.getElementById("postCompInfo").classList.add("show");       postFile = await compresserVideo(file, 15);       document.getElementById("postCompInfo").classList.remove("show");       const nvTaille=(postFile.size/1024/1024).toFixed(1);       document.getElementById("postCompInfo").textContent=`✅ ${tailleMo}Mo → ${nvTaille}Mo`;       document.getElementById("postCompInfo").classList.add("show");       setTimeout(()=>document.getElementById("postCompInfo").classList.remove("show"),3000);     } else { postFile = file;     }
+document.getElementById("btnPub").disabled=false;     document.getElementById("btnPub").textContent="Publier";   }catch(err){     alert("❌ "+err.message);     document.getElementById("btnPub").disabled=false;     document.getElementById("btnPub").textContent="Publier";     document.getElementById("postCompInfo").classList.remove("show");     e.target.value='';   }
+  document.getElementById("pmVid").classList.add("sh");document.getElementById("pmImg").classList.remove("sh");}};
 window.publierPost=async()=>{const texte=document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);await addCoins(20,'Post publié 📝');}catch(err){alert("❌ "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 window.delPost=async id=>{if(!confirm("Supprimer ce post ?"))return;await deleteDoc(doc(db,"posts",id));};
 window.likePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const liked=(p.likedBy||[]).includes(UC.id);if(liked)await updateDoc(doc(db,"posts",id),{likedBy:(p.likedBy||[]).filter(x=>x!==UC.id),likes:Math.max(0,(p.likes||1)-1)});else{await updateDoc(doc(db,"posts",id),{likedBy:[...(p.likedBy||[]),UC.id],likes:(p.likes||0)+1});if(p.userId!==UC.id)addNotif(p.userId,"like",`${UC.prenom} a aimé votre publication ❤️`);}};
