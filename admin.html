@@ -1208,7 +1208,7 @@ window.deleteUser = async function(uid, name) {
     const lmSnap2 = await getDocs(query(collection(db, 'lastMessages'), where('dest', '==', uid)));
     for (const d of lmSnap2.docs) await deleteDoc(doc(db, 'lastMessages', d.id));
 
-    // Document user — en dernier
+await updateDoc(doc(db, 'users', uid), { banni: true });
     await deleteDoc(doc(db, 'users', uid));
 
     // Mise à jour locale immédiate
