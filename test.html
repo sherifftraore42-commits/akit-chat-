@@ -2433,35 +2433,82 @@ window.toggleSvViews=async()=>{
   document.getElementById('svOptionsMenu').style.display='none';
   const panel=document.getElementById('svViewsPanel');
   panel.classList.toggle('open');
-  if(!panel.classList.contains('open'))return;
+  if(!panel.classList.contains('open')){resumeStory();return;}
   pauseStory();
-  const s=svData[svIdx];
+  
   const list=document.getElementById('svViewsList');
   list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>⏳ Chargement...</p>`;
-  const uMap=await getUsers();
-  const viewers=(s.vuPar||[]).filter(id=>id!==UC.id);
-  const reactions=s.reactions||{};
-  if(viewers.length===0){
-    list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:13px'>Aucune vue pour l'instant</p>`;
-    return;
+  
+  try{
+    // Relire Firebase pour avoir les données fraîches
+    const s=svData[svIdx];
+    const freshSnap=await getDoc(doc(db,"stories",s.id));
+    if(!freshSnap.exists()){
+      list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>Story introuvable</p>`;
+      return;
+    }
+    
+    const freshData=freshSnap.data();
+    const vuPar=freshData.vuPar||[];
+    const reactions=freshData.reactions||{};
+    
+    // Mettre à jour les données locales aussi
+    svData[svIdx].vuPar=vuPar;
+    svData[svIdx].vues=freshData.vues||0;
+    
+    // Filtrer : enlever seulement le propriétaire de la liste
+    const viewers=vuPar.filter(id=>id!==UC.id);
+    
+    // Mettre à jour le compteur
+    document.getElementById('svVuCount').textContent=viewers.length;
+    
+    if(viewers.length===0){
+      list.innerHTML=`
+        <div style='text-align:center;padding:24px'>
+          <div style='font-size:36px;margin-bottom:8px'>👁</div>
+          <p style='color:rgba(255,255,255,.4);font-size:13px'>
+            Personne n'a encore vu cette story
+          </p>
+        </div>`;
+      return;
+    }
+    
+    // Charger les profils des viewers
+    const uMap=await getUsers();
+    
+    list.innerHTML=viewers.map(uid=>{
+      const u=uMap[uid]||{prenom:'?',nom:''};
+      const av=u.avatarUrl
+        ?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+        :(u.prenom?.[0]||'?').toUpperCase();
+      
+      // Récupérer les réactions de cette personne
+      const urList=Object.entries(reactions)
+        .filter(([emoji,users])=>(users||[]).includes(uid))
+        .map(([emoji])=>emoji);
+      const ur=urList.join(' ');
+      
+      // Heure de vue (si disponible)
+      const pres=getPresenceInfo(u);
+      
+      return `
+        <div class="sv-view-item" onclick="ouvrirProfilUser('${uid}')">
+          <div class="sv-view-av">${av}</div>
+          <div class="sv-view-name">
+            <div style="font-size:13px;font-weight:700;color:#fff">
+              ${u.prenom||''} ${u.nom||''}
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">
+              ${pres.label}
+            </div>
+          </div>
+          ${ur?`<div class="sv-view-reactions" style="font-size:18px">${ur}</div>`:'<div style="font-size:12px;color:rgba(255,255,255,.3)">👁 Vu</div>'}
+        </div>`;
+    }).join('');
+    
+  }catch(err){
+    list.innerHTML=`<p style='color:#E24B4A;text-align:center;padding:16px;font-size:13px'>❌ Erreur : ${err.message}</p>`;
   }
-  list.innerHTML=viewers.map(uid=>{
-    const u=uMap[uid]||{prenom:'?'};
-    const av=u.avatarUrl
-      ?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
-      :(u.prenom?.[0]||'?').toUpperCase();
-    const ur=Object.entries(reactions)
-      .filter(([emoji,users])=>(users||[]).includes(uid))
-      .map(([emoji])=>emoji).join(' ');
-    return `<div class="sv-view-item">
-      <div class="sv-view-av">${av}</div>
-      <div class="sv-view-name">${u.prenom||''} ${u.nom||''}</div>
-      ${ur?`<div class="sv-view-reactions">${ur}</div>`:''}
-      <div class="sv-view-time">Vu ✓</div>
-    </div>`;
-  }).join('');
-  // Mettre à jour le compteur
-  document.getElementById('svVuCount').textContent=viewers.length;
 };
 window.closeSV=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}ferm("ovSV");renderStories();};
 window.toggleSvC=()=>{const panel=document.getElementById("svCPanel");panel.classList.toggle("open");if(panel.classList.contains("open")){pauseStory();const s=svData[svIdx];const list=document.getElementById("svCList");list.innerHTML=(s.comments||[]).length===0?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:10px;font-size:12px'>Aucun commentaire</p>`:(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( c.user?.[0]||"?").toUpperCase();return `<div class="sv-ci"><div class="sv-ca">${av}</div><div class="sv-cb2"><div class="sv-cu">${c.user}</div><div class="sv-ct">${c.texte}</div><div class="sv-ctm">${c.time||""}</div></div></div>`;}).join("");list.scrollTop=list.scrollHeight;}else resumeStory();};
