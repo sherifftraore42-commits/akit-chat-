@@ -2366,6 +2366,84 @@ window.toggleVuList=async()=>{const s=svData[svIdx];if(s.userId!==UC.id)return;c
 function demarSV(){clearInterval(svTimer);svProg=0;const fill=document.getElementById(`spf${svIdx}`);if(!fill)return;const dur=svData[svIdx]?.musicUrl?15000:STORY_DURATION;svTimer=setInterval(()=>{if(svPaused)return;svProg+=100/(dur/100);fill.style.width=Math.min(svProg,100)+"%";if(svProg>=100){clearInterval(svTimer);window.svN();}},100);}
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}if(svIdx>0){svIdx--;affSV();demarSV();}};
+window.toggleSvOptions=()=>{
+  const menu=document.getElementById('svOptionsMenu');
+  if(!menu)return;
+  const isOpen=menu.style.display==='block';
+  menu.style.display=isOpen?'none':'block';
+  // Afficher bouton vues seulement si c'est ta propre story
+  const s=svData[svIdx];
+  if(!s)return;
+  const isOwn=s.userId===UC.id;
+  const vuBtn=document.getElementById('svVuBtn');
+  const delBtn=document.getElementById('svDeleteBtn');
+  if(vuBtn)vuBtn.style.display=isOwn?'flex':'none';
+  if(delBtn)delBtn.style.display=isOwn?'flex':'none';
+};
+
+window.toggleSvComments=()=>{
+  document.getElementById('svOptionsMenu').style.display='none';
+  const panel=document.getElementById('svCPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    pauseStory();
+    const s=svData[svIdx];
+    const list=document.getElementById('svCList');
+    list.innerHTML=(s.comments||[]).length===0
+      ?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:13px'>Aucun commentaire</p>`
+      :(s.comments||[]).map(c=>{
+        const av=c.avatarUrl
+          ?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
+          :(c.user?.[0]||'?').toUpperCase();
+        return `<div class="sv-comment-item">
+          <div class="sv-comment-av">${av}</div>
+          <div class="sv-comment-bubble">
+            <div class="sv-comment-name">${c.user||'?'}</div>
+            <div class="sv-comment-text">${c.texte}</div>
+            <div class="sv-comment-time">${c.time||''}</div>
+          </div>
+        </div>`;
+      }).join('');
+    list.scrollTop=list.scrollHeight;
+  } else {
+    resumeStory();
+  }
+};
+
+window.toggleSvViews=async()=>{
+  document.getElementById('svOptionsMenu').style.display='none';
+  const panel=document.getElementById('svViewsPanel');
+  panel.classList.toggle('open');
+  if(!panel.classList.contains('open'))return;
+  pauseStory();
+  const s=svData[svIdx];
+  const list=document.getElementById('svViewsList');
+  list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>⏳ Chargement...</p>`;
+  const uMap=await getUsers();
+  const viewers=(s.vuPar||[]).filter(id=>id!==UC.id);
+  const reactions=s.reactions||{};
+  if(viewers.length===0){
+    list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:13px'>Aucune vue pour l'instant</p>`;
+    return;
+  }
+  list.innerHTML=viewers.map(uid=>{
+    const u=uMap[uid]||{prenom:'?'};
+    const av=u.avatarUrl
+      ?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
+      :(u.prenom?.[0]||'?').toUpperCase();
+    const ur=Object.entries(reactions)
+      .filter(([emoji,users])=>(users||[]).includes(uid))
+      .map(([emoji])=>emoji).join(' ');
+    return `<div class="sv-view-item">
+      <div class="sv-view-av">${av}</div>
+      <div class="sv-view-name">${u.prenom||''} ${u.nom||''}</div>
+      ${ur?`<div class="sv-view-reactions">${ur}</div>`:''}
+      <div class="sv-view-time">Vu ✓</div>
+    </div>`;
+  }).join('');
+  // Mettre à jour le compteur
+  document.getElementById('svVuCount').textContent=viewers.length;
+};
 window.closeSV=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}ferm("ovSV");renderStories();};
 window.toggleSvC=()=>{const panel=document.getElementById("svCPanel");panel.classList.toggle("open");if(panel.classList.contains("open")){pauseStory();const s=svData[svIdx];const list=document.getElementById("svCList");list.innerHTML=(s.comments||[]).length===0?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:10px;font-size:12px'>Aucun commentaire</p>`:(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( c.user?.[0]||"?").toUpperCase();return `<div class="sv-ci"><div class="sv-ca">${av}</div><div class="sv-cb2"><div class="sv-cu">${c.user}</div><div class="sv-ct">${c.texte}</div><div class="sv-ctm">${c.time||""}</div></div></div>`;}).join("");list.scrollTop=list.scrollHeight;}else resumeStory();};
 window.sendSvC=async()=>{const inp=document.getElementById("svCInp");const texte=inp.value.trim();if(!texte)return;const s=svData[svIdx];const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"Maintenant",userId:UC.id};const newC=[...(s.comments||[]),c];await updateDoc(doc(db,"stories",s.id),{comments:newC});svData[svIdx].comments=newC;document.getElementById("svCC").textContent=newC.length;addNotif(s.userId,"comment_story",`${UC.prenom} a commenté votre story`);inp.value="";document.getElementById("svCPanel").classList.remove("open");resumeStory();};
