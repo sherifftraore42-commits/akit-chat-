@@ -913,7 +913,6 @@ setTimeout(step,300);
     <button class="sv-react-inline" id="btn_react_love" onclick="reagirStory('😍',event)">😍 <span class="sv-react-count" id="cnt_love">0</span></button>
   </div>
      </div>
-    </div>
   <!-- Input réponse -->
   <div style="display:flex;gap:8px;width:100%;align-items:center;">
     <input class="sv-comment-inp" id="svCInp" placeholder="Répondre à cette story..." onfocus="pauseStory()" onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()" onkeydown="if(event.key==='Enter')sendSvC()" style="flex:1"/>
