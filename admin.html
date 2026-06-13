@@ -841,6 +841,10 @@ async function initAdmin() {
   addLog('Connexion admin : ' + (me.prenom || '') + ' ' + (me.nom || '') + ' - ' + (me.role || 'admin'));
   await loadDashboard();
   loadBank();
+  // Restrictions rôles — à ajouter à la fin de initAdmin()
+  const _isSA = me && ((me.role||'').toLowerCase().includes('super') || me['directeur general']==='super_admin');
+  const sbRolesBtn = document.getElementById('sbRoles');
+  if (sbRolesBtn && !_isSA) sbRolesBtn.style.display = 'none';
 }
 
 // NAVIGATION
@@ -860,8 +864,18 @@ const panelTitles = {
 };
 
 window.nav = function(id, btn) {
-  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.sb-item').forEach(function(b) { b.classList.remove('active'); });
+  const isSuperAdmin = me && (
+    (me.role || '').toLowerCase().includes('super') ||
+    me['directeur general'] === 'super_admin'
+  );
+
+  if (id === 'roles' && !isSuperAdmin) {
+    toast('Accès réservé au Super Administrateur uniquement', 'error');
+    return;
+  }
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
   const panel = document.getElementById('panel-' + id);
   if (panel) panel.classList.add('active');
   if (btn) btn.classList.add('active');
@@ -874,7 +888,6 @@ window.nav = function(id, btn) {
   else if (id === 'mobilemoney') loadMMPanel();
   else if (id === 'roles') loadRoles();
 };
-
 // HELPERS
 function fmtDate(d) {
   if (!d) return '-';
@@ -1059,17 +1072,83 @@ window.banUser = async function(uid, name, isBanned) {
 };
 
 window.deleteUser = async function(uid, name) {
-  if (!confirm('SUPPRIMER definitivement "' + name + '" ? Irreversible !')) return;
-  if (!confirm('Confirmer la suppression de ' + name + ' ?')) return;
+  if (!confirm('SUPPRIMER définitivement "' + name + '" ?\n\nTous ses posts, stories, messages, amis, notifications seront effacés.\n\nIRRÉVERSIBLE !')) return;
+  if (!confirm('⚠️ Dernière confirmation : supprimer ' + name + ' ?')) return;
+
+  toast('Suppression en cours...', 'info');
+
   try {
+    // Posts
+    const postsSnap = await getDocs(query(collection(db, 'posts'), where('userId', '==', uid)));
+    for (const d of postsSnap.docs) await deleteDoc(doc(db, 'posts', d.id));
+
+    // Stories
+    const storiesSnap = await getDocs(query(collection(db, 'stories'), where('userId', '==', uid)));
+    for (const d of storiesSnap.docs) await deleteDoc(doc(db, 'stories', d.id));
+
+    // Notifications
+    const notifsSnap = await getDocs(query(collection(db, 'notifications'), where('userId', '==', uid)));
+    for (const d of notifsSnap.docs) await deleteDoc(doc(db, 'notifications', d.id));
+
+    // Amis envoyés et reçus
+    const amisSnap1 = await getDocs(query(collection(db, 'amis'), where('user_id', '==', uid)));
+    for (const d of amisSnap1.docs) await deleteDoc(doc(db, 'amis', d.id));
+    const amisSnap2 = await getDocs(query(collection(db, 'amis'), where('ami_id', '==', uid)));
+    for (const d of amisSnap2.docs) await deleteDoc(doc(db, 'amis', d.id));
+
+    // Favoris
+    try { await deleteDoc(doc(db, 'favs', uid)); } catch(e) {}
+
+    // Mobile Money
+    try { await deleteDoc(doc(db, 'mobilemoney', uid)); } catch(e) {}
+
+    // Défis
+    const defisSnap1 = await getDocs(query(collection(db, 'defis'), where('from', '==', uid)));
+    for (const d of defisSnap1.docs) await deleteDoc(doc(db, 'defis', d.id));
+    const defisSnap2 = await getDocs(query(collection(db, 'defis'), where('to', '==', uid)));
+    for (const d of defisSnap2.docs) await deleteDoc(doc(db, 'defis', d.id));
+
+    // Lives
+    const livesSnap = await getDocs(query(collection(db, 'lives'), where('userId', '==', uid)));
+    for (const d of livesSnap.docs) await deleteDoc(doc(db, 'lives', d.id));
+
+    // Groupes — retirer des membres
+    const groupesSnap = await getDocs(query(collection(db, 'groupes'), where('membres', 'array-contains', uid)));
+    for (const d of groupesSnap.docs) {
+      const membres = (d.data().membres || []).filter(m => m !== uid);
+      if (membres.length === 0) await deleteDoc(doc(db, 'groupes', d.id));
+      else await updateDoc(doc(db, 'groupes', d.id), { membres });
+    }
+
+    // Last Messages
+    const lmSnap1 = await getDocs(query(collection(db, 'lastMessages'), where('exp', '==', uid)));
+    for (const d of lmSnap1.docs) await deleteDoc(doc(db, 'lastMessages', d.id));
+    const lmSnap2 = await getDocs(query(collection(db, 'lastMessages'), where('dest', '==', uid)));
+    for (const d of lmSnap2.docs) await deleteDoc(doc(db, 'lastMessages', d.id));
+
+    // Document user — en dernier
     await deleteDoc(doc(db, 'users', uid));
-    allUsers = allUsers.filter(function(u) { return u.id !== uid; });
+
+    // Mise à jour locale immédiate
+    allUsers = allUsers.filter(u => u.id !== uid);
+    allPosts = allPosts.filter(p => p.userId !== uid);
+    allStories = allStories.filter(s => s.userId !== uid);
+    if (filtU) filtU = filtU.filter(u => u.id !== uid);
+
     renderUsers(filtU || allUsers);
     setBadge('bdgU', allUsers.length);
-    toast(name + ' supprime', 'error');
-    addLog('DELETE USER : ' + name + ' (' + uid + ')');
-    loadDashboard();
-  } catch(e) { toast('Erreur : ' + e.message, 'error'); }
+    setBadge('bdgP', allPosts.length);
+    setBadge('bdgS', allStories.length);
+    document.getElementById('stUsers').textContent = allUsers.length.toLocaleString();
+    document.getElementById('stPosts').textContent = allPosts.length.toLocaleString();
+
+    toast('✅ ' + name + ' supprimé définitivement', 'success');
+    addLog('DELETE COMPLETE : ' + name + ' (' + uid + ')');
+
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'error');
+    addLog('DELETE ERROR : ' + name + ' - ' + e.message);
+  }
 };
 
 window.viewUser = function(uid) {
@@ -1101,24 +1180,44 @@ window.viewUser = function(uid) {
 
 // ROLE MODAL
 window.openRoleModal = function(uid, name, cur) {
+  const isSuperAdmin = me && (
+    (me.role || '').toLowerCase().includes('super') ||
+    me['directeur general'] === 'super_admin'
+  );
+
+  if (!isSuperAdmin) {
+    toast('Accès réservé au Super Administrateur', 'error');
+    return;
+  }
+
   document.getElementById('mTitle').textContent = 'Role de ' + name;
   document.getElementById('mBody').innerHTML =
     '<p style="color:var(--text2);font-size:13px;margin-bottom:14px">Role actuel : <strong style="color:var(--accent2)">' + cur + '</strong></p>'
     + '<select class="msel" id="newRole">'
-      + '<option value="user"' + (cur==='user'?' selected':'') + '>Utilisateur</option>'
-      + '<option value="moderator"' + (cur==='moderator'?' selected':'') + '>Moderateur</option>'
-      + '<option value="admin"' + (cur==='admin'?' selected':'') + '>Administrateur</option>'
-      + '<option value="super_admin"' + (cur.includes('super')?' selected':'') + '>Super Admin</option>'
+      + '<option value="user"'      + (cur==='user'      ? ' selected':'') + '>Utilisateur</option>'
+      + '<option value="moderator"' + (cur==='moderator' ? ' selected':'') + '>Moderateur</option>'
+      + '<option value="admin"'     + (cur==='admin'     ? ' selected':'') + '>Administrateur</option>'
     + '</select>'
+    + '<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:10px 12px;font-size:11.5px;color:var(--yellow2);margin-bottom:12px">'
+      + '⚠️ Le rôle <b>Super Admin</b> est réservé et ne peut pas être attribué ici.'
+    + '</div>'
     + '<button class="mbtn primary" onclick="confirmRole(\'' + uid + '\',\'' + name.replace(/'/g,'') + '\')">Confirmer le role</button>'
     + '<button class="mbtn cancel" onclick="closeModal()">Annuler</button>';
   openModal();
 };
 
 window.confirmRole = async function(uid, name) {
+  const isSuperAdmin = me && (
+    (me.role || '').toLowerCase().includes('super') ||
+    me['directeur general'] === 'super_admin'
+  );
+  if (!isSuperAdmin) { toast('Accès refusé', 'error'); closeModal(); return; }
+
   const nr = document.getElementById('newRole').value;
+  if (nr.includes('super')) { toast('Interdit : vous ne pouvez pas attribuer super_admin', 'error'); return; }
+
   await updateDoc(doc(db, 'users', uid), { role: nr });
-  const u = allUsers.find(function(x) { return x.id === uid; });
+  const u = allUsers.find(x => x.id === uid);
   if (u) u.role = nr;
   closeModal();
   renderUsers(filtU || allUsers);
