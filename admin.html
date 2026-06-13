@@ -32,6 +32,10 @@ button{cursor:pointer;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   opacity:.4;}
+  /* BOUTON RETOUR */
+.back-btn{display:none;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border3);border-radius:var(--r3);padding:8px 14px;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .2s;margin-bottom:18px;}
+.back-btn:hover{border-color:var(--accent);color:var(--text);}
+.back-btn.visible{display:flex;}
 
 /* SPLASH */
 #splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .6s ease;}
@@ -430,6 +434,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     </div>
 
     <div class="content">
+      <div class="content">
+
+  <!-- BOUTON RETOUR GLOBAL -->
+  <button class="back-btn" id="backBtn" onclick="goBack()">
+    <i class="fas fa-arrow-left"></i> Retour
+  </button>
 
       <!-- DASHBOARD -->
       <div class="panel active" id="panel-dashboard">
@@ -863,6 +873,8 @@ const panelTitles = {
   logs:'Logs Systeme'
 };
 
+let navHistory = ['dashboard'];
+
 window.nav = function(id, btn) {
   const isSuperAdmin = me && (
     (me.role || '').toLowerCase().includes('super') ||
@@ -873,6 +885,76 @@ window.nav = function(id, btn) {
     toast('Accès réservé au Super Administrateur uniquement', 'error');
     return;
   }
+
+  // Enregistrer l'historique
+  const current = navHistory[navHistory.length - 1];
+  if (current !== id) navHistory.push(id);
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('tbTitle').textContent = panelTitles[id] || id;
+  addLog('Navigation : ' + (panelTitles[id] || id));
+
+  // Afficher ou cacher le bouton retour
+  const backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    if (navHistory.length > 1) backBtn.classList.add('visible');
+    else backBtn.classList.remove('visible');
+  }
+
+  if (id === 'posts') loadPosts();
+  else if (id === 'stories') loadStories();
+  else if (id === 'activity') loadActivity();
+  else if (id === 'transactions') loadTransactions();
+  else if (id === 'mobilemoney') loadMMPanel();
+  else if (id === 'roles') loadRoles();
+};
+
+window.goBack = function() {
+  if (navHistory.length <= 1) return;
+
+  // Retirer la page actuelle
+  navHistory.pop();
+
+  const prevId = navHistory[navHistory.length - 1];
+  const sbMap = {
+    dashboard: 'sbDash',
+    activity:  'sbAct',
+    users:     'sbUsers',
+    posts:     'sbPosts',
+    stories:   'sbStories',
+    reports:   'sbReports',
+    bank:      'sbBank',
+    transactions: 'sbTx',
+    mobilemoney:  'sbMM',
+    roles:     'sbRoles',
+    settings:  'sbSet',
+    logs:      'sbLogs'
+  };
+
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+
+  const panel = document.getElementById('panel-' + prevId);
+  if (panel) panel.classList.add('active');
+
+  const sbBtn = document.getElementById(sbMap[prevId]);
+  if (sbBtn) sbBtn.classList.add('active');
+
+  document.getElementById('tbTitle').textContent = panelTitles[prevId] || prevId;
+
+  // Cacher le bouton si on est revenu au début
+  const backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    if (navHistory.length > 1) backBtn.classList.add('visible');
+    else backBtn.classList.remove('visible');
+  }
+
+  addLog('Retour : ' + (panelTitles[prevId] || prevId));
+};
 
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
