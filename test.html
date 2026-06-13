@@ -128,14 +128,10 @@ input,textarea{font-family:var(--font)}
 .s-navs button{background:var(--gris);border:none;width:28px;height:28px;border-radius:50%;font-size:14px;color:var(--texte2);display:flex;align-items:center;justify-content:center}
 .s-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .s-row::-webkit-scrollbar{display:none}
-
-/* Story card - style africain hexagonal/diamant */
 .add-s{flex:0 0 76px;height:130px;border-radius:16px 4px 16px 4px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px dashed rgba(0,255,136,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .2s;}
 .add-s:hover{border-color:var(--akit-green);transform:scale(1.03);}
 .add-circle{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--akit-green),var(--bleu));color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;}
 .s-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.6);text-align:center;text-transform:uppercase;letter-spacing:.5px}
-
-/* Story card style africain */
 .s-card{flex:0 0 76px;height:130px;border-radius:16px 4px 16px 4px;overflow:hidden;position:relative;cursor:pointer;transition:transform .2s}
 .s-card:active{transform:scale(.96)}
 .s-card-inner{position:absolute;inset:0;}
@@ -155,14 +151,13 @@ input,textarea{font-family:var(--font)}
 .sc-views{position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:8px;color:rgba(255,255,255,.7);z-index:2;}
 @keyframes spinDisc{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* ===== STORY VIEWER STYLE AFRICAIN ===== */
+/* ===== STORY VIEWER ===== */
 #ovSV{display:none;position:fixed;inset:0;z-index:5000;background:#000;flex-direction:column;}
 #ovSV.open{display:flex;}
 .sv-container{flex:1;position:relative;overflow:hidden;}
 .sv-bg-blur{position:absolute;inset:-20px;background-size:cover;background-position:center;filter:blur(20px) brightness(.3);z-index:0;}
 .sv-img-main{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;}
 .sv-img-main img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;}
-/* Deco africaine: motifs géométriques sur les bords */
 .sv-deco-left{position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(to bottom,var(--story-grad1),var(--story-grad2),var(--story-grad3));z-index:2;border-radius:0 3px 3px 0;}
 .sv-deco-right{position:absolute;right:0;top:0;bottom:0;width:6px;background:linear-gradient(to bottom,var(--story-grad3),var(--story-grad2),var(--story-grad1));z-index:2;border-radius:3px 0 0 3px;}
 .sv-progress-bar{position:absolute;top:0;left:8px;right:8px;display:flex;gap:3px;z-index:10;padding-top:8px;}
@@ -186,48 +181,16 @@ input,textarea{font-family:var(--font)}
 .sv-react-btn:active{transform:scale(1.3)}
 .sv-react-btn.reacted{background:rgba(255,107,53,.3);border-color:var(--story-grad1);}
 .sv-react-count{font-size:14px;font-weight:700;color:#fff;min-width:16px}
-.sv-react-inline{
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:50px;
-  padding:6px 10px;
-  font-size:20px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:4px;
-  color:#fff;
-  backdrop-filter:blur(6px);
-  transition:transform .15s,background .15s;
-  flex:1;
-  justify-content:center;
-}
+.sv-react-inline{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:6px 10px;font-size:20px;cursor:pointer;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(6px);transition:transform .15s,background .15s;flex:1;justify-content:center;}
 .sv-react-inline:active{transform:scale(1.25);}
-.sv-react-inline.reacted{
-  background:rgba(255,107,53,.35);
-  border-color:var(--story-grad1);
-}
-@keyframes emojiEnvol{
-  0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}
-  25%{transform:translateY(-80px) scale(1.3) rotate(-15deg);}
-  50%{transform:translateY(-160px) scale(1.1) rotate(10deg);}
-  75%{transform:translateY(-260px) scale(.9) rotate(-8deg);}
-  100%{opacity:0;transform:translateY(-380px) scale(.5) rotate(20deg);}
-}
-.emoji-envol{
-  position:fixed;
-  pointer-events:none;
-  z-index:9999;
-  font-size:36px;
-  animation:emojiEnvol 1.4s cubic-bezier(.25,.46,.45,.94) forwards;
-}
-  /* Bottom bar story */
+.sv-react-inline.reacted{background:rgba(255,107,53,.35);border-color:var(--story-grad1);}
+@keyframes emojiEnvol{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}25%{transform:translateY(-80px) scale(1.3) rotate(-15deg);}50%{transform:translateY(-160px) scale(1.1) rotate(10deg);}75%{transform:translateY(-260px) scale(.9) rotate(-8deg);}100%{opacity:0;transform:translateY(-380px) scale(.5) rotate(20deg);}}
+.emoji-envol{position:fixed;pointer-events:none;z-index:9999;font-size:36px;animation:emojiEnvol 1.4s cubic-bezier(.25,.46,.45,.94) forwards;}
 .sv-bottom-bar{position:absolute;bottom:0;left:0;right:0;z-index:10;}
 .sv-actions-row{display:flex;align-items:center;gap:8px;padding:8px 12px;}
 .sv-comment-inp{flex:1;background:rgba(255,255,255,.12);border:.5px solid rgba(255,255,255,.2);border-radius:50px;padding:9px 14px;color:#fff;font-size:13px;outline:none;min-height:40px;backdrop-filter:blur(6px);}
 .sv-send-btn{background:linear-gradient(135deg,var(--story-grad1),var(--story-grad2));border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sv-more-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:38px;height:38px;border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
-/* Panel commentaires */
 .sv-comments-panel{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,.95);border-radius:20px 20px 0 0;max-height:60%;display:none;flex-direction:column;z-index:20;border-top:.5px solid rgba(255,107,53,.3);}
 .sv-comments-panel.open{display:flex;}
 .sv-comments-title{font-size:13px;font-weight:700;color:#fff;padding:14px 16px 8px;border-bottom:.5px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
@@ -239,7 +202,6 @@ input,textarea{font-family:var(--font)}
 .sv-comment-name{color:var(--story-grad1);font-size:10px;font-weight:700;margin-bottom:2px;}
 .sv-comment-text{color:rgba(255,255,255,.85);font-size:12px;}
 .sv-comment-time{color:rgba(255,255,255,.4);font-size:9px;margin-top:2px;}
-/* Panel vues */
 .sv-views-panel{position:absolute;bottom:0;left:0;right:0;background:rgba(10,10,10,.95);border-radius:20px 20px 0 0;max-height:55%;display:none;flex-direction:column;z-index:21;border-top:.5px solid rgba(0,255,136,.3);}
 .sv-views-panel.open{display:flex;}
 .sv-views-title{font-size:13px;font-weight:700;color:var(--akit-green);padding:14px 16px 8px;border-bottom:.5px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
@@ -277,7 +239,7 @@ input,textarea{font-family:var(--font)}
 .gift-float{position:fixed;pointer-events:none;z-index:11000;font-size:32px;animation:giftFloat 2s ease-out forwards;}
 @keyframes giftFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-200px) scale(1.5)}}
 
-/* ===== APPEL VIDEO/AUDIO OVERLAY ===== */
+/* ===== APPEL VIDEO/AUDIO ===== */
 #ovCall{display:none;position:fixed;inset:0;z-index:11000;background:#0a0f1e;flex-direction:column;}
 #ovCall.open{display:flex;}
 .call-remote-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0f1e;}
@@ -309,7 +271,6 @@ input,textarea{font-family:var(--font)}
 .call-incoming-actions{display:flex;gap:40px;margin-top:10px;}
 .call-btn-answer{width:64px;height:64px;border-radius:50%;background:#1D9E75;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:callPulse 1.5s ease-in-out infinite;}
 .call-btn-reject{width:64px;height:64px;border-radius:50%;background:#E24B4A;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.call-ringtone{display:none;}
 .call-no-video{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0f1e,#1a1a2e);z-index:3;gap:12px;}
 .call-no-video-av{width:90px;height:90px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px;font-weight:700;}
 .call-no-video-av img{width:100%;height:100%;object-fit:cover}
@@ -439,7 +400,6 @@ input,textarea{font-family:var(--font)}
 .msg-b small{font-size:11px;opacity:.55;align-self:flex-end;}
 .msg-b.msg-me{align-self:flex-end;background:var(--bleu);color:#fff;border-bottom-right-radius:3px}
 .msg-b.msg-th{align-self:flex-start;background:var(--gris);color:var(--texte);border-bottom-left-radius:3px}
-/* Menu suppression message */
 .msg-ctx-menu{position:absolute;background:var(--blanc);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);border:.5px solid var(--gris2);z-index:100;overflow:hidden;min-width:160px;}
 .msg-ctx-menu.mine{right:0;bottom:calc(100% + 4px);}
 .msg-ctx-menu.theirs{left:0;bottom:calc(100% + 4px);}
@@ -805,11 +765,12 @@ const step=()=>{pct+=Math.random()*3+1;if(pct>=100){pct=100;fill.style.width='10
 setTimeout(step,300);
 </script>
 
-<!-- OVERLAY APPEL VIDEO/AUDIO -->
+<!-- ======================================================= -->
+<!-- OVERLAY APPEL VIDEO/AUDIO — UN SEUL div#ovCall ICI     -->
+<!-- ======================================================= -->
 <div id="ovCall">
   <video id="callRemoteVideo" class="call-remote-video" autoplay playsinline></video>
   <video id="callLocalVideo" class="call-local-video" autoplay playsinline muted></video>
-  <!-- Quand vidéo désactivée -->
   <div class="call-no-video" id="callNoVideo" style="display:none">
     <div class="call-no-video-av" id="callNoVideoAv"></div>
     <div class="call-no-video-name" id="callNoVideoName"></div>
@@ -824,13 +785,12 @@ setTimeout(step,300);
     <div class="call-type-badge" id="callTypeBadge">📹 Vidéo</div>
   </div>
   <div class="call-controls">
-    <button class="call-btn mute" id="callMuteBtn" onclick="toggleCallMute()" title="Couper micro"><i class="fas fa-microphone"></i></button>
-    <button class="call-btn speaker" id="callSpeakerBtn" onclick="toggleCallSpeaker()" title="Haut-parleur"><i class="fas fa-volume-up"></i></button>
-    <button class="call-btn hangup" onclick="raccrocherAppel()" title="Raccrocher"><i class="fas fa-phone-slash"></i></button>
-    <button class="call-btn cam" id="callCamBtn" onclick="toggleCallCam()" title="Caméra"><i class="fas fa-video"></i></button>
-    <button class="call-btn flip" onclick="flipCamera()" title="Retourner"><i class="fas fa-sync"></i></button>
+    <button class="call-btn mute" id="callMuteBtn" onclick="toggleCallMute()"><i class="fas fa-microphone"></i></button>
+    <button class="call-btn speaker" id="callSpeakerBtn" onclick="toggleCallSpeaker()"><i class="fas fa-volume-up"></i></button>
+    <button class="call-btn hangup" onclick="raccrocherAppel()"><i class="fas fa-phone-slash"></i></button>
+    <button class="call-btn cam" id="callCamBtn" onclick="toggleCallCam()"><i class="fas fa-video"></i></button>
+    <button class="call-btn flip" onclick="flipCamera()"><i class="fas fa-sync"></i></button>
   </div>
-  <!-- Appel entrant -->
   <div class="call-incoming-overlay" id="callIncomingOverlay" style="display:none">
     <div class="call-incoming-av" id="callIncomingAv"></div>
     <div class="call-incoming-name" id="callIncomingName">Appelant</div>
@@ -841,6 +801,9 @@ setTimeout(step,300);
     </div>
   </div>
 </div>
+<!-- ======================================================= -->
+<!-- FIN DU SEUL div#ovCall                                  -->
+<!-- ======================================================= -->
 
 <!-- LIVE OVERLAY -->
 <div id="ovLive">
@@ -902,32 +865,28 @@ setTimeout(step,300);
     </div>
     <div class="sv-tap-left" onclick="svP()"></div>
     <div class="sv-tap-right" onclick="svN()"></div>
-  <div class="sv-reactions-bar" id="svReactions" style="display:none"></div>
+    <div class="sv-reactions-bar" id="svReactions" style="display:none"></div>
     <div class="sv-bottom-bar">
-     <div class="sv-actions-row" style="flex-direction:column;gap:6px;padding:6px 12px 12px;">
-  <div id="svReactionsBar" style="display:flex;gap:6px;justify-content:space-around;width:100%;">
-    <button class="sv-react-inline" id="btn_react_heart" onclick="reagirStory('❤️',event)">❤️ <span class="sv-react-count" id="cnt_heart">0</span></button>
-    <button class="sv-react-inline" id="btn_react_fire" onclick="reagirStory('🔥',event)">🔥 <span class="sv-react-count" id="cnt_fire">0</span></button>
-    <button class="sv-react-inline" id="btn_react_clap" onclick="reagirStory('👏',event)">👏 <span class="sv-react-count" id="cnt_clap">0</span></button>
-    <button class="sv-react-inline" id="btn_react_wow" onclick="reagirStory('😮',event)">😮 <span class="sv-react-count" id="cnt_wow">0</span></button>
-    <button class="sv-react-inline" id="btn_react_love" onclick="reagirStory('😍',event)">😍 <span class="sv-react-count" id="cnt_love">0</span></button>
-  </div>
-     </div>
-  <!-- Input réponse -->
-  <div style="display:flex;gap:8px;width:100%;align-items:center;">
-    <input class="sv-comment-inp" id="svCInp" placeholder="Répondre à cette story..." onfocus="pauseStory()" onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()" onkeydown="if(event.key==='Enter')sendSvC()" style="flex:1"/>
-    <button class="sv-more-btn" onclick="toggleSvOptions()" id="svMoreBtn" style="display:none"><i class="fas fa-ellipsis-h"></i></button>
-    <button class="sv-send-btn" onclick="sendSvC()"><i class="fas fa-paper-plane"></i></button>
-  </div>
-</div>
+      <div class="sv-actions-row" style="flex-direction:column;gap:6px;padding:6px 12px 12px;">
+        <div id="svReactionsBar" style="display:flex;gap:6px;justify-content:space-around;width:100%;">
+          <button class="sv-react-inline" id="btn_react_heart" onclick="reagirStory('❤️',event)">❤️ <span class="sv-react-count" id="cnt_heart">0</span></button>
+          <button class="sv-react-inline" id="btn_react_fire" onclick="reagirStory('🔥',event)">🔥 <span class="sv-react-count" id="cnt_fire">0</span></button>
+          <button class="sv-react-inline" id="btn_react_clap" onclick="reagirStory('👏',event)">👏 <span class="sv-react-count" id="cnt_clap">0</span></button>
+          <button class="sv-react-inline" id="btn_react_wow" onclick="reagirStory('😮',event)">😮 <span class="sv-react-count" id="cnt_wow">0</span></button>
+          <button class="sv-react-inline" id="btn_react_love" onclick="reagirStory('😍',event)">😍 <span class="sv-react-count" id="cnt_love">0</span></button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;width:100%;align-items:center;">
+        <input class="sv-comment-inp" id="svCInp" placeholder="Répondre à cette story..." onfocus="pauseStory()" onblur="if(!document.getElementById('svCInp').value.trim())resumeStory()" onkeydown="if(event.key==='Enter')sendSvC()" style="flex:1"/>
+        <button class="sv-more-btn" onclick="toggleSvOptions()" id="svMoreBtn" style="display:none"><i class="fas fa-ellipsis-h"></i></button>
+        <button class="sv-send-btn" onclick="sendSvC()"><i class="fas fa-paper-plane"></i></button>
+      </div>
     </div>
-    <!-- Panel options (vues, supprimer, commentaires) -->
     <div id="svOptionsMenu" style="display:none;position:absolute;bottom:70px;right:10px;background:rgba(0,0,0,.85);border-radius:12px;padding:6px;z-index:25;min-width:160px;border:.5px solid rgba(255,255,255,.15);">
       <button onclick="toggleSvComments()" style="width:100%;background:none;border:none;color:#fff;padding:10px 12px;font-size:13px;font-weight:600;text-align:left;display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'"><i class="fas fa-comment"></i> Commentaires (<span id="svCC">0</span>)</button>
-      <button id="svVuBtn" onclick="toggleSvViews()" style="display:none;width:100%;background:none;border:none;color:#fff;padding:10px 12px;font-size:13px;font-weight:600;text-align:left;display:none;align-items:center;gap:8px;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'"><i class="fas fa-eye"></i> <span id="svVuCount">0</span> vue(s)</button>
-      <button id="svDeleteBtn" onclick="supprimerMaStory()" style="display:none;width:100%;background:none;border:none;color:#E24B4A;padding:10px 12px;font-size:13px;font-weight:600;text-align:left;display:none;align-items:center;gap:8px;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(226,75,74,.15)'" onmouseout="this.style.background='none'"><i class="fas fa-trash"></i> Supprimer ma story</button>
+      <button id="svVuBtn" onclick="toggleSvViews()" style="display:none;width:100%;background:none;border:none;color:#fff;padding:10px 12px;font-size:13px;font-weight:600;text-align:left;align-items:center;gap:8px;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='none'"><i class="fas fa-eye"></i> <span id="svVuCount">0</span> vue(s)</button>
+      <button id="svDeleteBtn" onclick="supprimerMaStory()" style="display:none;width:100%;background:none;border:none;color:#E24B4A;padding:10px 12px;font-size:13px;font-weight:600;text-align:left;align-items:center;gap:8px;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(226,75,74,.15)'" onmouseout="this.style.background='none'"><i class="fas fa-trash"></i> Supprimer ma story</button>
     </div>
-    <!-- Panel commentaires -->
     <div class="sv-comments-panel" id="svCPanel">
       <div class="sv-comments-title">
         <span>💬 Commentaires</span>
@@ -939,7 +898,6 @@ setTimeout(step,300);
         <button class="sv-send-btn" onclick="sendSvC2()"><i class="fas fa-paper-plane"></i></button>
       </div>
     </div>
-    <!-- Panel vues -->
     <div class="sv-views-panel" id="svViewsPanel">
       <div class="sv-views-title">
         <span>👁 Vues</span>
@@ -1046,7 +1004,6 @@ setTimeout(step,300);
 
   <div class="layout" id="mainLayout">
     <div class="layout-inner">
-      <!-- ESPACE LIVE DEDIÉ -->
       <div class="live-section" id="liveSectionEl">
         <div class="live-section-title">
           <div class="live-pulse-dot"></div>
@@ -1055,24 +1012,18 @@ setTimeout(step,300);
         </div>
         <div class="live-cards-row" id="liveSectionCards"></div>
       </div>
-
-      <!-- STATUT -->
       <div class="statut-band" id="statutBand">
         <span style="font-size:12px;font-weight:600;color:var(--texte2);flex-shrink:0">😊 Humeur :</span>
         <div id="statutDisplay" style="flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i> Partager mon humeur</button>
         </div>
       </div>
-
-      <!-- STORIES -->
       <div class="stories-box">
         <div class="s-top"><h3>✨ Stories & Moments</h3><div class="s-navs"><button onclick="scrollS(-1)">‹</button><button onclick="scrollS(1)">›</button></div></div>
         <div class="s-row" id="sRow">
           <div class="add-s" onclick="openAddStory()"><div class="add-circle"><i class="fa-solid fa-plus"></i></div><span class="s-lbl">Nouveau</span></div>
         </div>
       </div>
-
-      <!-- COMPOSER -->
       <div class="composer">
         <div class="c-top">
           <div class="c-av" id="cAv"><svg viewBox="0 0 100 100" style="width:100%;height:100%;fill:#fff"><circle cx="50" cy="35" r="20"/><ellipse cx="50" cy="80" rx="30" ry="20"/></svg></div>
@@ -1085,8 +1036,6 @@ setTimeout(step,300);
           <button class="cb" onclick="ouvrirLive()" style="color:var(--live-red)"><i class="fa-solid fa-circle-play"></i> Live</button>
         </div>
       </div>
-
-      <!-- POSTS -->
       <div id="postsEl"><div style="text-align:center;padding:32px;color:var(--texte2);font-size:14px">⏳ Chargement...</div></div>
       <button class="btn-more" id="btnMore" onclick="chargerPlus()" style="display:none">⬇️ Voir plus</button>
     </div>
@@ -1338,8 +1287,8 @@ setTimeout(step,300);
           <div class="cv-head-nom" id="cvNom"></div>
           <span id="cvStatus" style="font-size:11px;color:#1D9E75;margin-left:4px"></span>
           <div class="cv-head-actions">
-            <button class="cv-head-btn call-video" onclick="lancerAppel('video')" title="Appel vidéo"><i class="fa-solid fa-video"></i></button>
-            <button class="cv-head-btn call-audio" onclick="lancerAppel('audio')" title="Appel audio"><i class="fa-solid fa-phone"></i></button>
+            <button class="cv-head-btn call-video" onclick="lancerAppel('video')"><i class="fa-solid fa-video"></i></button>
+            <button class="cv-head-btn call-audio" onclick="lancerAppel('audio')"><i class="fa-solid fa-phone"></i></button>
           </div>
         </div>
         <div class="disappear-toggle"><i class="fa-solid fa-clock-rotate-left" style="color:var(--bleu);font-size:14px"></i><span>Messages éphémères (30s)</span><div class="tgl-sm" id="tglDisappear" onclick="toggleDisappear(this)"></div></div>
@@ -1442,11 +1391,11 @@ setTimeout(step,300);
         <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:right;margin-bottom:8px"><span id="storyTextCount">0</span>/120</div>
         <div style="margin-bottom:10px"><div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px">🎵 Musique</div>
          <select id="storyMusicSelect" style="width:100%;background:rgba(255,255,255,.1);border:.5px solid rgba(255,255,255,.2);border-radius:8px;padding:8px 12px;color:#fff;font-size:12px;outline:none;cursor:pointer">
-  <option value="">Aucune musique</option>
-  <option value="Afrobeats Mix|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">🎵 Afrobeats Mix</option>
-  <option value="Makossa Beat|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">🎵 Makossa Beat</option>
-  <option value="Bikutsi|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">🎵 Bikutsi</option>
-</select>
+          <option value="">Aucune musique</option>
+          <option value="Afrobeats Mix|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">🎵 Afrobeats Mix</option>
+          <option value="Makossa Beat|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">🎵 Makossa Beat</option>
+          <option value="Bikutsi|https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">🎵 Bikutsi</option>
+         </select>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
           <div onclick="setTextColor('#ffffff',this)" style="width:26px;height:26px;border-radius:50%;background:#fff;cursor:pointer;border:3px solid #fff;"></div>
@@ -1566,45 +1515,7 @@ setTimeout(step,300);
   </div>
 </div>
 
-<!-- APPEL VIDEO/AUDIO OVERLAY -->
-<div id="ovCall" style="display:none;position:fixed;inset:0;z-index:11000;background:#0a0f1e;flex-direction:column;">
-  <video id="callRemoteVideo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#0a0f1e;" autoplay playsinline></video>
-  <video id="callLocalVideo" style="position:absolute;top:16px;right:16px;width:100px;height:140px;border-radius:12px;object-fit:cover;background:#1a1a2e;z-index:5;border:2px solid rgba(255,255,255,.2);" autoplay playsinline muted></video>
-  <!-- Pas de vidéo -->
-  <div id="callNoVideo" style="display:none;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0f1e,#1a1a2e);z-index:3;gap:12px;">
-    <div id="callNoVideoAv" style="width:90px;height:90px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px;font-weight:700;"></div>
-    <div id="callNoVideoName" style="color:#fff;font-size:18px;font-weight:700;"></div>
-    <div id="callTimerDisplay" style="color:rgba(255,255,255,.6);font-size:14px;font-family:monospace;">00:00</div>
-  </div>
-  <!-- En-tête appel -->
-  <div style="position:absolute;top:0;left:0;right:0;padding:20px 16px 14px;display:flex;align-items:center;gap:12px;z-index:6;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);">
-    <div id="callRemoteAv" style="width:48px;height:48px;border-radius:50%;background:var(--bleu);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;border:2px solid rgba(255,255,255,.3);"></div>
-    <div style="flex:1;">
-      <div id="callRemoteName" style="color:#fff;font-size:16px;font-weight:700;">Appel...</div>
-      <div id="callStatus" style="color:rgba(255,255,255,.6);font-size:12px;margin-top:2px;">Connexion...</div>
-    </div>
-    <div id="callTypeBadge" style="background:rgba(255,255,255,.15);color:#fff;border-radius:50px;padding:4px 10px;font-size:11px;font-weight:600;border:0.5px solid rgba(255,255,255,.2);">📹 Vidéo</div>
-  </div>
-  <!-- Contrôles -->
-  <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 16px 40px;display:flex;align-items:center;justify-content:center;gap:20px;z-index:6;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);">
-    <button id="callMuteBtn" onclick="toggleCallMute()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-microphone"></i></button>
-    <button id="callSpeakerBtn" onclick="toggleCallSpeaker()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-volume-up"></i></button>
-    <button onclick="raccrocherAppel()" style="width:56px;height:56px;border-radius:50%;border:none;background:#E24B4A;color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-phone-slash"></i></button>
-    <button id="callCamBtn" onclick="toggleCallCam()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-video"></i></button>
-    <button onclick="flipCamera()" style="width:56px;height:56px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-sync"></i></button>
-  </div>
-  <!-- Appel entrant -->
-  <div id="callIncomingOverlay" style="display:none;position:absolute;inset:0;background:linear-gradient(135deg,#0a0f1e,#1a1a2e);flex-direction:column;align-items:center;justify-content:center;gap:24px;z-index:7;">
-    <div id="callIncomingAv" style="width:100px;height:100px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;font-weight:700;border:4px solid rgba(255,255,255,.2);animation:callPulse 1.5s ease-in-out infinite;"></div>
-    <div id="callIncomingName" style="color:#fff;font-size:22px;font-weight:800;">Appelant</div>
-    <div id="callIncomingType" style="color:rgba(255,255,255,.6);font-size:14px;">Appel entrant...</div>
-    <div style="display:flex;gap:40px;margin-top:10px;">
-      <button onclick="refuserAppel()" style="width:64px;height:64px;border-radius:50%;background:#E24B4A;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="fas fa-phone-slash"></i></button>
-      <button onclick="accepterAppel()" style="width:64px;height:64px;border-radius:50%;background:#1D9E75;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:callPulse 1.5s ease-in-out infinite;"><i class="fas fa-phone"></i></button>
-    </div>
-  </div>
-</div>
-
+<!-- Inputs fichiers globaux -->
 <input type="file" id="inpAv" accept="image/*" style="display:none" onchange="prevAv(event)"/>
 <input type="file" id="inpCover" accept="image/*" style="display:none" onchange="prevCover(event)"/>
 
@@ -1636,113 +1547,9 @@ function compresserImage(file,maxW=900,qualite=0.72){return new Promise(resolve=
 const compresserAvatar=f=>compresserImage(f,400,0.8);
 const compresserStory=f=>compresserImage(f,1080,0.75);
 const compresserPost=f=>compresserImage(f,900,0.72);
-// ===== COMPRESSION VIDEO =====
-function compresserVideo(file, maxSizeMo = 15) {
-  return new Promise((resolve, reject) => {
-    const maxBytes = maxSizeMo * 1024 * 1024;
-    
-    // Si la vidéo est déjà petite, on la retourne directement
-    if (file.size <= maxBytes) {
-      resolve(file);
-      return;
-    }
 
-    // Vérifier si le navigateur supporte la compression vidéo
-    if (!window.MediaRecorder) {
-      // Pas de support : on rejette si trop grande
-      if (file.size > 50 * 1024 * 1024) {
-        reject(new Error(`Vidéo trop grande (${(file.size/1024/1024).toFixed(1)}Mo). Maximum 50Mo.`));
-      } else {
-        resolve(file); // On accepte quand même si moins de 50Mo
-      }
-      return;
-    }
+function compresserVideo(file,maxSizeMo=15){return new Promise((resolve,reject)=>{const maxBytes=maxSizeMo*1024*1024;if(file.size<=maxBytes){resolve(file);return;}if(!window.MediaRecorder){if(file.size>50*1024*1024){reject(new Error(`Vidéo trop grande (${(file.size/1024/1024).toFixed(1)}Mo). Maximum 50Mo.`));}else{resolve(file);}return;}const video=document.createElement('video');const canvas=document.createElement('canvas');const ctx=canvas.getContext('2d');const chunks=[];video.muted=true;video.src=URL.createObjectURL(file);video.onloadedmetadata=()=>{let width=video.videoWidth;let height=video.videoHeight;const maxDim=720;if(width>maxDim||height>maxDim){if(width>height){height=Math.round(height*maxDim/width);width=maxDim;}else{width=Math.round(width*maxDim/height);height=maxDim;}}canvas.width=width;canvas.height=height;const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':MediaRecorder.isTypeSupported('video/webm;codecs=vp8')?'video/webm;codecs=vp8':'video/webm';const stream=canvas.captureStream(25);const recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:800000});recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};recorder.onstop=()=>{URL.revokeObjectURL(video.src);const blob=new Blob(chunks,{type:mimeType});const nomFichier=file.name.replace(/\.[^/.]+$/,'.webm');const fichierCompresse=new File([blob],nomFichier,{type:mimeType});resolve(fichierCompresse);};recorder.onerror=()=>{URL.revokeObjectURL(video.src);resolve(file);};recorder.start();video.play();const dessinerFrame=()=>{if(video.ended||video.paused){recorder.stop();return;}ctx.drawImage(video,0,0,width,height);requestAnimationFrame(dessinerFrame);};video.onplay=()=>dessinerFrame();video.onended=()=>{setTimeout(()=>recorder.stop(),200);};};video.onerror=()=>{URL.revokeObjectURL(video.src);reject(new Error('Impossible de lire la vidéo.'));};});}
 
-    const video = document.createElement('video');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const chunks = [];
-    
-    video.muted = true;
-    video.src = URL.createObjectURL(file);
-    
-    video.onloadedmetadata = () => {
-      // Réduire la résolution si nécessaire
-      let width = video.videoWidth;
-      let height = video.videoHeight;
-      const maxDim = 720; // Max 720p
-      
-      if (width > maxDim || height > maxDim) {
-        if (width > height) {
-          height = Math.round(height * maxDim / width);
-          width = maxDim;
-        } else {
-          width = Math.round(width * maxDim / height);
-          height = maxDim;
-        }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Vérifier les codecs supportés
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? 'video/webm;codecs=vp9'
-        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
-        ? 'video/webm;codecs=vp8'
-        : 'video/webm';
-      
-      const stream = canvas.captureStream(25); // 25 fps
-      const recorder = new MediaRecorder(stream, {
-        mimeType,
-        videoBitsPerSecond: 800000 // 800kbps = bonne qualité, taille réduite
-      });
-      
-      recorder.ondataavailable = e => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-      
-      recorder.onstop = () => {
-        URL.revokeObjectURL(video.src);
-        const blob = new Blob(chunks, { type: mimeType });
-        const nomFichier = file.name.replace(/\.[^/.]+$/, '.webm');
-        const fichierCompresse = new File([blob], nomFichier, { type: mimeType });
-        
-        console.log(`Vidéo: ${(file.size/1024/1024).toFixed(1)}Mo → ${(blob.size/1024/1024).toFixed(1)}Mo`);
-        resolve(fichierCompresse);
-      };
-      
-      recorder.onerror = () => {
-        URL.revokeObjectURL(video.src);
-        resolve(file); // En cas d'erreur, on retourne l'original
-      };
-      
-      // Démarrer l'enregistrement
-      recorder.start();
-      video.play();
-      
-      // Dessiner chaque frame sur le canvas
-      const dessinerFrame = () => {
-        if (video.ended || video.paused) {
-          recorder.stop();
-          return;
-        }
-        ctx.drawImage(video, 0, 0, width, height);
-        requestAnimationFrame(dessinerFrame);
-      };
-      
-      video.onplay = () => dessinerFrame();
-      video.onended = () => {
-        setTimeout(() => recorder.stop(), 200);
-      };
-    };
-    
-    video.onerror = () => {
-      URL.revokeObjectURL(video.src);
-      reject(new Error('Impossible de lire la vidéo.'));
-    };
-  });
-}
 function uploadCloudinary(file,folder,progressEl,fillEl){return new Promise((resolve,reject)=>{const fd=new FormData();fd.append("file",file);fd.append("upload_preset",CL_PRESET);fd.append("folder",folder);if(progressEl)progressEl.classList.add("show");const xhr=new XMLHttpRequest();xhr.open("POST",`https://api.cloudinary.com/v1_1/${CL_CLOUD}/auto/upload`);xhr.upload.onprogress=e=>{if(e.lengthComputable&&fillEl)fillEl.style.width=(e.loaded/e.total*100)+"%";};xhr.onload=()=>{if(progressEl)progressEl.classList.remove("show");if(xhr.status===200)resolve(JSON.parse(xhr.responseText).secure_url);else reject(new Error("Upload échoué"));};xhr.onerror=()=>{if(progressEl)progressEl.classList.remove("show");reject(new Error("Erreur réseau"));};xhr.send(fd);});}
 
 // ===== ÉTAT GLOBAL =====
@@ -1794,19 +1601,13 @@ function getPresenceInfo(u){const now=Date.now();const dv=u.dernierVu?.toDate?u.
 function jouerSon(freq){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=freq;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.4);}catch{}}
 function animerReaction(emoji){const pop=document.createElement("div");pop.className="react-pop";pop.textContent=emoji;pop.style.left=Math.random()*60+20+"%";pop.style.bottom="80px";document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);}
 
-// BADGES
 function setBdg(id,nb){const el=document.getElementById(id);if(!el)return;el.textContent=nb>0?nb:"";nb>0?el.classList.add("on"):el.classList.remove("on");}
-function majTousBadges(type,nb){
-  if(type==='msg'){['bdg_msg_sb','bdg_msg_top'].forEach(id=>setBdg(id,nb));}
-  if(type==='notif'){['bdg_notif_sb','bdg_notif_top'].forEach(id=>setBdg(id,nb));}
-}
+function majTousBadges(type,nb){if(type==='msg'){['bdg_msg_sb','bdg_msg_top'].forEach(id=>setBdg(id,nb));}if(type==='notif'){['bdg_notif_sb','bdg_notif_top'].forEach(id=>setBdg(id,nb));}}
 
-// PLUS MENU
 window.togglePlusMenu=()=>{document.getElementById('bnPlusBtn').classList.toggle('open');document.getElementById('plusMenu').classList.toggle('open');};
 window.closePlusMenu=()=>{document.getElementById('bnPlusBtn').classList.remove('open');document.getElementById('plusMenu').classList.remove('open');};
 document.addEventListener('click',e=>{const btn=document.getElementById('bnPlusBtn');if(btn&&!btn.contains(e.target))closePlusMenu();});
 
-// SEARCH
 window.ouvrirSearch=()=>{document.getElementById('searchOverlay').classList.add('open');document.getElementById('searchModal').style.display='block';setTimeout(()=>document.getElementById('searchInp').focus(),100);};
 window.fermerSearch=()=>{document.getElementById('searchOverlay').classList.remove('open');document.getElementById('searchModal').style.display='none';document.getElementById('searchInp').value='';};
 window.rechercherUsers=async q=>{const res=document.getElementById('searchResults');if(!q.trim()){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Tapez pour rechercher...</p>`;return;}const uMap=await getUsers();const found=Object.entries(uMap).filter(([id,u])=>id!==UC?.id&&`${u.prenom||''} ${u.nom||''}`.toLowerCase().includes(q.toLowerCase())).map(([id,u])=>({id,...u}));if(found.length===0){res.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px;font-size:13px">Aucun résultat</p>`;return;}res.innerHTML=found.map(u=>`<div class="s-item" onclick="fermerSearch();openMsg();setTimeout(()=>openConv('${u.id}','direct'),300)"><div class="s-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase()}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${u.prenom||''} ${u.nom||''}</div><div style="font-size:12px;color:var(--texte2)">${getPresenceInfo(u).label}</div></div></div>`).join('');};
@@ -1828,10 +1629,8 @@ onAuthStateChanged(auth,async fireUser=>{
   window.addEventListener("beforeunload",()=>marquerEnLigne(false));
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&UC)marquerEnLigne(false);});
 
-  // Notifications temps réel avec réinitialisation correcte
   onSnapshot(query(collection(db,"notifications"),where("userId","==",UC.id),where("lu","==",false)),snap=>{
-    const nb=snap.size;
-    majTousBadges('notif',nb);
+    const nb=snap.size;majTousBadges('notif',nb);
     if(nb===0){document.title="AKIT-CHAT";prevNotifCount=0;return;}
     document.title=`(${nb}) AKIT-CHAT`;
     if(nb>prevNotifCount&&prevNotifCount!==-1){jouerSon(880);}
@@ -1847,14 +1646,8 @@ onAuthStateChanged(auth,async fireUser=>{
 
   onSnapshot(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente")),snap=>{setBdg("bdg_amis_sb",snap.size);});
 
-  // Écouter les appels entrants
   onSnapshot(query(collection(db,"videoCalls"),where("calleeId","==",UC.id),where("statut","==","en_attente")),snap=>{
-    snap.docChanges().forEach(change=>{
-      if(change.type==="added"){
-        const data=change.doc.data();
-        afficherAppelEntrant(change.doc.id,data);
-      }
-    });
+    snap.docChanges().forEach(change=>{if(change.type==="added"){const data=change.doc.data();afficherAppelEntrant(change.doc.id,data);}});
   });
 
   const mmSnap=await getDoc(doc(db,"mobilemoney",UC.id));
@@ -1865,7 +1658,6 @@ onAuthStateChanged(auth,async fireUser=>{
   const roleCheck=(UC.role||'').toLowerCase();
   if(adminBtn&&(roleCheck==='admin'||roleCheck==='super_admin'||roleCheck==='superadmin'))adminBtn.style.display='block';
 
-  // Parrainage auto
   const urlParams=new URLSearchParams(window.location.search);
   const refId=urlParams.get('ref');
   if(refId&&UC&&refId!==UC.id){const refSnap=await getDoc(doc(db,"users",refId));if(refSnap.exists()){const refUser=refSnap.data();const filleuls=refUser.filleuls||[];if(!filleuls.includes(UC.id)){await updateDoc(doc(db,"users",refId),{filleuls:arrayUnion(UC.id),akit_coin:(refUser.akit_coin||0)+750});await updateDoc(doc(db,"users",UC.id),{akit_coin:(UC.akit_coin||0)+250});UC.akit_coin=(UC.akit_coin||0)+250;mmState.coin.balance=UC.akit_coin;updateCoinDisplay();addNotif(refId,"coin",`🎁 ${UC.prenom} a rejoint via votre lien ! +750 AKIT Coins`);alert("🎉 Bienvenue ! 250 AKIT Coins crédités !");}}}
@@ -1899,41 +1691,23 @@ async function addCoins(amount,label){
   mmState.coin.hist.push({type:amount>0?'in':'out',label,amount:Math.abs(amount),date:now});
   UC.akit_coin=mmState.coin.balance;
   await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});
-  await saveMM();
-  updateCoinDisplay();
+  await saveMM();updateCoinDisplay();
   if(amount>0)animerReaction('💰');
 }
 
 // ===== APPEL VIDEO/AUDIO WebRTC =====
 window.lancerAppel=async(type)=>{
-  const uid=document.getElementById("cvUid").value;
-  if(!uid)return;
-  const uMap=await getUsers();
-  const u=uMap[uid]||{prenom:"?"};
-  currentCallUID=uid;
-  currentCallType=type;
-
+  const uid=document.getElementById("cvUid").value;if(!uid)return;
+  const uMap=await getUsers();const u=uMap[uid]||{prenom:"?"};
+  currentCallUID=uid;currentCallType=type;
   try{
     const constraints=type==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
     callStream=await navigator.mediaDevices.getUserMedia(constraints);
     callPC=new RTCPeerConnection(ICE_SERVERS);
     callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
-
-    // Vidéo locale
-    const localVid=document.getElementById('callLocalVideo');
-    localVid.srcObject=callStream;
-
-    callPC.ontrack=e=>{
-      const remoteVid=document.getElementById('callRemoteVideo');
-      if(e.streams&&e.streams[0])remoteVid.srcObject=e.streams[0];
-    };
-
-    callPC.onicecandidate=async e=>{
-      if(e.candidate&&currentCallId){
-        await addDoc(collection(db,'videoCalls',currentCallId,'callerCandidates'),e.candidate.toJSON());
-      }
-    };
-
+    document.getElementById('callLocalVideo').srcObject=callStream;
+    callPC.ontrack=e=>{const rv=document.getElementById('callRemoteVideo');if(e.streams&&e.streams[0])rv.srcObject=e.streams[0];};
+    callPC.onicecandidate=async e=>{if(e.candidate&&currentCallId){await addDoc(collection(db,'videoCalls',currentCallId,'callerCandidates'),e.candidate.toJSON());}};
     const offer=await callPC.createOffer();
     await callPC.setLocalDescription(offer);
 
@@ -1947,7 +1721,6 @@ window.lancerAppel=async(type)=>{
     });
     currentCallId=callRef.id;
 
-    // Afficher l'overlay
     document.getElementById('ovCall').style.display='flex';
     document.getElementById('callRemoteName').textContent=`${u.prenom||""} ${u.nom||""}`;
     document.getElementById('callStatus').textContent='Appel en cours...';
@@ -1966,7 +1739,6 @@ window.lancerAppel=async(type)=>{
 
     addNotif(uid,'message',`📞 ${UC.prenom} vous appelle en ${type==='video'?'vidéo':'audio'} !`);
 
-    // Écouter l'answer
     const unsub=onSnapshot(doc(db,'videoCalls',currentCallId),async snap=>{
       if(!snap.exists())return;
       const data=snap.data();
@@ -1979,7 +1751,6 @@ window.lancerAppel=async(type)=>{
       }
     });
 
-    // ICE candidats de l'appelé
     onSnapshot(collection(db,'videoCalls',currentCallId,'calleeCandidates'),snap=>{
       snap.docChanges().forEach(change=>{
         if(change.type==='added'){
@@ -2034,7 +1805,6 @@ window.accepterAppel=async()=>{
     await callPC.setLocalDescription(answer);
     await updateDoc(doc(db,'videoCalls',currentCallId),{answer:{type:answer.type,sdp:answer.sdp},statut:'accepte'});
 
-    // ICE candidats de l'appelant
     onSnapshot(collection(db,'videoCalls',currentCallId,'callerCandidates'),snap=>{
       snap.docChanges().forEach(change=>{
         if(change.type==='added'){
@@ -2247,7 +2017,6 @@ function renderLiveSection(lives){
 window.openJeux=()=>{if(UC)document.getElementById('jeuxCoinBal').textContent=(UC.akit_coin||0).toLocaleString();ouv('ovJeux');};
 window.lancerJeu=(jeu)=>{ferm('ovJeux');if(jeu==='morpion')ouvrirMorpion();else if(jeu==='quiz')ouvrirQuiz();else if(jeu==='devinette')ouvrirDevinettes();};
 
-// MORPION
 window.ouvrirMorpion=()=>{resetMorpion();ouv('ovMorpion');};
 window.resetMorpion=()=>{ticBoard=Array(9).fill('');ticTurn='X';ticGameOver=false;document.getElementById('ticStatus').textContent='À votre tour (❎)';document.getElementById('ticResult').style.display='none';renderTicGrid();};
 function renderTicGrid(){const g=document.getElementById('ticGrid');g.innerHTML='';ticBoard.forEach((v,i)=>{const cell=document.createElement('div');cell.className='tic-cell'+(v?' '+v.toLowerCase():'');cell.textContent=v==='X'?'❎':v==='O'?'🔴':'';cell.onclick=()=>ticClick(i);g.appendChild(cell);});}
@@ -2255,7 +2024,6 @@ window.ticClick=async(i)=>{if(ticBoard[i]||ticGameOver||ticTurn!=='X')return;tic
 function iaJouer(){const vides=ticBoard.map((v,i)=>v?null:i).filter(v=>v!==null);if(vides.length===0)return;let move=null;for(const m of vides){ticBoard[m]='O';if(checkTicWin()){move=m;break;}ticBoard[m]='';}if(move===null){for(const m of vides){ticBoard[m]='X';if(checkTicWin()){ticBoard[m]='';move=m;break;}ticBoard[m]='';}}if(move===null&&ticBoard[4]==='')move=4;if(move===null)move=vides[Math.floor(Math.random()*vides.length)];ticBoard[move]='O';const win=checkTicWin();if(win){ticGameOver=true;renderTicGrid();document.getElementById('ticStatus').textContent='';document.getElementById('ticResultMsg').textContent='😔 L\'IA a gagné!';document.getElementById('ticReward').textContent='';document.getElementById('ticResult').style.display='block';return;}if(ticBoard.every(c=>c)){ticGameOver=true;renderTicGrid();document.getElementById('ticResultMsg').textContent="🤝 Match nul !";document.getElementById('ticReward').textContent='';document.getElementById('ticResult').style.display='block';return;}ticTurn='X';document.getElementById('ticStatus').textContent='À votre tour (❎)';renderTicGrid();}
 function checkTicWin(){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,b,c]of wins){if(ticBoard[a]&&ticBoard[a]===ticBoard[b]&&ticBoard[a]===ticBoard[c])return ticBoard[a];}return null;}
 
-// QUIZ
 const QUIZ_POOL=[{q:"Quelle est la capitale du Cameroun ?",opts:["Douala","Yaoundé","Bafoussam","Garoua"],a:1},{q:"Quel est le plus grand pays d'Afrique ?",opts:["Nigeria","RDC","Algérie","Soudan"],a:2},{q:"Quelle rivière est la plus longue d'Afrique ?",opts:["Congo","Niger","Nil","Zambèze"],a:2},{q:"Qui était le premier président du Cameroun ?",opts:["Paul Biya","Ahmadou Ahidjo","John Fru Ndi","Bello Bouba"],a:1},{q:"Quel pays africain n'a jamais été colonisé ?",opts:["Ghana","Éthiopie","Kenya","Sénégal"],a:1},{q:"Quelle est la monnaie du Nigeria ?",opts:["Shilling","Cedi","Naira","Franc"],a:2},{q:"Quel est le plus haut sommet d'Afrique ?",opts:["Mont Kenya","Kilimandjaro","Ruwenzori","Atlas"],a:1},{q:"Combien de pays compose l'Afrique ?",opts:["48","52","54","56"],a:2},{q:"Quelle est la capitale du Sénégal ?",opts:["Abidjan","Dakar","Bamako","Conakry"],a:1},{q:"Quel fleuve traverse Le Caire ?",opts:["Congo","Niger","Zambèze","Nil"],a:3},{q:"Quelle est la capitale de l'Afrique du Sud ?",opts:["Cape Town","Johannesburg","Pretoria","Durban"],a:2},{q:"Quel pays africain a le plus grand nombre d'habitants ?",opts:["Éthiopie","RDC","Nigeria","Égypte"],a:2},{q:"Quelle est la monnaie utilisée au Cameroun ?",opts:["Naira","Cedi","Franc CFA","Shilling"],a:2},{q:"Quel lac est le plus grand d'Afrique ?",opts:["Lac Tanganyika","Lac Victoria","Lac Malawi","Lac Turkana"],a:1},{q:"Quel pays a remporté le plus de CAN ?",opts:["Nigeria","Cameroun","Égypte","Ghana"],a:2},{q:"Quelle est la capitale du Ghana ?",opts:["Kumasi","Accra","Tamale","Cape Coast"],a:1},{q:"Quel pays africain a la plus grande superficie ?",opts:["Soudan","Algérie","RDC","Libya"],a:1},{q:"Quelle est la capitale de l'Éthiopie ?",opts:["Mombasa","Nairobi","Addis-Abeba","Khartoum"],a:2},{q:"Quel animal est le symbole du Cameroun ?",opts:["Éléphant","Lion","Léopard","Gorille"],a:1},{q:"Quelle est la capitale du Kenya ?",opts:["Mombasa","Nairobi","Kisumu","Eldoret"],a:1},{q:"Quel pays africain a l'économie la plus forte ?",opts:["Égypte","Afrique du Sud","Nigeria","Kenya"],a:2},{q:"Quelle est la capitale de la RDC ?",opts:["Kinshasa","Lubumbashi","Kisangani","Goma"],a:0},{q:"Quel pays africain a été le premier à obtenir l'indépendance ?",opts:["Ghana","Liberia","Éthiopie","Égypte"],a:1},{q:"Quelle est la capitale de la Côte d'Ivoire ?",opts:["Abidjan","Yamoussoukro","Bouaké","San Pedro"],a:1},{q:"Quel pays africain est une île ?",opts:["Gambie","Cap-Vert","Bénin","Togo"],a:1}];
 let quizUsed=new Set();
 function getQuizQuestions(n=10){if(quizUsed.size>=QUIZ_POOL.length)quizUsed=new Set();const available=QUIZ_POOL.filter((_,i)=>!quizUsed.has(i));const shuffled=[...available].sort(()=>Math.random()-0.5).slice(0,n);shuffled.forEach(q=>quizUsed.add(QUIZ_POOL.indexOf(q)));return shuffled;}
@@ -2264,34 +2032,28 @@ function renderQuizProgress(){const prog=document.getElementById('quizProgress')
 function afficherQuestion(){const q=quizQuestions[quizIdx];document.getElementById('quizScore').textContent=quizScore;document.getElementById('quizContent').innerHTML=`<div class="quiz-question">Question ${quizIdx+1}/${quizQuestions.length}<br>${q.q}</div>${q.opts.map((o,i)=>`<button class="quiz-opt" id="qopt${i}" onclick="repondreQuiz(${i})">${o}</button>`).join('')}`;}
 window.repondreQuiz=async(idx)=>{const q=quizQuestions[quizIdx];document.querySelectorAll('.quiz-opt').forEach(b=>b.onclick=null);if(idx===q.a){document.getElementById('qopt'+idx).classList.add('correct');quizScore+=50;quizTotalCoins+=50;jouerSon(600);}else{document.getElementById('qopt'+idx).classList.add('wrong');document.getElementById('qopt'+q.a).classList.add('correct');jouerSon(200);}quizIdx++;renderQuizProgress();if(quizIdx>=quizQuestions.length){setTimeout(async()=>{if(quizTotalCoins>0)await addCoins(quizTotalCoins,`Quiz Afrique: ${quizScore/50}/${quizQuestions.length} bonnes réponses`);document.getElementById('quizContent').innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:48px">🧠</div><div style="font-size:20px;font-weight:800;margin:10px 0">${quizScore} points</div><div style="color:var(--akit-green);font-weight:700">+${quizTotalCoins} AKIT Coins gagnés !</div><button onclick="ouvrirQuiz()" style="margin-top:14px;background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer">🔄 Rejouer</button></div>`;},800);return;}setTimeout(afficherQuestion,1200);};
 
-// DEVINETTES
 const DEVINETTES=[{q:"Je suis grand, tout vert, je cache le soleil mais je ne suis pas un nuage. Qui suis-je ?",r:"L'arbre"},{q:"Plus je me sèche, plus je suis mouillée. Qui suis-je ?",r:"La serviette"},{q:"J'ai des dents mais je ne mords pas. Qui suis-je ?",r:"Le peigne"},{q:"Je parle toutes les langues mais je n'ai pas de bouche. Qui suis-je ?",r:"L'écho"},{q:"Je pèse moins qu'une plume mais même le plus fort ne peut me tenir longtemps. Qui suis-je ?",r:"Le souffle"},{q:"Le plus riche ne peut m'acheter, le plus pauvre en possède. Qui suis-je ?",r:"Le temps"},{q:"Plus on m'enlève, plus je suis grande. Qui suis-je ?",r:"La fosse"},{q:"Je cours sans jambes, je crie sans bouche. Qui suis-je ?",r:"Le vent"},{q:"On me jette quand on en a besoin et on me reprend quand on n'en a plus besoin. Qui suis-je ?",r:"L'ancre"}];
 window.ouvrirDevinettes=()=>{devIdx=0;afficherDevinette();ouv('ovDevinette');};
 function afficherDevinette(){const d=DEVINETTES[devIdx%DEVINETTES.length];document.getElementById('devContent').innerHTML=`<div style="text-align:center;margin-bottom:16px"><div style="font-size:36px">🔤</div><div style="font-size:11px;color:var(--texte2)">Devinette ${devIdx+1}</div></div><div style="background:var(--gris);border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px;font-weight:600;line-height:1.7;color:var(--texte)">${d.q}</div><textarea class="post-ta" id="reponseDev" placeholder="✍️ Écrivez votre réponse ici..." style="min-height:60px;margin-bottom:8px"></textarea><div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="verifierReponseDevinette('${d.r.replace(/'/g,"\\'")}','${d.r.replace(/'/g,"\\'")}',this)" style="flex:2;background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer">✅ Valider</button><button onclick="voirReponseDevinette('${d.r.replace(/'/g,"\\'")}',this)" style="flex:1;background:var(--gris2);color:var(--texte);border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer">👁 Voir</button></div><div id="devFeedback"></div><button onclick="devIdx++;afficherDevinette()" style="width:100%;background:var(--gris);border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px">➡️ Suivante</button>`;}
 window.verifierReponseDevinette=async(reponse,correct)=>{const inp=document.getElementById('reponseDev');const rep=inp.value.trim().toLowerCase();const fb=document.getElementById('devFeedback');if(!rep){fb.innerHTML=`<div style="color:#E24B4A;font-size:12px;padding:6px">⚠️ Écrivez votre réponse d'abord !</div>`;return;}const ok=rep.includes(correct.toLowerCase().split(" ").pop())||correct.toLowerCase().includes(rep);if(ok){fb.innerHTML=`<div style="background:#e8f5e9;border-radius:10px;padding:10px;color:#1D9E75;font-weight:700">✅ Bonne réponse ! +75 Coins</div>`;await addCoins(75,'Devinette réussie ✅');}else{fb.innerHTML=`<div style="background:#ffebe9;border-radius:10px;padding:10px;color:#E24B4A;font-weight:700">❌ La réponse est : <b>${correct}</b></div>`;}};
 window.voirReponseDevinette=(r,btn)=>{btn.style.display='none';document.getElementById('devFeedback').innerHTML=`<div style="background:#fff3cd;border-radius:10px;padding:10px;text-align:center;font-size:14px;font-weight:700;color:#856404">Réponse : ${r}</div>`;};
 
-// DÉFI AMI
 window.ouvrirDefiAmi=async()=>{ferm('ovJeux');const[uMap,saSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);const amisIds=new Set();saSnap.forEach(d=>{const a=d.data();if(a.user_id===UC.id)amisIds.add(a.ami_id);if(a.ami_id===UC.id)amisIds.add(a.user_id);});allDefiAmis=Object.entries(uMap).filter(([id])=>amisIds.has(id)).map(([id,d])=>({id,...d}));renderDefiAmis(allDefiAmis);ouv('ovDefiAmi');};
-function renderDefiAmis(liste){const el=document.getElementById('defiAmisListe');if(liste.length===0){el.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px">Aucun ami.</p>`;return;}el.innerHTML=liste.map(u=>`<div class="a-item"><div class="a-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:(u.prenom?.[0]||'U').toUpperCase()}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">${u.enLigne?'🟢 En ligne':'Hors ligne'}</div></div><button class="btn-ok" onclick="envoyerDefi('${u.id}','${(u.prenom||'ami').replace(/'/g,'')}')">⚔️ Défier</button></div>`).join('');}
+function renderDefiAmis(liste){const el=document.getElementById('defiAmisListe');if(liste.length===0){el.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:20px">Aucun ami.</p>`;return;}el.innerHTML=liste.map(u=>`<div class="a-item"><div class="a-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||'U').toUpperCase()}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">${u.enLigne?'🟢 En ligne':'Hors ligne'}</div></div><button class="btn-ok" onclick="envoyerDefi('${u.id}','${(u.prenom||'ami').replace(/'/g,'')}')">⚔️ Défier</button></div>`).join('');}
 window.filtrerDefiAmis=q=>{renderDefiAmis(allDefiAmis.filter(u=>`${u.prenom} ${u.nom}`.toLowerCase().includes(q.toLowerCase())));};
 window.envoyerDefi=async(uid,nom)=>{if((UC.akit_coin||0)<500){alert("❌ Vous avez besoin de 500 AKIT Coins !");return;}ferm('ovDefiAmi');await addDoc(collection(db,"defis"),{from:UC.id,to:uid,fromNom:`${UC.prenom} ${UC.nom}`,mise:500,statut:"en_attente",date:serverTimestamp()});await addCoins(-500,`Défi envoyé à ${nom}`);addNotif(uid,"defi",`⚔️ ${UC.prenom} vous défie au Quiz ! Mise: 500 coins`);alert(`✅ Défi envoyé à ${nom} !`);};
 
-// ===== SONDAGE =====
 window.openComposerSondage=()=>ouv('ovSondage');
 window.publierSondage=async()=>{const q=document.getElementById('sondageQuestion').value.trim();if(!q){alert("⚠️ Posez une question !");return;}const opts=[];for(let i=0;i<4;i++){const v=document.getElementById('opt'+i).value.trim();if(v)opts.push(v);}if(opts.length<2){alert("⚠️ Au moins 2 options !");return;}await addDoc(collection(db,"posts"),{userId:UC.id,texte:q,mediaUrl:null,mediaType:null,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[],type:"sondage",sondageOpts:opts,sondageVotes:{}});ferm('ovSondage');['sondageQuestion','opt0','opt1','opt2','opt3'].forEach(id=>document.getElementById(id).value='');addNotifTous("post",`📊 ${UC.prenom} a publié un sondage`);};
 
-// ===== LEADERBOARD =====
 window.openLeaderboard=()=>{ouv('ovLeaderboard');chargerLeaderboard('likes');};
 window.switchLbTab=(tab,btn)=>{lbCurrentTab=tab;document.querySelectorAll('#ovLeaderboard .msg-tab').forEach(b=>b.classList.remove('act'));btn.classList.add('act');chargerLeaderboard(tab);};
 async function chargerLeaderboard(tab){const el=document.getElementById('lbContent');el.innerHTML=`<p style="text-align:center;color:var(--texte2);padding:24px">⏳ Chargement...</p>`;const uMap=await getUsers();const postsSnap=await getDocs(collection(db,"posts"));const stats={};Object.keys(uMap).forEach(id=>{stats[id]={likes:0,posts:0,coins:uMap[id].akit_coin||0,uid:id};});postsSnap.forEach(d=>{const p=d.data();if(stats[p.userId]){stats[p.userId].likes+=(p.likes||0);stats[p.userId].posts++;}});let sorted=Object.values(stats);if(tab==='likes')sorted.sort((a,b)=>b.likes-a.likes);else if(tab==='coins')sorted.sort((a,b)=>b.coins-a.coins);else sorted.sort((a,b)=>b.posts-a.posts);sorted=sorted.slice(0,20);const ranks=['🥇','🥈','🥉'];const badges={likes:'👑 Roi du Like',coins:'💎 Rich Kid',posts:'⭐ Star'};el.innerHTML=sorted.map((s,i)=>{const u=uMap[s.uid]||{prenom:'?',nom:''};const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( u.prenom?.[0]||'?').toUpperCase();const val=tab==='likes'?s.likes:tab==='coins'?s.coins:s.posts;const label=tab==='likes'?'likes':tab==='coins'?'coins':'posts';const isMe=s.uid===UC.id;return `<div class="lb-item rank-${i+1}" style="${isMe?'border:2px solid var(--bleu);':''}" onclick="ouvrirProfilUser('${s.uid}')"><div class="lb-rank">${i<3?ranks[i]:`${i+1}`}</div><div class="lb-av">${av}</div><div class="lb-info"><div class="lb-name">${u.prenom||''} ${u.nom||''} ${isMe?'(Vous)':''}</div><div class="lb-score">${val.toLocaleString()} ${label}</div></div>${i<3?`<div class="lb-badge">${badges[tab]}</div>`:''}</div>`;}).join('');}
 
-// ===== EARN =====
 window.openEarn=async()=>{updateCoinDisplay();await chargerEarnTasks();ouv('ovEarn');};
 async function chargerEarnTasks(){const el=document.getElementById('earnTasksList');if(!el)return;const postsSnap=await getDocs(query(collection(db,"posts"),where("userId","==",UC.id)));const amis=await getDocs(query(collection(db,"amis"),where("statut","==","accepte")));let amisCnt=0;amis.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)amisCnt++;});const filleuls=(UC.filleuls||[]).length;const tasks=[{ico:'📝',bg:'#e8f4fd',titre:'Publier 1 post',desc:'Partagez quelque chose',reward:'+50 Coins',done:postsSnap.size>=1,progress:Math.min(postsSnap.size,1),total:1,action:()=>{ferm('ovEarn');openComposer();}},{ico:'👥',bg:'#f3e8ff',titre:'Avoir 3 amis',desc:'Connectez-vous',reward:'+200 Coins',done:amisCnt>=3,progress:Math.min(amisCnt,3),total:3,action:()=>{ferm('ovEarn');openSugg();}},{ico:'📸',bg:'#e8f8f5',titre:'Publier une story',desc:'Partagez un moment',reward:'+30 Coins',done:false,progress:0,total:1,action:()=>{ferm('ovEarn');openAddStory();}},{ico:'🎮',bg:'#fff3e0',titre:'Gagner au Morpion',desc:'Battez l\'IA',reward:'+100 Coins',done:false,progress:0,total:1,action:()=>{ferm('ovEarn');openJeux();}},{ico:'🎁',bg:'#f0fff8',titre:'Inviter 3 amis',desc:'Parrainage',reward:'+750 Coins',done:filleuls>=3,progress:Math.min(filleuls,3),total:3,action:()=>{ferm('ovEarn');openParrainage();}},{ico:'🧠',bg:'#fef9e7',titre:'Finir le Quiz',desc:'10 questions',reward:'+400 Coins max',done:false,progress:0,total:1,action:()=>{ferm('ovEarn');ouvrirQuiz();}},{ico:'⭐',bg:'#f3e8ff',titre:'Mode Créateur',desc:'Monétisez',reward:'+500 Coins',done:UC.modeCreateur||false,progress:UC.modeCreateur?1:0,total:1,action:()=>{ferm('ovEarn');ouvrirCreateur();}}];el.innerHTML=tasks.map(t=>`<div class="earn-card"><div class="earn-ico" style="background:${t.bg}">${t.ico}</div><div class="earn-info"><div class="earn-title">${t.titre}</div><div class="earn-desc">${t.desc}</div><div class="earn-progress"><div class="earn-progress-fill" style="width:${(t.progress/t.total)*100}%"></div></div><div style="font-size:10px;color:var(--texte2);margin-top:3px">${t.progress}/${t.total}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="earn-reward">${t.reward}</div><button class="earn-btn ${t.done?'done':''}" onclick="(${t.action.toString()})()">${t.done?'✅ Fait':'▶ Aller'}</button></div></div>`).join('');}
 async function verifierEarnTasks(){const lastLogin=UC.lastDailyBonus;const today=new Date().toDateString();if(lastLogin!==today){await addCoins(10,'🌅 Bonus connexion quotidienne');await updateDoc(doc(db,"users",UC.id),{lastDailyBonus:today});UC.lastDailyBonus=today;}}
 
-// ===== MARKETPLACE =====
 window.openMarketplace=()=>{ouv('ovMarketplace');chargerShop('tous');};
 window.filterShop=(cat,btn)=>{document.querySelectorAll('.shop-cat').forEach(b=>b.classList.remove('active'));btn.classList.add('active');chargerShop(cat);};
 async function chargerShop(cat){const grid=document.getElementById('shopGrid');grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--texte2)">⏳ Chargement...</div>`;try{let q2=cat==='tous'?query(collection(db,"marketplace"),orderBy("date","desc"),limit(20)):query(collection(db,"marketplace"),where("categorie","==",cat),orderBy("date","desc"),limit(20));const snap=await getDocs(q2);const uMap=await getUsers();if(snap.empty){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--texte2)">Aucun article.<br><br><button onclick="ouvrirVente()" style="background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">+ Vendre le premier</button></div>`;return;}const EMOJIS={electronique:'📱',vetements:'👗',maison:'🏠',services:'💼',alimentaire:'🍎'};grid.innerHTML=snap.docs.map(d=>{const p={id:d.id,...d.data()};const u=uMap[p.userId]||{prenom:'?'};return `<div class="shop-item" onclick="voirArticle('${p.id}')">${p.imageUrl?`<img src="${p.imageUrl}" style="width:100%;height:140px;object-fit:cover;display:block"/>`: `<div class="shop-item-img">${EMOJIS[p.categorie]||'🛍️'}</div>`}<div class="shop-item-info"><div class="shop-item-title">${p.nom||'Article'}</div><div class="shop-item-price">${(p.prix||0).toLocaleString()} FCFA</div><div class="shop-item-seller">📍 ${u.prenom||'?'} ${u.nom||''}</div></div></div>`;}).join('');}catch(e){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:24px;color:#E24B4A">Erreur: ${e.message}</div>`;}}
@@ -2300,17 +2062,14 @@ window.prevVenteImg=async e=>{const file=e.target.files[0];if(!file)return;vente
 window.ouvrirVente=()=>{ferm('ovMarketplace');venteImgFile=null;['venteNom','venteDesc','ventePrix','venteContact'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('venteImgPrev').style.display='none';document.getElementById('inpVenteImg').value='';ouv('ovVendre');};
 window.publierVente=async()=>{const nom=document.getElementById('venteNom').value.trim();const desc=document.getElementById('venteDesc').value.trim();const prix=parseInt(document.getElementById('ventePrix').value);const cat=document.getElementById('venteCat').value;const contact=document.getElementById('venteContact').value.trim();if(!nom||!prix){alert("⚠️ Remplissez le nom et le prix !");return;}let imageUrl=null;if(venteImgFile){try{imageUrl=await uploadCloudinary(venteImgFile,`akit/marketplace/${UC.id}`,null,null);}catch{}}await addDoc(collection(db,"marketplace"),{userId:UC.id,nom,description:desc,prix,categorie:cat,contact,imageUrl,date:serverTimestamp()});ferm('ovVendre');ouv('ovMarketplace');chargerShop('tous');alert(`✅ "${nom}" mis en vente !`);venteImgFile=null;};
 
-// ===== BOOST =====
 window.ouvrirBoost=(postId)=>{document.getElementById('boostPostId').value=postId;boostSelectedDuree=null;boostSelectedCost=null;document.querySelectorAll('.boost-opt').forEach(el=>{el.style.borderColor='var(--gris2)';el.style.background='var(--gris)';});ouv('ovBoost');};
 window.selBoost=(el,duree,cost)=>{boostSelectedDuree=duree;boostSelectedCost=parseInt(cost);document.querySelectorAll('.boost-opt').forEach(b=>{b.style.borderColor='var(--gris2)';b.style.background='var(--gris)';});el.style.borderColor='var(--akit-yellow)';el.style.background='#fffde7';};
 window.confirmerBoost=async()=>{if(!boostSelectedDuree){alert("⚠️ Choisissez une durée !");return;}if((UC.akit_coin||0)<boostSelectedCost){alert(`❌ Solde insuffisant !`);return;}const postId=document.getElementById('boostPostId').value;if(!postId)return;await addCoins(-boostSelectedCost,`Boost post ${boostSelectedDuree}h`);const expireAt=new Date(Date.now()+parseInt(boostSelectedDuree)*3600000);await updateDoc(doc(db,"posts",postId),{boosted:true,boostExpire:expireAt.toISOString(),boostedBy:UC.id});ferm('ovBoost');alert(`🚀 Post boosté ${boostSelectedDuree}h !`);};
 
-// ===== CRÉATEUR =====
 window.ouvrirCreateur=()=>{const tgl=document.getElementById('tglCreateur');tgl.classList.toggle('on',UC.modeCreateur||false);document.getElementById('crtAbonnes').textContent=Math.floor((UC.akit_coin||0)/10);document.getElementById('crtRevenu').textContent=(UC.coinGagnes||0).toLocaleString();ouv('ovCreateur');};
 window.toggleModeCreateur=(el)=>{el.classList.toggle('on');};
 window.activerCreateur=async()=>{const prix=parseInt(document.getElementById('crtPrix').value)||0;if(prix>0&&prix<500){alert("⚠️ Prix minimum : 500 FCFA");return;}await updateDoc(doc(db,"users",UC.id),{modeCreateur:true,prixAbonnement:prix});UC.modeCreateur=true;if(!UC.coinGagnes)await addCoins(500,'🌟 Activation Mode Créateur');alert("✅ Mode Créateur activé ! +500 AKIT Coins !");ferm('ovCreateur');};
 
-// ===== STORIES =====
 const STORY_DURATION=15000;
 window.setTextPos=(pos,el)=>{storyTextPos=pos;document.querySelectorAll('.story-text-pos-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');};
 window.setTextColor=(color,el)=>{storyTextColor=color;document.querySelectorAll('[onclick^="setTextColor"]').forEach(b=>b.style.border='2px solid transparent');el.style.border='3px solid '+color;};
@@ -2328,7 +2087,6 @@ async function renderStories(){
     const now=Date.now();
     const[uMap,livesSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"lives"),where("actif","==",true)))]);
     row.innerHTML="";row.appendChild(addCard);
-    // Lives actifs en premier
     livesSnap.forEach(d=>{
       const l={id:d.id,...d.data()};if(l.userId===UC.id)return;
       const u=uMap[l.userId]||{prenom:"?"};
@@ -2338,7 +2096,6 @@ async function renderStories(){
       card.innerHTML=`<div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a0a,#2d0000)"></div><div class="sc-ov"></div><div class="sc-ring" style="border-color:var(--live-red)">${av}</div><div style="position:absolute;top:4px;left:4px;background:var(--live-red);color:#fff;border-radius:4px;padding:2px 5px;font-size:8px;font-weight:800;z-index:3">LIVE</div><div class="sc-name">${u.prenom||"?"}</div>`;
       row.appendChild(card);
     });
-    // Stories groupées par utilisateur
     const gr={};
     snap.forEach(d=>{const s={id:d.id,...d.data()};const dt=s.date?.toDate?s.date.toDate():new Date(s.date);if(now-dt.getTime()>86400000)return;if(!gr[s.userId])gr[s.userId]=[];gr[s.userId].push(s);});
     Object.keys(gr).forEach(uid=>{
@@ -2372,7 +2129,6 @@ window.posterStory=async()=>{
   finally{btn.disabled=false;btn.textContent="Publier";}
 };
 
-// ===== STORY VIEWER =====
 function openSV(stories,idx){svData=stories;svIdx=idx;svPaused=false;affSV();ouv("ovSV");demarSV();}
 let storyAudio=null;
 async function affSV(){
@@ -2387,216 +2143,48 @@ async function affSV(){
   if(s.musicUrl){musicBadge.style.display='flex';document.getElementById('svMusicName').textContent=s.musicName||'Musique';try{storyAudio=new Audio(s.musicUrl);storyAudio.volume=0.4;storyAudio.play().catch(()=>{});}catch{}}
   else musicBadge.style.display='none';
   afficherReactionsStory(s);
-  const isOwn=s.userId===UC.id;const vuEl=document.getElementById("svVuCount");
-  // Afficher bouton "..." seulement au propriétaire
-const moreBtn=document.getElementById('svMoreBtn');
-if(moreBtn)moreBtn.style.display=isOwn?'flex':'none';
-// Fermer le menu options si on change de story
-document.getElementById('svOptionsMenu').style.display='none';
-document.getElementById('svCPanel').classList.remove('open');
-document.getElementById('svViewsPanel').classList.remove('open');
-  if(isOwn){   document.getElementById('svVuCount').textContent=s.vues||0; }
+  const isOwn=s.userId===UC.id;
+  const moreBtn=document.getElementById('svMoreBtn');
+  if(moreBtn)moreBtn.style.display=isOwn?'flex':'none';
+  document.getElementById('svOptionsMenu').style.display='none';
+  document.getElementById('svCPanel').classList.remove('open');
+  document.getElementById('svViewsPanel').classList.remove('open');
+  if(isOwn){document.getElementById('svVuCount').textContent=s.vues||0;}
   getDoc(doc(db,"users",s.userId)).then(ud=>{const u=ud.exists()?ud.data():{prenom:"?"};document.getElementById("svNm").textContent=`${u.prenom||""} ${u.nom||""}`.trim();const avEl=document.getElementById("svAv2");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}"/>`: `<span style="color:#fff;font-weight:700;font-size:12px">${(u.prenom?.[0]||"?").toUpperCase()}</span>`;});
   if(!isOwn&&!(s.vuPar||[]).includes(UC.id)){
-  const newVuPar=[...(s.vuPar||[]),UC.id];
-  const newVues=(s.vues||0)+1;
-  await updateDoc(doc(db,"stories",s.id),{
-    vues:newVues,
-    vuPar:newVuPar
-  });
-  // Mettre à jour localement aussi
-  svData[svIdx].vues=newVues;
-  svData[svIdx].vuPar=newVuPar;
-  // Mettre à jour le compteur affiché
-  document.getElementById('svVuCount').textContent=newVuPar.filter(id=>id!==s.userId).length;
-}
+    const newVuPar=[...(s.vuPar||[]),UC.id];
+    const newVues=(s.vues||0)+1;
+    await updateDoc(doc(db,"stories",s.id),{vues:newVues,vuPar:newVuPar});
+    svData[svIdx].vues=newVues;svData[svIdx].vuPar=newVuPar;
+    document.getElementById('svVuCount').textContent=newVuPar.filter(id=>id!==s.userId).length;
+  }
   if(!isOwn){const notifKey=`story_vu_${s.id}`;if(!sessionStorage.getItem(notifKey)){sessionStorage.setItem(notifKey,'1');addNotif(s.userId,"story_vu",`👁 ${UC.prenom} a vu votre story`);}}
   const bar=document.getElementById("svPr");bar.innerHTML="";svData.forEach((_,i)=>{const seg=document.createElement("div");seg.className="sp-s";const fill=document.createElement("div");fill.className="sp-f";fill.id=`spf${i}`;if(i<svIdx)fill.style.width="100%";seg.appendChild(fill);bar.appendChild(seg);});
-  // Bouton supprimer sa propre story
   const delBtn=document.getElementById('svDeleteBtn');
-if(delBtn)delBtn.style.display=isOwn?'flex':'none';
+  if(delBtn)delBtn.style.display=isOwn?'flex':'none';
 }
-function afficherReactionsStory(s){   const reactions=s.reactions||{};   const isOwn=s.userId===UC.id;   REACTIONS.forEach((emoji,i)=>{     const id=REACT_IDS[i];     const usersArr=reactions[emoji]||[];     const countEl=document.getElementById(`cnt_${id}`);     const btnEl=document.getElementById(`btn_react_${id}`);     if(countEl)countEl.textContent=usersArr.length;     if(btnEl)btnEl.classList.toggle("reacted",usersArr.includes(UC.id));   });   // Cacher les réactions si c'est notre propre story   const reactBar=document.getElementById('svReactionsBar');   if(reactBar)reactBar.style.display=isOwn?'none':'flex'; }
-window.reagirStory=async(emoji, event)=>{
-  const s=svData[svIdx];
-  if(s.userId===UC.id)return;
-
-  // Animation envol depuis le bouton cliqué
-  if(event){
-    const rect=event.currentTarget.getBoundingClientRect();
-    const nb = 3 + Math.floor(Math.random()*3); // 3 à 5 emojis
-    for(let i=0;i<nb;i++){
-      setTimeout(()=>{
-        const el=document.createElement('div');
-        el.className='emoji-envol';
-        el.textContent=emoji;
-        // Position aléatoire autour du bouton
-        el.style.left=(rect.left + rect.width/2 + (Math.random()-0.5)*40)+'px';
-        el.style.top=(rect.top)+'px';
-        // Délai et durée légèrement différents pour chaque emoji
-        el.style.animationDuration=(1.2+Math.random()*0.6)+'s';
-        el.style.animationDelay=(Math.random()*0.2)+'s';
-        el.style.fontSize=(28+Math.random()*20)+'px';
-        document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 2000);
-      }, i*80);
-    }
-  }
-
-  const snap=await getDoc(doc(db,"stories",s.id));
-  if(!snap.exists())return;
-  const reactions=snap.data().reactions||{};
-  const usersArr=reactions[emoji]||[];
-  const already=usersArr.includes(UC.id);
-
-  if(already){
-    reactions[emoji]=usersArr.filter(id=>id!==UC.id);
-  } else {
-    reactions[emoji]=[...usersArr,UC.id];
-    addNotif(s.userId,"reaction",`${UC.prenom} a réagi ${emoji} à votre story`);
-  }
-
-  await updateDoc(doc(db,"stories",s.id),{reactions});
-  svData[svIdx].reactions=reactions;
-  afficherReactionsStory(svData[svIdx]);
+function afficherReactionsStory(s){const reactions=s.reactions||{};const isOwn=s.userId===UC.id;REACTIONS.forEach((emoji,i)=>{const id=REACT_IDS[i];const usersArr=reactions[emoji]||[];const countEl=document.getElementById(`cnt_${id}`);const btnEl=document.getElementById(`btn_react_${id}`);if(countEl)countEl.textContent=usersArr.length;if(btnEl)btnEl.classList.toggle("reacted",usersArr.includes(UC.id));});const reactBar=document.getElementById('svReactionsBar');if(reactBar)reactBar.style.display=isOwn?'none':'flex';}
+window.reagirStory=async(emoji,event)=>{
+  const s=svData[svIdx];if(s.userId===UC.id)return;
+  if(event){const rect=event.currentTarget.getBoundingClientRect();const nb=3+Math.floor(Math.random()*3);for(let i=0;i<nb;i++){setTimeout(()=>{const el=document.createElement('div');el.className='emoji-envol';el.textContent=emoji;el.style.left=(rect.left+rect.width/2+(Math.random()-0.5)*40)+'px';el.style.top=(rect.top)+'px';el.style.animationDuration=(1.2+Math.random()*0.6)+'s';el.style.animationDelay=(Math.random()*0.2)+'s';el.style.fontSize=(28+Math.random()*20)+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),2000);},i*80);}}
+  const snap=await getDoc(doc(db,"stories",s.id));if(!snap.exists())return;
+  const reactions=snap.data().reactions||{};const usersArr=reactions[emoji]||[];const already=usersArr.includes(UC.id);
+  if(already){reactions[emoji]=usersArr.filter(id=>id!==UC.id);}else{reactions[emoji]=[...usersArr,UC.id];addNotif(s.userId,"reaction",`${UC.prenom} a réagi ${emoji} à votre story`);}
+  await updateDoc(doc(db,"stories",s.id),{reactions});svData[svIdx].reactions=reactions;afficherReactionsStory(svData[svIdx]);
 };
-    window.supprimerMaStory=async()=>{const s=svData[svIdx];if(s.userId!==UC.id)return;if(!confirm("Supprimer cette story ?"))return;await deleteDoc(doc(db,"stories",s.id));closeSV();renderStories();};
+window.supprimerMaStory=async()=>{const s=svData[svIdx];if(s.userId!==UC.id)return;if(!confirm("Supprimer cette story ?"))return;await deleteDoc(doc(db,"stories",s.id));closeSV();renderStories();};
 window.pauseStory=()=>{svPaused=true;clearInterval(svTimer);if(storyAudio)storyAudio.pause();};
 window.resumeStory=()=>{if(!svPaused)return;svPaused=false;demarSV();if(storyAudio)storyAudio.play().catch(()=>{});};
-window.toggleVuList=async()=>{const s=svData[svIdx];if(s.userId!==UC.id)return;const list=document.getElementById("svVuList");list.classList.toggle("show");if(!list.classList.contains("show"))return;list.innerHTML=`<div style="color:rgba(255,255,255,.5);font-size:11px;padding:6px">⏳...</div>`;const uMap=await getUsers();const viewers=(s.vuPar||[]).filter(id=>id!==UC.id);if(viewers.length===0){list.innerHTML=`<div style="color:rgba(255,255,255,.5);font-size:11px;padding:6px">Aucune vue</div>`;return;}const reactions=s.reactions||{};list.innerHTML=viewers.map(uid=>{const u=uMap[uid]||{prenom:"?"};const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( u.prenom?.[0]||"?").toUpperCase();const ur=REACTIONS.filter(e=>(reactions[e]||[]).includes(uid)).join(" ");return `<div class="sv-vu-item"><div class="sv-vu-av">${av}</div><span style="color:#fff;font-size:12px">${u.prenom||""} ${u.nom||""}</span>${ur?`<span style="margin-left:auto">${ur}</span>`:""}</div>`;}).join("");};
+window.toggleSvOptions=()=>{const menu=document.getElementById('svOptionsMenu');if(!menu)return;const isOpen=menu.style.display==='block';menu.style.display=isOpen?'none':'block';const s=svData[svIdx];if(!s)return;const isOwn=s.userId===UC.id;const vuBtn=document.getElementById('svVuBtn');const delBtn=document.getElementById('svDeleteBtn');if(vuBtn)vuBtn.style.display=isOwn?'flex':'none';if(delBtn)delBtn.style.display=isOwn?'flex':'none';};
+window.toggleSvComments=()=>{document.getElementById('svOptionsMenu').style.display='none';const panel=document.getElementById('svCPanel');panel.classList.toggle('open');if(panel.classList.contains('open')){pauseStory();const s=svData[svIdx];const list=document.getElementById('svCList');list.innerHTML=(s.comments||[]).length===0?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:13px'>Aucun commentaire</p>`:(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( c.user?.[0]||'?').toUpperCase();return `<div class="sv-comment-item"><div class="sv-comment-av">${av}</div><div class="sv-comment-bubble"><div class="sv-comment-name">${c.user||'?'}</div><div class="sv-comment-text">${c.texte}</div><div class="sv-comment-time">${c.time||''}</div></div></div>`;}).join('');list.scrollTop=list.scrollHeight;}else{resumeStory();}};
+window.toggleSvViews=async()=>{document.getElementById('svOptionsMenu').style.display='none';const panel=document.getElementById('svViewsPanel');panel.classList.toggle('open');if(!panel.classList.contains('open')){resumeStory();return;}pauseStory();const list=document.getElementById('svViewsList');list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>⏳ Chargement...</p>`;try{const s=svData[svIdx];const freshSnap=await getDoc(doc(db,"stories",s.id));if(!freshSnap.exists()){list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>Story introuvable</p>`;return;}const freshData=freshSnap.data();const vuPar=freshData.vuPar||[];const reactions=freshData.reactions||{};svData[svIdx].vuPar=vuPar;svData[svIdx].vues=freshData.vues||0;const viewers=vuPar.filter(id=>id!==UC.id);document.getElementById('svVuCount').textContent=viewers.length;if(viewers.length===0){list.innerHTML=`<div style='text-align:center;padding:24px'><div style='font-size:36px;margin-bottom:8px'>👁</div><p style='color:rgba(255,255,255,.4);font-size:13px'>Personne n'a encore vu cette story</p></div>`;return;}const uMap=await getUsers();list.innerHTML=viewers.map(uid=>{const u=uMap[uid]||{prenom:'?',nom:''};const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:( u.prenom?.[0]||'?').toUpperCase();const urList=Object.entries(reactions).filter(([emoji,users])=>(users||[]).includes(uid)).map(([emoji])=>emoji);const ur=urList.join(' ');const pres=getPresenceInfo(u);return `<div class="sv-view-item" onclick="ouvrirProfilUser('${uid}')"><div class="sv-view-av">${av}</div><div class="sv-view-name"><div style="font-size:13px;font-weight:700;color:#fff">${u.prenom||''} ${u.nom||''}</div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">${pres.label}</div></div>${ur?`<div class="sv-view-reactions" style="font-size:18px">${ur}</div>`:'<div style="font-size:12px;color:rgba(255,255,255,.3)">👁 Vu</div>'}</div>`;}).join('');}catch(err){list.innerHTML=`<p style='color:#E24B4A;text-align:center;padding:16px;font-size:13px'>❌ Erreur : ${err.message}</p>`;}};
+window.closeSV=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}ferm("ovSV");renderStories();};
+window.sendSvC=async()=>{const inp=document.getElementById("svCInp");const texte=inp.value.trim();if(!texte)return;const s=svData[svIdx];const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"Maintenant",userId:UC.id};const newC=[...(s.comments||[]),c];await updateDoc(doc(db,"stories",s.id),{comments:newC});svData[svIdx].comments=newC;document.getElementById("svCC").textContent=newC.length;addNotif(s.userId,"comment_story",`${UC.prenom} a commenté votre story`);inp.value="";document.getElementById("svCPanel").classList.remove("open");resumeStory();};
+window.sendSvC2=async()=>{const inp=document.getElementById("svCInp2");const texte=inp.value.trim();if(!texte)return;const s=svData[svIdx];const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"Maintenant",userId:UC.id};const newC=[...(s.comments||[]),c];await updateDoc(doc(db,"stories",s.id),{comments:newC});svData[svIdx].comments=newC;document.getElementById("svCC").textContent=newC.length;addNotif(s.userId,"comment_story",`${UC.prenom} a commenté votre story`);inp.value="";};
 function demarSV(){clearInterval(svTimer);svProg=0;const fill=document.getElementById(`spf${svIdx}`);if(!fill)return;const dur=svData[svIdx]?.musicUrl?15000:STORY_DURATION;svTimer=setInterval(()=>{if(svPaused)return;svProg+=100/(dur/100);fill.style.width=Math.min(svProg,100)+"%";if(svProg>=100){clearInterval(svTimer);window.svN();}},100);}
 window.svN=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}if(svIdx<svData.length-1){svIdx++;affSV();demarSV();}else window.closeSV();};
 window.svP=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}if(svIdx>0){svIdx--;affSV();demarSV();}};
-window.toggleSvOptions=()=>{
-  const menu=document.getElementById('svOptionsMenu');
-  if(!menu)return;
-  const isOpen=menu.style.display==='block';
-  menu.style.display=isOpen?'none':'block';
-  // Afficher bouton vues seulement si c'est ta propre story
-  const s=svData[svIdx];
-  if(!s)return;
-  const isOwn=s.userId===UC.id;
-  const vuBtn=document.getElementById('svVuBtn');
-  const delBtn=document.getElementById('svDeleteBtn');
-  if(vuBtn)vuBtn.style.display=isOwn?'flex':'none';
-  if(delBtn)delBtn.style.display=isOwn?'flex':'none';
-};
 
-window.toggleSvComments=()=>{
-  document.getElementById('svOptionsMenu').style.display='none';
-  const panel=document.getElementById('svCPanel');
-  panel.classList.toggle('open');
-  if(panel.classList.contains('open')){
-    pauseStory();
-    const s=svData[svIdx];
-    const list=document.getElementById('svCList');
-    list.innerHTML=(s.comments||[]).length===0
-      ?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px;font-size:13px'>Aucun commentaire</p>`
-      :(s.comments||[]).map(c=>{
-        const av=c.avatarUrl
-          ?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`
-          :(c.user?.[0]||'?').toUpperCase();
-        return `<div class="sv-comment-item">
-          <div class="sv-comment-av">${av}</div>
-          <div class="sv-comment-bubble">
-            <div class="sv-comment-name">${c.user||'?'}</div>
-            <div class="sv-comment-text">${c.texte}</div>
-            <div class="sv-comment-time">${c.time||''}</div>
-          </div>
-        </div>`;
-      }).join('');
-    list.scrollTop=list.scrollHeight;
-  } else {
-    resumeStory();
-  }
-};
-
-window.toggleSvViews=async()=>{
-  document.getElementById('svOptionsMenu').style.display='none';
-  const panel=document.getElementById('svViewsPanel');
-  panel.classList.toggle('open');
-  if(!panel.classList.contains('open')){resumeStory();return;}
-  pauseStory();
-  
-  const list=document.getElementById('svViewsList');
-  list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>⏳ Chargement...</p>`;
-  
-  try{
-    // Relire Firebase pour avoir les données fraîches
-    const s=svData[svIdx];
-    const freshSnap=await getDoc(doc(db,"stories",s.id));
-    if(!freshSnap.exists()){
-      list.innerHTML=`<p style='color:rgba(255,255,255,.4);text-align:center;padding:16px'>Story introuvable</p>`;
-      return;
-    }
-    
-    const freshData=freshSnap.data();
-    const vuPar=freshData.vuPar||[];
-    const reactions=freshData.reactions||{};
-    
-    // Mettre à jour les données locales aussi
-    svData[svIdx].vuPar=vuPar;
-    svData[svIdx].vues=freshData.vues||0;
-    
-    // Filtrer : enlever seulement le propriétaire de la liste
-    const viewers=vuPar.filter(id=>id!==UC.id);
-    
-    // Mettre à jour le compteur
-    document.getElementById('svVuCount').textContent=viewers.length;
-    
-    if(viewers.length===0){
-      list.innerHTML=`
-        <div style='text-align:center;padding:24px'>
-          <div style='font-size:36px;margin-bottom:8px'>👁</div>
-          <p style='color:rgba(255,255,255,.4);font-size:13px'>
-            Personne n'a encore vu cette story
-          </p>
-        </div>`;
-      return;
-    }
-    
-    // Charger les profils des viewers
-    const uMap=await getUsers();
-    
-    list.innerHTML=viewers.map(uid=>{
-      const u=uMap[uid]||{prenom:'?',nom:''};
-      const av=u.avatarUrl
-        ?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
-        :(u.prenom?.[0]||'?').toUpperCase();
-      
-      // Récupérer les réactions de cette personne
-      const urList=Object.entries(reactions)
-        .filter(([emoji,users])=>(users||[]).includes(uid))
-        .map(([emoji])=>emoji);
-      const ur=urList.join(' ');
-      
-      // Heure de vue (si disponible)
-      const pres=getPresenceInfo(u);
-      
-      return `
-        <div class="sv-view-item" onclick="ouvrirProfilUser('${uid}')">
-          <div class="sv-view-av">${av}</div>
-          <div class="sv-view-name">
-            <div style="font-size:13px;font-weight:700;color:#fff">
-              ${u.prenom||''} ${u.nom||''}
-            </div>
-            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">
-              ${pres.label}
-            </div>
-          </div>
-          ${ur?`<div class="sv-view-reactions" style="font-size:18px">${ur}</div>`:'<div style="font-size:12px;color:rgba(255,255,255,.3)">👁 Vu</div>'}
-        </div>`;
-    }).join('');
-    
-  }catch(err){
-    list.innerHTML=`<p style='color:#E24B4A;text-align:center;padding:16px;font-size:13px'>❌ Erreur : ${err.message}</p>`;
-  }
-};
-window.closeSV=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.pause();storyAudio=null;}ferm("ovSV");renderStories();};
-window.toggleSvC=()=>{const panel=document.getElementById("svCPanel");panel.classList.toggle("open");if(panel.classList.contains("open")){pauseStory();const s=svData[svIdx];const list=document.getElementById("svCList");list.innerHTML=(s.comments||[]).length===0?`<p style='color:rgba(255,255,255,.4);text-align:center;padding:10px;font-size:12px'>Aucun commentaire</p>`:(s.comments||[]).map(c=>{const av=c.avatarUrl?`<img src="${c.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( c.user?.[0]||"?").toUpperCase();return `<div class="sv-ci"><div class="sv-ca">${av}</div><div class="sv-cb2"><div class="sv-cu">${c.user}</div><div class="sv-ct">${c.texte}</div><div class="sv-ctm">${c.time||""}</div></div></div>`;}).join("");list.scrollTop=list.scrollHeight;}else resumeStory();};
-window.sendSvC=async()=>{const inp=document.getElementById("svCInp");const texte=inp.value.trim();if(!texte)return;const s=svData[svIdx];const c={user:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,time:"Maintenant",userId:UC.id};const newC=[...(s.comments||[]),c];await updateDoc(doc(db,"stories",s.id),{comments:newC});svData[svIdx].comments=newC;document.getElementById("svCC").textContent=newC.length;addNotif(s.userId,"comment_story",`${UC.prenom} a commenté votre story`);inp.value="";document.getElementById("svCPanel").classList.remove("open");resumeStory();};
-
-// ===== POSTS =====
 function renderPosts(){
   if(unsubPosts)unsubPosts();lastPostDoc=null;allPostsLoaded=false;
   const el=document.getElementById("postsEl");el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--texte2);font-size:14px">⏳ Chargement...</div>`;
@@ -2621,29 +2209,16 @@ function buildPostHtml(p,uMap,favs){
   const nom=`${u.prenom||""} ${u.nom||""}`.trim();const avC=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( u.prenom?.[0]||"U").toUpperCase();
   const isBoosted=p.boosted&&p.boostExpire&&new Date(p.boostExpire).getTime()>Date.now();
   const cmtHtml=(p.comments||[]).map(c=>{const cu=uMap[c.userId];const cav=cu?.avatarUrl?`<img src="${cu.avatarUrl}" style="width:100%;height:100%"/>`:( c.userPrenom?.[0]||"U").toUpperCase();return `<div class="ci"><div class="c-av2" onclick="ouvrirProfilUser('${c.userId||''}')">${cav}</div><div class="c-bbl"><div class="c-un" onclick="ouvrirProfilUser('${c.userId||''}')">${c.userPrenom||"?"}</div><div class="c-tx">${c.texte}</div><div class="c-tm">${c.time||""}</div></div></div>`;}).join("");
-  // Bouton supprimer message (expéditeur + les deux côtés)
-  const menuPost=isOwn?`<div style="position:relative;display:inline-block">
-    <button class="p-menu-btn" onclick="togglePostMenu('${p.id}',this)"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-    <div id="pmenu_${p.id}" style="display:none;position:absolute;right:0;top:36px;background:var(--blanc);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);border:0.5px solid var(--gris2);z-index:100;min-width:160px;overflow:hidden;">
-      <div onclick="ouvrirBoost('${p.id}');togglePostMenu('${p.id}')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--gris)'" onmouseout="this.style.background='none'"><i class="fas fa-bolt" style="color:var(--akit-yellow)"></i> Booster</div>
-      <div onclick="delPost('${p.id}');togglePostMenu('${p.id}')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#E24B4A;transition:background .15s;" onmouseover="this.style.background='#ffebe9'" onmouseout="this.style.background='none'"><i class="fas fa-trash"></i> Supprimer</div>
-    </div>
-  </div>`:``;
+  const menuPost=isOwn?`<div style="position:relative;display:inline-block"><button class="p-menu-btn" onclick="togglePostMenu('${p.id}',this)"><i class="fa-solid fa-ellipsis-vertical"></i></button><div id="pmenu_${p.id}" style="display:none;position:absolute;right:0;top:36px;background:var(--blanc);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);border:0.5px solid var(--gris2);z-index:100;min-width:160px;overflow:hidden;"><div onclick="ouvrirBoost('${p.id}');togglePostMenu('${p.id}')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--gris)'" onmouseout="this.style.background='none'"><i class="fas fa-bolt" style="color:var(--akit-yellow)"></i> Booster</div><div onclick="delPost('${p.id}');togglePostMenu('${p.id}')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#E24B4A;transition:background .15s;" onmouseover="this.style.background='#ffebe9'" onmouseout="this.style.background='none'"><i class="fas fa-trash"></i> Supprimer</div></div></div>`:``; 
   if(p.type==="sondage"){const totalVotes=Object.values(p.sondageVotes||{}).reduce((a,v)=>a+(v||0),0);const opts=(p.sondageOpts||[]).map((opt,i)=>{const votes=p.sondageVotes?.[i]||0;const pct=totalVotes>0?Math.round(votes/totalVotes*100):0;return `<div class="poll-option" onclick="voterSondage('${p.id}',${i})"><div class="poll-bar-wrap"><div class="poll-bar-fill" style="width:${pct}%"></div><div class="poll-option-text">${opt}</div><div class="poll-option-pct">${pct}%</div></div></div>`;}).join('');return `<div class="post"><div class="p-head"><div class="p-av" onclick="ouvrirProfilUser('${p.userId}')">${avC}</div><div class="p-info"><div class="p-nom" onclick="ouvrirProfilUser('${p.userId}')">${nom}</div><div class="p-date">${fmtDate(p.date)}</div></div>${menuPost}</div><div class="poll-box"><div style="font-size:14px;font-weight:700;margin-bottom:12px">📊 ${p.texte}</div>${opts}<div style="font-size:11px;color:var(--texte2);margin-top:8px">${totalVotes} vote(s)</div></div></div>`;}
   let mediaHtml="";
   if(p.mediaUrl&&p.mediaType==="img")mediaHtml=`<div class="p-media" onclick="openLightbox('${p.mediaUrl}')"><img src="${p.mediaUrl}" loading="lazy"/></div>`;
   else if(p.mediaUrl&&p.mediaType==="vid")mediaHtml=`<div class="p-media"><video src="${p.mediaUrl}" controls playsinline onclick="event.stopPropagation()"></video></div>`;
-  return `<div class="post ${isBoosted?'sponsored':''}" id="post_${p.id}">
-    ${isBoosted?`<div style="padding:6px 14px;font-size:11px;color:#c79b00;background:#fffde7;display:flex;align-items:center;gap:5px"><i class="fas fa-bolt"></i> Post boosté <span class="sponsored-badge">Sponsorisé</span></div>`:''}
+  return `<div class="post ${isBoosted?'sponsored':''}" id="post_${p.id}">${isBoosted?`<div style="padding:6px 14px;font-size:11px;color:#c79b00;background:#fffde7;display:flex;align-items:center;gap:5px"><i class="fas fa-bolt"></i> Post boosté <span class="sponsored-badge">Sponsorisé</span></div>`:''}
     <div class="p-head"><div class="p-av" onclick="ouvrirProfilUser('${p.userId}')">${avC}</div><div class="p-info"><div class="p-nom" onclick="ouvrirProfilUser('${p.userId}')">${nom} ${u.modeCreateur?'⭐':''}</div><div class="p-date">${fmtDate(p.date)}</div></div>${menuPost}</div>
     ${p.texte?`<div class="p-text">${p.texte}</div>`:""}${mediaHtml}
     <div class="p-stats"><span>❤️ ${p.likes||0} J'aime</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span></div>
-    <div class="p-actions">
-      <button class="p-btn${isLiked?" liked":""}" onclick="likePost('${p.id}')"><i class="fa-solid fa-heart"></i> J'aime</button>
-      <button class="p-btn" onclick="toggleCmts('${p.id}')"><i class="fa-solid fa-comment"></i> Commenter</button>
-      <button class="p-btn" onclick="sharePost('${p.id}')"><i class="fa-solid fa-share-nodes"></i> Partager</button>
-      <button class="p-btn${isFav?" faved":""}" onclick="toggleFav('${p.id}')"><i class="fa-solid fa-bookmark"></i></button>
-    </div>
+    <div class="p-actions"><button class="p-btn${isLiked?" liked":""}" onclick="likePost('${p.id}')"><i class="fa-solid fa-heart"></i> J'aime</button><button class="p-btn" onclick="toggleCmts('${p.id}')"><i class="fa-solid fa-comment"></i> Commenter</button><button class="p-btn" onclick="sharePost('${p.id}')"><i class="fa-solid fa-share-nodes"></i> Partager</button><button class="p-btn${isFav?" faved":""}" onclick="toggleFav('${p.id}')"><i class="fa-solid fa-bookmark"></i></button></div>
     <div class="cmts" id="cmts_${p.id}">${cmtHtml}<div class="ci-row"><input class="ci-inp" id="ci_${p.id}" placeholder="Commenter..." autocomplete="off" onkeydown="if(event.key==='Enter')sendCmt('${p.id}')"/><button class="ci-send" onclick="sendCmt('${p.id}')"><i class="fas fa-paper-plane"></i></button></div></div>
   </div>`;
 }
@@ -2652,13 +2227,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('[id^="pmenu_"]')&&!e
 window.voterSondage=async(postId,optIdx)=>{const snap=await getDoc(doc(db,"posts",postId));if(!snap.exists())return;const p=snap.data();const votes={...(p.sondageVotes||{})};votes[optIdx]=(votes[optIdx]||0)+1;await updateDoc(doc(db,"posts",postId),{sondageVotes:votes});};
 window.toggleCmts=id=>document.getElementById(`cmts_${id}`)?.classList.toggle("open");
 window.openComposer=type=>{postFile=null;postType=null;document.getElementById("postTxt").value="";document.getElementById("pmImg").classList.remove("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("inpPhoto").value="";document.getElementById("inpVideo").value="";ouv("ovComp");if(type==="photo")setTimeout(()=>document.getElementById("inpPhoto").click(),200);if(type==="video")setTimeout(()=>document.getElementById("inpVideo").click(),200);};
-window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{ 
-const tailleMo = (file.size/1024/1024).toFixed(1);   if(file.size > 200*1024*1024){     alert(`❌ Vidéo trop grande (${tailleMo}Mo). Maximum 200Mo.`);     e.target.value='';     return;   } 
-document.getElementById("pmVid").src=URL.createObjectURL(file);   document.getElementById("pmVid").classList.add("sh");   document.getElementById("pmImg").classList.remove("sh");   document.getElementById("btnPub").disabled=true;   document.getElementById("btnPub").textContent="🗜️ Compression...";      try{     if(file.size > 15*1024*1024){
-document.getElementById("postCompInfo").textContent=`🗜️ Compression vidéo (${tailleMo}Mo)...`;       
-  document.getElementById("postCompInfo").classList.add("show");       postFile = await compresserVideo(file, 15);       document.getElementById("postCompInfo").classList.remove("show");       const nvTaille=(postFile.size/1024/1024).toFixed(1);       document.getElementById("postCompInfo").textContent=`✅ ${tailleMo}Mo → ${nvTaille}Mo`;       document.getElementById("postCompInfo").classList.add("show");       setTimeout(()=>document.getElementById("postCompInfo").classList.remove("show"),3000);     } else { postFile = file;     }
-document.getElementById("btnPub").disabled=false;     document.getElementById("btnPub").textContent="Publier";   }catch(err){     alert("❌ "+err.message);     document.getElementById("btnPub").disabled=false;     document.getElementById("btnPub").textContent="Publier";     document.getElementById("postCompInfo").classList.remove("show");     e.target.value='';   }
-  document.getElementById("pmVid").classList.add("sh");document.getElementById("pmImg").classList.remove("sh");}};
+window.prevPostMedia=async(e,type)=>{const file=e.target.files[0];if(!file)return;postType=type;if(type==="img"){document.getElementById("pmImg").src=URL.createObjectURL(file);document.getElementById("pmImg").classList.add("sh");document.getElementById("pmVid").classList.remove("sh");document.getElementById("postCompInfo").classList.add("show");postFile=await compresserPost(file);document.getElementById("postCompInfo").classList.remove("show");document.getElementById("pmImg").src=URL.createObjectURL(postFile);}else{const tailleMo=(file.size/1024/1024).toFixed(1);if(file.size>200*1024*1024){alert(`❌ Vidéo trop grande (${tailleMo}Mo). Maximum 200Mo.`);e.target.value='';return;}document.getElementById("pmVid").src=URL.createObjectURL(file);document.getElementById("pmVid").classList.add("sh");document.getElementById("pmImg").classList.remove("sh");document.getElementById("btnPub").disabled=true;document.getElementById("btnPub").textContent="🗜️ Compression...";try{if(file.size>15*1024*1024){document.getElementById("postCompInfo").textContent=`🗜️ Compression vidéo (${tailleMo}Mo)...`;document.getElementById("postCompInfo").classList.add("show");postFile=await compresserVideo(file,15);document.getElementById("postCompInfo").classList.remove("show");const nvTaille=(postFile.size/1024/1024).toFixed(1);document.getElementById("postCompInfo").textContent=`✅ ${tailleMo}Mo → ${nvTaille}Mo`;document.getElementById("postCompInfo").classList.add("show");setTimeout(()=>document.getElementById("postCompInfo").classList.remove("show"),3000);}else{postFile=file;}document.getElementById("btnPub").disabled=false;document.getElementById("btnPub").textContent="Publier";}catch(err){alert("❌ "+err.message);document.getElementById("btnPub").disabled=false;document.getElementById("btnPub").textContent="Publier";document.getElementById("postCompInfo").classList.remove("show");e.target.value='';}}};
 window.publierPost=async()=>{const texte=document.getElementById("postTxt").value.trim();if(!texte&&!postFile){alert("⚠️ Ajoutez du texte ou un média.");return;}const btn=document.getElementById("btnPub");btn.disabled=true;btn.textContent="Publication...";try{let mediaUrl=null;if(postFile)mediaUrl=await uploadCloudinary(postFile,`akit/posts/${UC.id}`,document.getElementById("postUpBar"),document.getElementById("postUpFill"));await addDoc(collection(db,"posts"),{userId:UC.id,texte,mediaUrl,mediaType:postType,date:serverTimestamp(),likes:0,likedBy:[],comments:[],shares:0,sharedBy:[]});ferm("ovComp");addNotifTous("post",`${UC.prenom} a publié quelque chose 📝`);await addCoins(20,'Post publié 📝');}catch(err){alert("❌ "+err.message);}finally{btn.disabled=false;btn.textContent="Publier";}};
 window.delPost=async id=>{if(!confirm("Supprimer ce post ?"))return;await deleteDoc(doc(db,"posts",id));};
 window.likePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const liked=(p.likedBy||[]).includes(UC.id);if(liked)await updateDoc(doc(db,"posts",id),{likedBy:(p.likedBy||[]).filter(x=>x!==UC.id),likes:Math.max(0,(p.likes||1)-1)});else{await updateDoc(doc(db,"posts",id),{likedBy:[...(p.likedBy||[]),UC.id],likes:(p.likes||0)+1});if(p.userId!==UC.id)addNotif(p.userId,"like",`${UC.prenom} a aimé votre publication ❤️`);}};
@@ -2666,7 +2235,6 @@ window.sendCmt=async id=>{const inp=document.getElementById(`ci_${id}`);const te
 window.sharePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const sharedBy=p.sharedBy||[];if(!sharedBy.includes(UC.id))await updateDoc(doc(db,"posts",id),{shares:(p.shares||0)+1,sharedBy:[...sharedBy,UC.id]});if(navigator.share)try{await navigator.share({title:"AKIT-CHAT",url:location.href});}catch{}};
 window.toggleFav=async id=>{const ref2=doc(db,"favs",UC.id);const snap=await getDoc(ref2);const ids=snap.exists()?(snap.data().ids||[]):[];const idx2=ids.indexOf(id);if(idx2===-1)ids.push(id);else ids.splice(idx2,1);await setDoc(ref2,{ids});};
 
-// ===== MESSAGES =====
 window.openMsg=()=>{ouv("ovMsg");document.getElementById("msgSrch").value="";document.getElementById("zoneCv").classList.remove("open");document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("tabConv").classList.add("act");document.getElementById("tabGroups").classList.remove("act");loadConvs("");};
 window.closeMsg=()=>{ferm("ovMsg");if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();arreterEnregistrementSilencieux();};
 window.cancelReply=()=>{replyMsg=null;replyMsgFrom=null;document.getElementById('replyBar').classList.remove('show');};
@@ -2682,14 +2250,7 @@ async function loadConvs(q){
   lmSnap2.docs.forEach(d=>{const data=d.data();const key=data.dest;if(!lmMap[key]||lmMap[key].date?.toMillis?.()<data.date?.toMillis?.())lmMap[key]=data;});
   users=users.map(u=>{const lm=lmMap[u.id];const hasUnread=lm&&lm.dest===UC.id&&lm.luDest===false;return{...u,_hasUnread:hasUnread,_lastMsgDate:lm?.date?.toDate?lm.date.toDate():new Date(0),_lastMsg:lm?.contenu||""};});
   users.sort((a,b)=>{if(a._hasUnread!==b._hasUnread)return a._hasUnread?-1:1;return b._lastMsgDate-a._lastMsgDate;});
-  liste.innerHTML=users.map(u=>{
-    const pres=getPresenceInfo(u);const dotHtml=pres.dot?`<div class="presence-dot" style="background:${pres.dot}"></div>`:"";
-    const lastLine=u._hasUnread?`📩 ${u._lastMsg?u._lastMsg.substring(0,28)+'...':'Nouveau message'}`:pres.label;
-    return `<div class="cv-item" onclick="openConv('${u.id}','direct')" style="${u._hasUnread?'background:var(--bleu3);border-left:3px solid var(--bleu);':''}">
-      <div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}${dotHtml}</div>
-      <div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${lastLine}</div></div>
-      ${u._hasUnread?'<div class="cv-bdg">●</div>':""}
-    </div>`;}).join("");}
+  liste.innerHTML=users.map(u=>{const pres=getPresenceInfo(u);const dotHtml=pres.dot?`<div class="presence-dot" style="background:${pres.dot}"></div>`:"";const lastLine=u._hasUnread?`📩 ${u._lastMsg?u._lastMsg.substring(0,28)+'...':'Nouveau message'}`:pres.label;return `<div class="cv-item" onclick="openConv('${u.id}','direct')" style="${u._hasUnread?'background:var(--bleu3);border-left:3px solid var(--bleu);':''}"><div class="cv-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}${dotHtml}</div><div class="cv-info"><div class="cv-nom" style="${u._hasUnread?'font-weight:800;':''}">${u.prenom||""} ${u.nom||""}</div><div class="cv-last" style="${u._hasUnread?'color:var(--bleu);font-weight:600;':''}">${lastLine}</div></div>${u._hasUnread?'<div class="cv-bdg">●</div>':""}</div>`;}).join("");}
 window.srchConv=q=>loadConvs(q);
 window.switchMsgTab=(tab)=>{const isConv=tab==='conv';document.getElementById('tabConv').classList.toggle('act',isConv);document.getElementById('tabGroups').classList.toggle('act',!isConv);document.getElementById('listeCv').style.display=isConv?'block':'none';document.getElementById('listeGroupes').style.display=isConv?'none':'block';if(!isConv)loadGroupesList();};
 window.toggleDisappear=(el)=>{el.classList.toggle('on');isDisappear=el.classList.contains('on');};
@@ -2713,13 +2274,7 @@ window.openConv=async(uid,type='direct')=>{
     z.innerHTML=snap2.docs.map(d=>{
       const m=d.data();const mine=m.exp===UC.id;const msgId=d.id;
       let replyHtml='';if(m.replyTo){replyHtml=`<div style="background:rgba(0,0,0,.12);border-left:3px solid rgba(255,255,255,.6);border-radius:6px;padding:5px 9px;margin-bottom:5px;font-size:11px;opacity:.85"><div style="font-weight:700;font-size:10px;opacity:.7;margin-bottom:2px">${m.replyFrom||'Message'}</div><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(m.replyTo||'').substring(0,60)}</div></div>`;}
-      // Menu suppression message
-      const ctxMenu=`<div class="msg-ctx-menu ${mine?'mine':'theirs'}" id="ctx_${msgId}" style="display:none">
-        <div class="msg-ctx-item" onclick="copierMessage('${msgId}','${(m.contenu||'').replace(/'/g,"\\'")}')"><i class="fas fa-copy" style="color:var(--bleu)"></i> Copier</div>
-        <div class="msg-ctx-item" onclick="repondreMessage('${msgId}','${(m.contenu||'').replace(/'/g,"\\'")}','${mine?'Moi':nomDest}')"><i class="fas fa-reply" style="color:var(--bleu)"></i> Répondre</div>
-        ${mine?`<div class="msg-ctx-item danger" onclick="supprimerMessage('${convId}','${msgId}','both')"><i class="fas fa-trash"></i> Supprimer pour tous</div>`:''}
-        ${mine?`<div class="msg-ctx-item danger" onclick="supprimerMessage('${convId}','${msgId}','me')"><i class="fas fa-eye-slash"></i> Supprimer pour moi</div>`:''}
-      </div>`;
+      const ctxMenu=`<div class="msg-ctx-menu ${mine?'mine':'theirs'}" id="ctx_${msgId}" style="display:none"><div class="msg-ctx-item" onclick="copierMessage('${msgId}','${(m.contenu||'').replace(/'/g,"\\'")}')"><i class="fas fa-copy" style="color:var(--bleu)"></i> Copier</div><div class="msg-ctx-item" onclick="repondreMessage('${msgId}','${(m.contenu||'').replace(/'/g,"\\'")}','${mine?'Moi':nomDest}')"><i class="fas fa-reply" style="color:var(--bleu)"></i> Répondre</div>${mine?`<div class="msg-ctx-item danger" onclick="supprimerMessage('${convId}','${msgId}','both')"><i class="fas fa-trash"></i> Supprimer pour tous</div>`:''}${mine?`<div class="msg-ctx-item danger" onclick="supprimerMessage('${convId}','${msgId}','me')"><i class="fas fa-eye-slash"></i> Supprimer pour moi</div>`:''}</div>`;
       if(m.type==="audio"){const waveId='wv_'+msgId;return `<div class="msg-row-wrap ${mine?'mine':''}"><div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:0;background:none;max-width:290px" data-id="${msgId}" data-txt="🎤 Message vocal" data-from="${mine?'Moi':nomDest}" ontouchstart="startSwipe(event)" ontouchmove="moveSwipe(event)" ontouchend="endSwipe(event)" onclick="showMsgCtx(event,'${msgId}',${mine})">${ctxMenu}<div class="voice-bubble ${mine?'mine':'theirs'}"><button class="vb-play" onclick="event.stopPropagation();playAudioWave('${m.audioUrl||''}','${waveId}',this)"><i class="fas fa-play" id="ico_${waveId}"></i></button><div class="vb-right"><canvas class="vb-wave" id="${waveId}"></canvas><div class="vb-info"><span class="vb-dur" id="dur_${waveId}">${m.durStr||'0:00'}</span><span class="vb-time">${fmtHeure(m.date)}</span></div></div></div></div></div>`;}
       if(m.type==="image"){const imgUrl=(m.imageUrl||'').replace(/'/g,'%27');return `<div class="msg-row-wrap ${mine?'mine':''}"><div class="msg-b ${mine?"msg-me":"msg-th"}" style="padding:4px;max-width:220px" data-id="${msgId}" data-txt="📷 Photo" data-from="${mine?'Moi':nomDest}" ontouchstart="startSwipe(event)" ontouchmove="moveSwipe(event)" ontouchend="endSwipe(event)" onclick="showMsgCtx(event,'${msgId}',${mine})">${ctxMenu}${replyHtml}<div style="border-radius:10px;overflow:hidden;cursor:pointer" onclick="event.stopPropagation();openLightbox('${imgUrl}')"><img src="${m.imageUrl||''}" style="width:100%;display:block"/></div><small style="padding:0 8px 4px">${fmtHeure(m.date)}</small></div></div>`;}
       const contenu=(m.contenu||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -2733,21 +2288,17 @@ window.openConv=async(uid,type='direct')=>{
   unsubTyping=onSnapshot(doc(db,"typing",convId),snap=>{if(!snap.exists()){document.getElementById("typingIndicator").classList.remove("show");return;}const isTyp=snap.data()[uid]===true;if(isTyp){document.getElementById("typingName").textContent=`${u.prenom||"?"} écrit...`;document.getElementById("typingIndicator").classList.add("show");document.getElementById("msgsZ").scrollTop=99999;}else document.getElementById("typingIndicator").classList.remove("show");});
 };
 
-// Menu contexte message
 window.showMsgCtx=(e,msgId,mine)=>{e.stopPropagation();document.querySelectorAll('.msg-ctx-menu').forEach(m=>m.style.display='none');const menu=document.getElementById('ctx_'+msgId);if(menu){menu.style.display='block';}};
 window.fermerMsgCtx=()=>{document.querySelectorAll('.msg-ctx-menu').forEach(m=>m.style.display='none');};
 window.copierMessage=(msgId,texte)=>{navigator.clipboard.writeText(texte).then(()=>{}).catch(()=>{});fermerMsgCtx();};
 window.repondreMessage=(msgId,texte,from)=>{replyMsg=texte;replyMsgFrom=from;document.getElementById('replyBarFrom').textContent=`↩ ${from}`;document.getElementById('replyBarText').textContent=texte.substring(0,60)+(texte.length>60?'...':'');document.getElementById('replyBar').classList.add('show');document.getElementById('msgInp').focus();fermerMsgCtx();};
-window.supprimerMessage=async(convId,msgId,pour)=>{fermerMsgCtx();if(!confirm("Supprimer ce message ?"))return;if(pour==='both'){await deleteDoc(doc(db,"messages",convId,"msgs",msgId));}else{// Supprimer pour moi = on marque comme supprimé
-await updateDoc(doc(db,"messages",convId,"msgs",msgId),{supprimePour:arrayUnion(UC.id)});}};
+window.supprimerMessage=async(convId,msgId,pour)=>{fermerMsgCtx();if(!confirm("Supprimer ce message ?"))return;if(pour==='both'){await deleteDoc(doc(db,"messages",convId,"msgs",msgId));}else{await updateDoc(doc(db,"messages",convId,"msgs",msgId),{supprimePour:arrayUnion(UC.id)});}};
 
-// SWIPE TO REPLY
 let swipeStartX=0,swipeStartY=0,swipeEl=null;
 window.startSwipe=(e)=>{swipeStartX=e.touches[0].clientX;swipeStartY=e.touches[0].clientY;swipeEl=e.currentTarget;};
 window.moveSwipe=(e)=>{if(!swipeEl)return;const dx=e.touches[0].clientX-swipeStartX;const dy=Math.abs(e.touches[0].clientY-swipeStartY);if(dy>30){swipeEl=null;return;}if(dx>0&&dx<90){e.preventDefault();swipeEl.style.transition='none';swipeEl.style.transform=`translateX(${dx*0.6}px)`;let ico=swipeEl.parentElement.querySelector('.swipe-reply-ico');if(!ico){ico=document.createElement('span');ico.className='swipe-reply-ico';ico.innerHTML='↩';ico.style.cssText='position:absolute;left:-28px;top:50%;transform:translateY(-50%);color:var(--bleu);font-size:18px;font-weight:700;opacity:0;pointer-events:none;';swipeEl.parentElement.style.position='relative';swipeEl.parentElement.appendChild(ico);}ico.style.opacity=dx>35?'1':'0';}};
 window.endSwipe=(e)=>{if(!swipeEl)return;const dx=e.changedTouches[0].clientX-swipeStartX;const dy=Math.abs(e.changedTouches[0].clientY-swipeStartY);swipeEl.style.transition='transform .2s ease';swipeEl.style.transform='translateX(0)';const ico=swipeEl.parentElement?.querySelector('.swipe-reply-ico');if(ico){ico.style.opacity='0';setTimeout(()=>ico.remove(),200);}if(dx>55&&dy<30){const txt=swipeEl.dataset.txt||'';const from=swipeEl.dataset.from||'Message';replyMsg=txt;replyMsgFrom=from;const bar=document.getElementById('replyBar');document.getElementById('replyBarFrom').textContent=`↩ ${from}`;document.getElementById('replyBarText').textContent=txt.substring(0,60)+(txt.length>60?'...':'');bar.classList.add('show');document.getElementById('msgInp').focus();if(navigator.vibrate)navigator.vibrate(40);}swipeEl=null;};
 
-// GROUPES
 window.openGroupes=()=>{ouv("ovGroupes");loadGroupes();};
 window.ouvrirCreerGroupe=async()=>{membresGroupeSelectionnes=new Set();document.getElementById("groupeNomInput").value="";document.getElementById("groupeDescInput").value="";document.getElementById("selMembresRow").innerHTML=`<p style="color:var(--texte2);font-size:12px;width:100%;text-align:center;margin:auto">Aucun membre</p>`;ferm("ovGroupes");const uMap=await getUsers();tousMembresGroupe=Object.entries(uMap).filter(([id])=>id!==UC.id).map(([id,d])=>({id,...d}));renderMembresGroupe(tousMembresGroupe);ouv("ovCreerGroupe");};
 function renderMembresGroupe(liste){const el=document.getElementById("listeMembresGroupe");if(liste.length===0){el.innerHTML=`<p style="color:var(--texte2);text-align:center;padding:16px;font-size:13px">Aucun utilisateur</p>`;return;}el.innerHTML=liste.map(u=>{const sel=membresGroupeSelectionnes.has(u.id);const av=u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase();return `<div class="groupe-membre-select" onclick="toggleMembreGroupe('${u.id}')"><div class="gms-av">${av}</div><div class="gms-info"><div class="gms-nom">${u.prenom||""} ${u.nom||""}</div><div class="gms-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div><div class="gms-check ${sel?"sel":""}" id="chk_${u.id}">${sel?"<i class='fas fa-check'></i>":""}</div></div>`;}).join("");}
@@ -2759,7 +2310,6 @@ window.openGroupConv=async(groupeId)=>{const groupeSnap=await getDoc(doc(db,"gro
 async function loadGroupesList(){const liste=document.getElementById("listeGroupes");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"groupes"),where("membres","array-contains",UC.id)));if(snap.empty){liste.innerHTML=`<div style="text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:10px">👥</div><div style="font-size:14px;font-weight:700">Aucun groupe</div><button onclick="ouvrirCreerGroupe()" style="margin-top:12px;background:var(--bleu);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer">+ Créer</button></div>`;return;}liste.innerHTML=snap.docs.map(d=>{const g=d.data();return `<div class="cv-item" onclick="openGroupConv('${d.id}')"><div class="cv-av" style="background:linear-gradient(135deg,var(--bleu),#9B87F5);border-radius:12px;font-size:20px">👥</div><div class="cv-info"><div class="cv-nom">${g.nom||"Groupe"}</div><div class="cv-last">${(g.membres||[]).length} membres</div></div></div>`;}).join("")+`<button onclick="ouvrirCreerGroupe()" style="width:100%;margin-top:10px;background:var(--bleu3);color:var(--bleu);border:1px solid var(--bleu);border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">+ Nouveau groupe</button>`;}catch{liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>Erreur</p>`;}}
 async function loadGroupes(){const liste=document.getElementById("listeGroupesFull");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"groupes"),where("membres","array-contains",UC.id)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:20px'>Aucun groupe.</p>`;return;}liste.innerHTML=snap.docs.map(d=>{const g=d.data();return `<div style="background:var(--blanc);border-radius:12px;padding:14px;margin-bottom:10px;border:0.5px solid var(--gris2)"><div style="font-size:15px;font-weight:700;margin-bottom:6px">${g.nom||"Groupe"} ${g.adminId===UC.id?'👑':''}</div><div style="font-size:11px;color:var(--texte2);margin-bottom:8px">${(g.membres||[]).length} membres</div><button onclick="openMsg();setTimeout(()=>{switchMsgTab('groups');setTimeout(()=>openGroupConv('${d.id}'),400);},200)" style="width:100%;background:var(--bleu);color:#fff;border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">💬 Ouvrir</button></div>`;}).join("");}catch{liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:14px'>Erreur</p>`;}}
 
-// VOCAL
 function arreterEnregistrementSilencieux(){if(!isRecording)return;clearInterval(recordInterval);cancelAnimationFrame(waveAnimFrame);wavePoints=[];recordSec=0;isRecording=false;if(mediaRecorder){try{mediaRecorder.stream.getTracks().forEach(t=>t.stop());}catch{}mediaRecorder=null;}audioChunks=[];document.getElementById('normalInputRow').style.display='flex';document.getElementById('voiceRecordZone').classList.remove('show');document.getElementById('recordTimer').textContent='0:00';}
 window.toggleVoiceRecord=async()=>{if(isRecording){arreterEnregistrementSilencieux();return;}try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream);audioChunks=[];recordSec=0;wavePoints=[];mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};mediaRecorder.start(100);isRecording=true;document.getElementById('normalInputRow').style.display='none';document.getElementById('voiceRecordZone').classList.add('show');startWaveAnimation();recordInterval=setInterval(()=>{recordSec++;const m=Math.floor(recordSec/60),s=recordSec%60;document.getElementById('recordTimer').textContent=`${m}:${s.toString().padStart(2,'0')}`;},1000);}catch{alert('❌ Microphone non accessible.');}};
 window.arreterEnregistrement=async(send)=>{if(!isRecording||!mediaRecorder)return;clearInterval(recordInterval);cancelAnimationFrame(waveAnimFrame);wavePoints=[];const recSavedSec=recordSec;recordSec=0;isRecording=false;document.getElementById('normalInputRow').style.display='flex';document.getElementById('voiceRecordZone').classList.remove('show');document.getElementById('recordTimer').textContent='0:00';mediaRecorder.stream.getTracks().forEach(t=>t.stop());if(!send){mediaRecorder=null;audioChunks=[];return;}mediaRecorder.onstop=async()=>{if(audioChunks.length===0){mediaRecorder=null;return;}const blob=new Blob(audioChunks,{type:'audio/webm'});const file=new File([blob],'voice.webm',{type:'audio/webm'});const uid=document.getElementById("cvUid").value;if(!uid){mediaRecorder=null;audioChunks=[];return;}try{const url=await uploadCloudinary(file,`akit/audio/${UC.id}`,null,null);const convId=[UC.id,uid].sort().join("_");const dur=recSavedSec||0;const m=Math.floor(dur/60),s=dur%60;const durStr=`${m}:${s.toString().padStart(2,'0')}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,type:"audio",audioUrl:url,durStr,contenu:"🎤 Message vocal",date:serverTimestamp(),lu:false});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:"🎤 Message vocal",date:serverTimestamp(),luDest:false,luExp:true});addNotif(uid,"message",`🎤 ${UC.prenom} vous a envoyé un message vocal`);}catch(e){alert("❌ "+e.message);}audioChunks=[];mediaRecorder=null;};mediaRecorder.stop();};
@@ -2770,12 +2320,10 @@ async function stopTypingSignal(){const uid=document.getElementById("cvUid").val
 window.retourCv=()=>{if(unsubMsgs){unsubMsgs();unsubMsgs=null;}if(unsubTyping){unsubTyping();unsubTyping=null;}stopTypingSignal();arreterEnregistrementSilencieux();cancelReply();document.getElementById("listeCv").style.display="block";document.getElementById("listeGroupes").style.display="none";document.getElementById("zoneCv").classList.remove("open");loadConvs("");};
 window.sendMsg=async()=>{const inp=document.getElementById("msgInp");const contenu=inp.value.trim();const uid=document.getElementById("cvUid").value;const type=document.getElementById("cvType").value;if(!contenu||!uid)return;inp.value="";const savedReply=replyMsg,savedReplyFrom=replyMsgFrom;cancelReply();stopTypingSignal();clearTimeout(typingTimeout);if(type==="groupe"){const convId=`groupe_${uid}`;await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,contenu,date:serverTimestamp(),type:"text",...(savedReply?{replyTo:savedReply,replyFrom:'Moi'}:{})});const gSnap=await getDoc(doc(db,"groupes",uid));if(gSnap.exists()){gSnap.data().membres?.forEach(mid=>{if(mid!==UC.id)addNotif(mid,"groupe_message",`💬 ${UC.prenom} a écrit dans le groupe`);});}}else{const convId=[UC.id,uid].sort().join("_");await addDoc(collection(db,"messages",convId,"msgs"),{exp:UC.id,dest:uid,contenu,date:serverTimestamp(),lu:false,type:"text",...(savedReply?{replyTo:savedReply,replyFrom:'Moi'}:{}),...(isDisappear?{disparait:true}:{})});await setDoc(doc(db,"lastMessages",convId),{exp:UC.id,dest:uid,contenu:isDisappear?"⏱ "+contenu:contenu,date:serverTimestamp(),luDest:false,luExp:true});addNotif(uid,"message",`💬 ${UC.prenom} vous a envoyé un message`);}};
 
-// AUDIO PLAYER
 const activeAudios={};
 window.playAudioWave=async(url,waveId,btn)=>{if(!url){alert('❌ Audio indisponible');return;}if(activeAudios[waveId]){activeAudios[waveId].pause();activeAudios[waveId]=null;document.getElementById('ico_'+waveId).className='fas fa-play';return;}const audio=new Audio(url);activeAudios[waveId]=audio;const ico=document.getElementById('ico_'+waveId);ico.className='fas fa-pause';const canvas=document.getElementById(waveId);drawVoiceWave(canvas,0);audio.ontimeupdate=()=>{if(audio.duration)drawVoiceWave(canvas,audio.currentTime/audio.duration);const rem=audio.duration-audio.currentTime;const durEl=document.getElementById('dur_'+waveId);if(durEl&&audio.duration){const m=Math.floor(rem/60),s=Math.floor(rem%60);durEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;}};audio.onended=()=>{ico.className='fas fa-play';activeAudios[waveId]=null;drawVoiceWave(canvas,0);};audio.play().catch(()=>alert('❌ Impossible de lire'));};
 function drawVoiceWave(canvas,progress){if(!canvas)return;const dpr=window.devicePixelRatio||1;const rect=canvas.getBoundingClientRect();if(!rect.width)return;canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);const W=rect.width,H=rect.height,mid=H/2,barW=2,gap=2,total=barW+gap,count=Math.floor(W/total);for(let i=0;i<count;i++){const seed=(Math.sin(i*0.4)*0.5+0.5);const amp=0.2+seed*0.75;const barH=Math.max(2,amp*(H*0.9));const x=i*total;const played=i/count<=progress;ctx.fillStyle=played?'#25D366':'rgba(255,255,255,0.35)';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,mid-barH/2,barW,barH,1);else ctx.rect(x,mid-barH/2,barW,barH);ctx.fill();}}
 
-// ===== MOBILE MONEY =====
 window.openMobileMoney=()=>{ouv("ovMobileMoney");refreshMMDisplay();};
 window.switchMM=(provider,btn)=>{currentMmProvider=provider;document.querySelectorAll('.mm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.mm-form').forEach(f=>f.classList.remove('active'));document.getElementById(`mm-${provider}`).classList.add('active');refreshMMDisplay();};
 function refreshMMDisplay(){['om','mtn','mpesa'].forEach(p=>{const s=mmState[p];document.getElementById(`${p}-connect-zone`).style.display=s.connected?"none":"block";document.getElementById(`${p}-panel`).style.display=s.connected?"block":"none";if(s.connected){document.getElementById(`${p}-balance`).textContent=(s.balance||0).toLocaleString()+" FCFA";renderMMHist(p);}});}
@@ -2791,13 +2339,10 @@ window.confirmerEnvoi=async()=>{
   if(!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA vers ${destNum} ?`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="⏳ Envoi...";try{const msg=`💸 TRANSFERT ${provider.toUpperCase()}\nDe: ${UC.prenom} ${UC.nom}\nID: ${UC.id}\nVers: ${destNum}\nMontant: ${amount.toLocaleString()} FCFA\nMotif: ${note||'Aucun'}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].hist.push({type:'out',label:`Envoi vers ${destNum}${note?' - '+note:''}`,amount,date:now});await saveMM();refreshMMDisplay();ferm("ovSendMoney");alert("✅ Demande envoyée !");}catch(e){alert("❌ "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}
 };
 
-// ===== NOTIFICATIONS =====
-window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});// Marquer toutes comme lues
-await Promise.all(snap.docs.filter(d=>!d.data().lu).map(d=>updateDoc(doc(db,"notifications",d.id),{lu:true})));majTousBadges('notif',0);document.title="AKIT-CHAT";prevNotifCount=0;const icoMap={message:'💬',like:'❤️',comment:'🗨️',ami:'👥',post:'📝',reaction:'⭐',story:'📸',story_vu:'👁',groupe_invite:'👥',groupe_message:'💬',coin:'💰',live:'🔴',defi:'⚔️',statut:'😊',default:'🔔'};liste.innerHTML=notifs.map(n=>{let action='';if(n.type==='message'){action=n.fromUid?`ferm('ovNotif');openMsg();setTimeout(()=>openConv('${n.fromUid}','direct'),400)`:`ferm('ovNotif');openMsg()`;}else if(n.type==='groupe_message'){action=`ferm('ovNotif');openMsg();setTimeout(()=>switchMsgTab('groups'),400)`;}else if(n.type==='ami'){action=`ferm('ovNotif');openAmis()`;}else if(n.type==='coin'){action=`ferm('ovNotif');openCoin()`;}else if(n.type==='live'){action=`ferm('ovNotif');ouvrirLive()`;}else{action=n.fromUid?`ferm('ovNotif');ouvrirProfilUser('${n.fromUid}')`:`ferm('ovNotif');scrollTop()`;}return `<div class="nf-item ${!n.lu?'unread':''}" onclick="${action}"><div class="nf-ico">${icoMap[n.type]||icoMap.default}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div>${!n.lu?'<div style="width:8px;height:8px;border-radius:50%;background:var(--bleu);flex-shrink:0;margin-top:4px"></div>':''}</div>`;}).join("");}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
+window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});await Promise.all(snap.docs.filter(d=>!d.data().lu).map(d=>updateDoc(doc(db,"notifications",d.id),{lu:true})));majTousBadges('notif',0);document.title="AKIT-CHAT";prevNotifCount=0;const icoMap={message:'💬',like:'❤️',comment:'🗨️',ami:'👥',post:'📝',reaction:'⭐',story:'📸',story_vu:'👁',groupe_invite:'👥',groupe_message:'💬',coin:'💰',live:'🔴',defi:'⚔️',statut:'😊',default:'🔔'};liste.innerHTML=notifs.map(n=>{let action='';if(n.type==='message'){action=n.fromUid?`ferm('ovNotif');openMsg();setTimeout(()=>openConv('${n.fromUid}','direct'),400)`:`ferm('ovNotif');openMsg()`;}else if(n.type==='groupe_message'){action=`ferm('ovNotif');openMsg();setTimeout(()=>switchMsgTab('groups'),400)`;}else if(n.type==='ami'){action=`ferm('ovNotif');openAmis()`;}else if(n.type==='coin'){action=`ferm('ovNotif');openCoin()`;}else if(n.type==='live'){action=`ferm('ovNotif');ouvrirLive()`;}else{action=n.fromUid?`ferm('ovNotif');ouvrirProfilUser('${n.fromUid}')`:`ferm('ovNotif');scrollTop()`;}return `<div class="nf-item ${!n.lu?'unread':''}" onclick="${action}"><div class="nf-ico">${icoMap[n.type]||icoMap.default}</div><div style="flex:1"><div class="nf-txt">${n.texte||"Notification"}</div><div class="nf-dt">${fmtDate(n.date)}</div></div>${!n.lu?'<div style="width:8px;height:8px;border-radius:50%;background:var(--bleu);flex-shrink:0;margin-top:4px"></div>':''}</div>`;}).join("");}catch(err){liste.innerHTML=`<p style='text-align:center;color:#E24B4A;padding:18px'>❌ ${err.message}</p>`;}};
 async function addNotif(userId,type,texte){try{await addDoc(collection(db,"notifications"),{userId,type,texte,fromUid:UC?.id||null,date:serverTimestamp(),lu:false});}catch{}}
 async function addNotifTous(type,texte){const uMap=await getUsers();Object.keys(uMap).forEach(id=>{if(id!==UC.id)addNotif(id,type,texte);});}
 
-// ===== AMIS =====
 window.openAmis=()=>{ouv("ovAmis");loadAmis();};
 async function loadAmis(){const[uMap,sdSnap,saSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"amis"),where("ami_id","==",UC.id),where("statut","==","en_attente"))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);let dmdHtml=sdSnap.empty?`<p style='color:var(--texte2);font-size:12px;padding:8px'>Aucune demande.</p>`:"";sdSnap.forEach(d=>{const a={id:d.id,...d.data()};const u=uMap[a.user_id];if(!u)return;dmdHtml+=`<div class="a-item"><div class="a-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">Demande d'ami</div></div><div class="a-btns"><button class="btn-ok" onclick="acceptAmi('${a.id}','${a.user_id}')">✓</button><button class="btn-no" onclick="refusAmi('${a.id}')">✕</button></div></div>`;});document.getElementById("listeDmd").innerHTML=dmdHtml;let amsHtml="";saSnap.forEach(d=>{const a=d.data();if(a.user_id!==UC.id&&a.ami_id!==UC.id)return;const uid=a.user_id===UC.id?a.ami_id:a.user_id;const u=uMap[uid];if(!u)return;amsHtml+=`<div class="a-item"><div class="a-av" style="position:relative">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}${u.enLigne?'<div style="position:absolute;bottom:1px;right:1px;width:9px;height:9px;border-radius:50%;background:#43e97b;border:2px solid #fff"></div>':""}</div><div class="a-info"><div class="a-nom">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div><button class="btn-ma" onclick="msgAmi('${uid}')">💬</button></div>`;});document.getElementById("listeAms").innerHTML=amsHtml||`<p style='color:var(--texte2);font-size:12px;padding:8px'>Aucun ami.</p>`;}
 window.acceptAmi=async(did,uid)=>{await updateDoc(doc(db,"amis",did),{statut:"accepte"});addNotif(uid,"ami",`${UC.prenom} a accepté votre demande d'ami 👥`);loadAmis();};
@@ -2807,20 +2352,15 @@ window.demandeAmi=async uid=>{const qa=query(collection(db,"amis"),where("user_i
 window.openSugg=async()=>{ouv("ovSugg");const[uMap,saSnap]=await Promise.all([getUsers(),getDocs(collection(db,"amis"))]);const amisIds=new Set();saSnap.forEach(d=>{const a=d.data();if(a.user_id===UC.id)amisIds.add(a.ami_id);if(a.ami_id===UC.id)amisIds.add(a.user_id);});const sugg=Object.entries(uMap).filter(([id])=>id!==UC.id&&!amisIds.has(id)).map(([id,d])=>({id,...d}));document.getElementById("listeSugg").innerHTML=sugg.length===0?`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune suggestion.</p>`:sugg.map(u=>`<div class="sg-item"><div class="sg-av" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}</div><div class="sg-info"><div class="sg-nom" onclick="ouvrirProfilUser('${u.id}')" style="cursor:pointer">${u.prenom||""} ${u.nom||""}</div><div class="sg-sub">${u.statut||'Membre AKIT-CHAT'}</div></div><button class="btn-add" onclick="demandeAmi('${u.id}')">+ Ajouter</button></div>`).join("");};
 window.openFavs=async()=>{ouv("ovFavs");const[favDoc,uMap]=await Promise.all([getDoc(doc(db,"favs",UC.id)),getUsers()]);const favIds=favDoc.exists()?(favDoc.data().ids||[]):[];if(favIds.length===0){document.getElementById("listeFavs").innerHTML=`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori.</p>`;return;}let html="";for(const pid of favIds){const snap=await getDoc(doc(db,"posts",pid));if(!snap.exists())continue;const p=snap.data();const u=uMap[p.userId]||{prenom:"?",nom:""};html+=`<div style="background:var(--gris);border-radius:9px;padding:11px;margin-bottom:8px;border:0.5px solid var(--gris2)"><div style="font-size:11px;color:var(--texte2);margin-bottom:3px">${u.prenom||""} ${u.nom||""} · ${fmtDate(p.date)}</div><div style="font-size:13px;color:var(--texte)">${p.texte||""}</div>${p.mediaUrl&&p.mediaType==="img"?`<img style="width:100%;max-height:100px;object-fit:cover;border-radius:7px;margin-top:5px;cursor:pointer" src="${p.mediaUrl}" onclick="openLightbox('${p.mediaUrl}')"/>`:""}<div style="font-size:11px;color:var(--texte2);margin-top:5px">❤️ ${p.likes||0} · 💬 ${(p.comments||[]).length}</div></div>`;};document.getElementById("listeFavs").innerHTML=html||`<p style="text-align:center;color:var(--texte2);padding:32px">Aucun favori.</p>`;};
 
-// ===== PARAMS =====
 window.openParam=()=>{document.getElementById("pp").value=UC.prenom||"";document.getElementById("pn").value=UC.nom||"";document.getElementById("pe").value=UC.email||"";document.getElementById("pt").value=UC.telephone||"";document.getElementById("pbio").value=UC.bio||"";ouv("ovParam");};
 window.saveProfil=async()=>{UC.prenom=document.getElementById("pp").value.trim()||UC.prenom;UC.nom=document.getElementById("pn").value.trim()||UC.nom;UC.email=document.getElementById("pe").value.trim()||UC.email;UC.telephone=document.getElementById("pt").value.trim()||UC.telephone;UC.bio=document.getElementById("pbio").value.trim();if(uMapCache)uMapCache[UC.id]={...uMapCache[UC.id],...UC};await updateDoc(doc(db,"users",UC.id),{prenom:UC.prenom,nom:UC.nom,email:UC.email,telephone:UC.telephone,bio:UC.bio});ferm("ovParam");initUI();alert("✅ Profil mis à jour !");};
 window.setBright=v=>{document.body.style.filter=`brightness(${v}%)`;document.getElementById("brVal").textContent=v+"%";};
 window.toggleDark=el=>{el.classList.toggle("on");const dark=el.classList.contains("on");document.documentElement.style.setProperty("--gris",dark?"#18191a":"#f4f5f7");document.documentElement.style.setProperty("--blanc",dark?"#1e1f22":"#ffffff");document.documentElement.style.setProperty("--texte",dark?"#e4e6eb":"#1a1d23");document.documentElement.style.setProperty("--gris2",dark?"#2e2f33":"#e8eaed");document.documentElement.style.setProperty("--texte2",dark?"#9ea3ae":"#6b7280");};
 window.effacerDonnees=async()=>{if(!confirm("Supprimer TOUTES vos données ?"))return;const[sp,ss]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"stories"),where("userId","==",UC.id)))]);for(const d of sp.docs)await deleteDoc(doc(db,"posts",d.id));for(const d of ss.docs)await deleteDoc(doc(db,"stories",d.id));await deleteDoc(doc(db,"users",UC.id));await signOut(auth);window.location.replace("index.html");};
 
-// ===== COIN =====
 window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinHistEl");const hist=mmState.coin.hist||[];el.innerHTML=hist.length===0?`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p>`:hist.slice(-15).reverse().map(h=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--gris);margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:${h.type==='out'?'#ffebe9':'#e8f5e9'};display:flex;align-items:center;justify-content:center;font-size:16px">${h.type==='out'?'💸':'💰'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${h.label}</div><div style="font-size:11px;color:var(--texte2)">${h.date||""}</div></div><div style="font-size:14px;font-weight:700;color:${h.type==='out'?'#E24B4A':'#1D9E75'}">${h.type==='out'?'-':'+'}${h.amount?.toLocaleString()||0} A</div></div>`).join("");ouv("ovCoin");};
 
-// ===== PROFIL =====
-window.openProfil=async()=>{pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+` <span class="new-prf-check">✓</span>${UC.modeCreateur?' <span style="font-size:14px">⭐</span>':''}`;document.getElementById("prfEmail").textContent=UC.email||"";document.getElementById("prfBio").textContent=UC.bio||"Membre AKIT-CHAT";const avEl=document.getElementById("prfAvEl");avEl.innerHTML=UC.avatarUrl?`<img src="${UC.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`:UC.prenom?.[0]?.toUpperCase()||'U';if(UC.coverUrl){document.getElementById("prfCoverImg").src=UC.coverUrl;document.getElementById("prfCoverImg").style.display="block";}else document.getElementById("prfCoverImg").style.display="none";
-const statutEl=document.getElementById("prfStatutDisplay");if(UC.statut&&(!UC.statutExpire||new Date(UC.statutExpire).getTime()>Date.now())){statutEl.innerHTML=`<span style="font-size:13px;color:rgba(255,255,255,.7)">${UC.statut}</span>`;}else if(statutEl)statutEl.innerHTML='';
-const[sp,sa]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);document.getElementById("psPosts").textContent=sp.size;let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});document.getElementById("psAmis").textContent=cntA;document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);updateCoinDisplay();renderPrfTab('posts',sp);ouv("ovProfil");};
+window.openProfil=async()=>{pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");document.getElementById("prfNom").innerHTML=`${UC.prenom||""} ${UC.nom||""}`.trim()+` <span class="new-prf-check">✓</span>${UC.modeCreateur?' <span style="font-size:14px">⭐</span>':''}`;document.getElementById("prfEmail").textContent=UC.email||"";document.getElementById("prfBio").textContent=UC.bio||"Membre AKIT-CHAT";const avEl=document.getElementById("prfAvEl");avEl.innerHTML=UC.avatarUrl?`<img src="${UC.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`:UC.prenom?.[0]?.toUpperCase()||'U';if(UC.coverUrl){document.getElementById("prfCoverImg").src=UC.coverUrl;document.getElementById("prfCoverImg").style.display="block";}else document.getElementById("prfCoverImg").style.display="none";const statutEl=document.getElementById("prfStatutDisplay");if(UC.statut&&(!UC.statutExpire||new Date(UC.statutExpire).getTime()>Date.now())){statutEl.innerHTML=`<span style="font-size:13px;color:rgba(255,255,255,.7)">${UC.statut}</span>`;}else if(statutEl)statutEl.innerHTML='';const[sp,sa]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);document.getElementById("psPosts").textContent=sp.size;let cntA=0;sa.forEach(d=>{const a=d.data();if(a.user_id===UC.id||a.ami_id===UC.id)cntA++;});document.getElementById("psAmis").textContent=cntA;document.getElementById("psAbonnes").textContent=Math.floor(cntA*1.5+sp.size*3);updateCoinDisplay();renderPrfTab('posts',sp);ouv("ovProfil");};
 async function renderPrfTab(tab,spSnap){const content=document.getElementById("prfTabContent");if(tab==='posts'){let sp=spSnap;if(!sp)sp=await getDocs(query(collection(db,"posts"),where("userId","==",UC.id)));let html='<div class="new-prf-grid">';sp.forEach(d=>{const p=d.data();const hasImg=p.mediaUrl&&p.mediaType==="img";html+=`<div class="new-prf-post-card" onclick="${hasImg?`openLightbox('${p.mediaUrl}')`:``}"><div style="width:100%;height:100%;background:var(--dark3);display:flex;align-items:center;justify-content:center">${hasImg?`<img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover"/>`:p.texte?`<p style="padding:12px;font-size:12px;color:rgba(255,255,255,.6);text-align:center">${p.texte.substring(0,60)}</p>`:`<i class="fa-solid fa-file" style="color:rgba(255,255,255,.2);font-size:24px"></i>`}</div></div>`;});html+='</div>';content.innerHTML=sp.size===0?`<p style='text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,.4)'>Aucune publication.</p>`:html;}else if(tab==='photos'){const sp=await getDocs(query(collection(db,"posts"),where("userId","==",UC.id)));const imgs=[];sp.forEach(d=>{const p=d.data();if(p.mediaUrl&&p.mediaType==="img")imgs.push(p.mediaUrl);});content.innerHTML=imgs.length===0?`<p style='text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,.4)'>Aucune photo.</p>`:`<div class="new-prf-grid">${imgs.map(url=>`<div class="new-prf-post-card" onclick="openLightbox('${url}')"><img src="${url}" style="width:100%;height:100%;object-fit:cover"/></div>`).join('')}</div>`;}else if(tab==='amis'){const[uMap,saSnap]=await Promise.all([getUsers(),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);let amsHtml='<div style="padding:0 16px 16px">';saSnap.forEach(d=>{const a=d.data();if(a.user_id!==UC.id&&a.ami_id!==UC.id)return;const uid=a.user_id===UC.id?a.ami_id:a.user_id;const u=uMap[uid];if(!u)return;amsHtml+=`<div class="a-item" onclick="ouvrirProfilUser('${uid}')"><div class="a-av">${u.avatarUrl?`<img src="${u.avatarUrl}"/>`:( u.prenom?.[0]||"U").toUpperCase()}</div><div class="a-info"><div class="a-nom" style="color:#fff">${u.prenom||""} ${u.nom||""}</div><div class="a-sub">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div></div>`;});amsHtml+='</div>';content.innerHTML=amsHtml;}else{content.innerHTML=`<div style="padding:16px;color:rgba(255,255,255,.6);font-size:13px;line-height:1.8">${UC.bio||"Aucune bio."}<br><br>📧 ${UC.email||""}<br>📞 ${UC.telephone||""}</div>`;}}
 window.switchPrfTab=(tab,el)=>{document.querySelectorAll('.new-prf-tab').forEach(t=>t.classList.remove('act'));el.classList.add('act');renderPrfTab(tab);};
 window.prevAv=async e=>{const file=e.target.files[0];if(!file)return;pendAvFile=await compresserAvatar(file);document.getElementById("prfAvEl").innerHTML=`<img src="${URL.createObjectURL(pendAvFile)}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`;document.getElementById("cfBar").classList.add("show");};
@@ -2828,44 +2368,21 @@ window.prevCover=async e=>{const file=e.target.files[0];if(!file)return;pendCove
 window.confirmChgs=async()=>{try{if(pendAvFile){UC.avatarUrl=await uploadCloudinary(pendAvFile,`akit/avatars/${UC.id}`,null,null);await updateDoc(doc(db,"users",UC.id),{avatarUrl:UC.avatarUrl});}if(pendCoverFile){UC.coverUrl=await uploadCloudinary(pendCoverFile,`akit/covers/${UC.id}`,null,null);await updateDoc(doc(db,"users",UC.id),{coverUrl:UC.coverUrl});}if(uMapCache)uMapCache[UC.id]={...uMapCache[UC.id],...UC};pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");initUI();alert("✅ Photo mise à jour !");}catch(err){alert("❌ "+err.message);}};
 window.cancelChgs=()=>{pendAvFile=null;pendCoverFile=null;document.getElementById("cfBar").classList.remove("show");};
 
-// PROFIL AUTRE USER
 window.ouvrirProfilUser=async uid=>{if(!uid)return;if(uid===UC.id){window.openProfil();return;}const uMap=await getUsers();const u=uMap[uid];if(!u)return;document.getElementById("upTitle").textContent=`${u.prenom||""} ${u.nom||""}`;document.getElementById("upNom").innerHTML=`${u.prenom||""} ${u.nom||""} <span class="new-prf-check">✓</span>${u.modeCreateur?'⭐':''}`;document.getElementById("upOnline").textContent=getPresenceInfo(u).label;document.getElementById("upBio").textContent=u.bio||"Membre AKIT-CHAT";const statutEl=document.getElementById("upStatutDisplay");if(u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>Date.now())){statutEl.innerHTML=`<span style="font-size:13px;color:rgba(255,255,255,.7)">${u.statut}</span>`;}else if(statutEl)statutEl.innerHTML='';const cover=document.getElementById("upCover");if(u.coverUrl)cover.style.background=`url('${u.coverUrl}') center/cover`;else cover.style.background="linear-gradient(135deg,#0d2b1a,#1a3a2a)";const avEl=document.getElementById("upAvEl");avEl.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;border-radius:11px;object-fit:cover"/>`:( u.prenom?.[0]?.toUpperCase()||'U');const[spSnap,saSnap]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",uid))),getDocs(query(collection(db,"amis"),where("statut","==","accepte")))]);document.getElementById("upPosts").textContent=spSnap.size;let cnt=0;saSnap.forEach(d=>{const a=d.data();if(a.user_id===uid||a.ami_id===uid)cnt++;});document.getElementById("upAmis").textContent=cnt;document.getElementById("upAbonnes").textContent=Math.floor(cnt*1.5+spSnap.size*3);let ph='';spSnap.forEach(d=>{const p=d.data();const hasImg=p.mediaUrl&&p.mediaType==="img";ph+=`<div class="new-prf-post-card" onclick="${hasImg?`openLightbox('${p.mediaUrl}')`:``}"><div style="width:100%;height:100%;background:var(--dark3);display:flex;align-items:center;justify-content:center">${hasImg?`<img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover"/>`:p.texte?`<p style="padding:12px;font-size:12px;color:rgba(255,255,255,.6);text-align:center">${p.texte.substring(0,60)}</p>`:`<i class="fa-solid fa-file" style="color:rgba(255,255,255,.2);font-size:24px"></i>`}</div></div>`;});document.getElementById("upPostsList").innerHTML=ph||`<p style='color:rgba(255,255,255,.4);font-size:12px;padding:8px;text-align:center;grid-column:1/-1'>Aucune publication.</p>`;document.getElementById("upBtnMsg").onclick=()=>{ferm("ovUserProfil");window.openMsg();setTimeout(()=>window.openConv(uid,"direct"),400);};document.getElementById("upBtnAdd").onclick=()=>window.demandeAmi(uid);ouv("ovUserProfil");};
 
-// ===== CLAUDE AI =====
 window.openClaude=()=>ouv("ovClaude");
 window.sendClaude=async()=>{const inp=document.getElementById("clInp");const q=inp.value.trim();if(!q)return;inp.value="";const box=document.getElementById("clMsgs");box.innerHTML+=`<div class="cl-msg u">${q}</div>`;const tid="t"+Date.now();box.innerHTML+=`<div class="cl-msg a" id="${tid}">⏳ Réflexion...</div>`;box.scrollTop=box.scrollHeight;try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,messages:[{role:"user",content:q}]})});const d=await r.json();document.getElementById(tid).textContent=d.content?.[0]?.text||"Pas de réponse.";}catch{document.getElementById(tid).textContent="❌ Erreur de connexion.";}box.scrollTop=box.scrollHeight;};
 
-// ===== PARRAINAGE =====
 window.openParrainage=async()=>{ouv("ovParrainage");const lien=`https://akit-chat.vercel.app/test.html?ref=${UC.id}`;document.getElementById("prrLink").value=lien;document.getElementById("prrCoins").textContent=(UC.akit_coin||0).toLocaleString();const filleuls=UC.filleuls||[];document.getElementById("prrFilleuls").textContent=filleuls.length;if(filleuls.length>0){const uMap=await getUsers();const liste=document.getElementById("prrListeFilleuls");liste.innerHTML=filleuls.map(uid=>{const u=uMap[uid]||{prenom:"?",nom:""};const av=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( u.prenom?.[0]||"?").toUpperCase();return `<div style="display:flex;align-items:center;gap:10px;padding:9px;background:var(--gris);border-radius:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0">${av}</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${u.prenom||""} ${u.nom||""}</div><div style="font-size:11px;color:var(--texte2)">${u.enLigne?"🟢 En ligne":"Hors ligne"}</div></div><div style="font-size:11px;font-weight:700;color:#00FF88">+750 💰</div></div>`;}).join("");}};
 window.copierLienParrainage=()=>{const lien=document.getElementById("prrLink").value;navigator.clipboard.writeText(lien).then(()=>alert("✅ Lien copié !")).catch(()=>{document.getElementById("prrLink").select();document.execCommand("copy");alert("✅ Lien copié !");});};
 window.partagerWhatsApp=()=>{const lien=document.getElementById("prrLink").value;window.open(`https://wa.me/?text=${encodeURIComponent(`🚀 Rejoins-moi sur AKIT-CHAT !\n\n+250 AKIT Coins gratuits à l'inscription 🎁\n\n${lien}`)}`,'_blank');};
 window.partagerAutre=async()=>{const lien=document.getElementById("prrLink").value;if(navigator.share){try{await navigator.share({title:"AKIT-CHAT",text:`Rejoins AKIT-CHAT !`,url:lien});}catch{}}else window.copierLienParrainage();};
 
-// ===== UTILITAIRES =====
 window.seDeco=async()=>{await marquerEnLigne(false);await signOut(auth);window.location.replace("index.html");};
 window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behavior:"smooth"});
 
-// BLOQUER RETOUR
 (function(){history.pushState(null,'',location.href);history.pushState(null,'',location.href);window.addEventListener('popstate',()=>history.pushState(null,'',location.href));document.addEventListener('touchstart',e=>{if(e.touches[0].clientX<20||e.touches[0].clientX>window.innerWidth-20)e.preventDefault();},{passive:false});})();
-window.sendSvC2 = async () => {
-  const inp = document.getElementById("svCInp2");
-  const texte = inp.value.trim();
-  if (!texte) return;
-  const s = svData[svIdx];
-  const c = {
-    user: `${UC.prenom} ${UC.nom}`,
-    avatarUrl: UC.avatarUrl || "",
-    texte,
-    time: "Maintenant",
-    userId: UC.id
-  };
-  const newC = [...(s.comments || []), c];
-  await updateDoc(doc(db, "stories", s.id), { comments: newC });
-  svData[svIdx].comments = newC;
-  document.getElementById("svCC").textContent = newC.length;
-  addNotif(s.userId, "comment_story", `${UC.prenom} a commenté votre story`);
-  inp.value = "";
-};
+
 </script>
 </body>
 </html>
