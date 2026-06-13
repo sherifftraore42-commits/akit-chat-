@@ -199,9 +199,8 @@ setTimeout(step,300);
     sendPasswordResetEmail, setPersistence,
     browserLocalPersistence, browserSessionPersistence
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, updateDoc }
+import { getFirestore, doc, updateDoc, getDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
   const firebaseConfig={
     apiKey:"AIzaSyBuCyKhCJfl6ADsHo-Nh8mbunXUJZ146w8",
     authDomain:"akit-chat.firebaseapp.com",
@@ -260,8 +259,7 @@ setTimeout(step,300);
       showErr("✅ Email de réinitialisation envoyé !",true);
     }catch{showErr("❌ Email introuvable.");}
   };
-
-  window.seConnecter=async function(){
+window.seConnecter=async function(){
     const email=document.getElementById("email").value.trim();
     const password=document.getElementById("password").value;
     const remember=document.getElementById("remember").checked;
@@ -271,6 +269,27 @@ setTimeout(step,300);
     try{
       await setPersistence(auth,remember?browserLocalPersistence:browserSessionPersistence);
       const cred=await signInWithEmailAndPassword(auth,email,password);
+
+      // ✅ VÉRIFICATION COMPTE SUPPRIMÉ OU BANNI
+      // Ajouter ces imports en haut du module : getDoc
+      const userSnap = await getDoc(doc(db,"users",cred.user.uid));
+
+      // Compte supprimé depuis l'admin → document n'existe plus
+      if(!userSnap.exists()){
+        await auth.signOut();
+        showErr("❌ Ce compte n'existe plus. Contactez l'administrateur.");
+        setLoading(false);
+        return;
+      }
+
+      // Compte banni depuis l'admin
+      if(userSnap.data().banni === true){
+        await auth.signOut();
+        showErr("❌ Votre compte a été suspendu. Contactez l'administrateur.");
+        setLoading(false);
+        return;
+      }
+
       try{
         await updateDoc(doc(db,"users",cred.user.uid),{enLigne:true,dernierVu:new Date().toISOString()});
       }catch(e){console.warn("updateDoc ignoré:",e.message);}
