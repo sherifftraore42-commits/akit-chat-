@@ -2353,8 +2353,17 @@ window.scrollTop=()=>document.getElementById("mainLayout").scrollTo({top:0,behav
 // ===== VIDEOS TIKTOK-STYLE =====
 let shortVideoFile=null;
 let currentVideoIndex=0;
-
-window.ouvrirVideos=async()=>{document.getElementById('ovVideos').style.display='flex';await chargerShortVideos();};
+window.ouvrirVideos=()=>{
+  const overlay=document.getElementById('ovVideos');
+  overlay.style.display='flex';
+  const feed=document.getElementById('videoFeed');
+  feed.innerHTML=`<div style="height:100vh;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:rgba(255,255,255,.5)">
+    <div style="width:48px;height:48px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:#E24B4A;animation:spin .8s linear infinite"></div>
+    <span style="font-size:13px;font-weight:600">Chargement des vidéos...</span>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+  </div>`;
+  setTimeout(()=>chargerShortVideos(),0);
+};
 window.fermerVideos=()=>{document.getElementById('ovVideos').style.display='none';document.querySelectorAll('#videoFeed video').forEach(v=>v.pause());if(window._videoUnsub){window._videoUnsub();window._videoUnsub=null;}};
 window.ouvrirComposerVideo=()=>{shortVideoFile=null;document.getElementById('shortVideoPrev').style.display='none';document.getElementById('videoDropCont').style.display='block';document.getElementById('shortVideoCaption').value='';document.getElementById('inpShortVideo').value='';document.getElementById('btnPublierShortVideo').disabled=true;ouv('ovUploadVideo');};
 window.prevShortVideo=e=>{const file=e.target.files[0];if(!file)return;shortVideoFile=file;const url=URL.createObjectURL(file);const prev=document.getElementById('shortVideoPrev');prev.src=url;prev.style.display='block';document.getElementById('videoDropCont').style.display='none';document.getElementById('btnPublierShortVideo').disabled=false;};
