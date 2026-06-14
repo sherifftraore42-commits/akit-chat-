@@ -166,13 +166,13 @@ const step=()=>{
     pct=100;
     fill.style.width='100%';
     pctEl.textContent='100%';
-    setTimeout(()=>{
-      document.getElementById('splashScreen').classList.add('hide');
-      setTimeout(()=>{
-        document.getElementById('splashScreen').style.display='none';
-        document.getElementById('authCheck').style.display='flex';
-      },600);
-    },400);
+setTimeout(()=>{
+  document.getElementById('splash').classList.add('hide');
+  setTimeout(()=>{
+    document.getElementById('splash').style.display='none';
+    document.getElementById('authCheck').style.display='flex';
+  },600);
+},400);
     return;
   }
   fill.style.width=pct+'%';
