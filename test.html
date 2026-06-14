@@ -2112,12 +2112,24 @@ window.demarrerLive=async()=>{
   try{
     const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
     liveStream=stream;
-     window.demarrerLive=async()=>{
-  const titre=document.getElementById('liveTitleInput').value.trim()||`Live de ${UC.prenom}`;
-  ferm('ovStartLive');
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
-    liveStream=stream;
+    document.getElementById('ovLive').classList.add('open');
+    document.getElementById('liveTitleDisplay').textContent=titre;
+    await new Promise(r=>setTimeout(r,300));
+    const vid=document.getElementById('liveVideo');
+    vid.srcObject=stream;
+    vid.muted=true;
+    vid.setAttribute('playsinline','');
+    vid.setAttribute('autoplay','');
+    try{await vid.play();}catch(e){console.warn('play err',e);}
+    const liveRef=await addDoc(collection(db,'lives'),{userId:UC.id,nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||'',titre,viewers:[],coins:0,date:serverTimestamp(),actif:true});
+    currentLiveId=liveRef.id;
+    if(window._liveUnsub)window._liveUnsub();
+    window._liveUnsub=onSnapshot(doc(db,'lives',liveRef.id),s=>{if(s.exists())document.getElementById('liveViewerCount').textContent=(s.data().viewers||[]).length;});
+    if(window._liveComUnsub)window._liveComUnsub();
+    window._liveComUnsub=onSnapshot(query(collection(db,'liveComments',liveRef.id,'msgs'),orderBy('date','asc'),limit(50)),s=>{const list=document.getElementById('liveCommentsList');list.innerHTML='';s.docs.forEach(d=>{const m=d.data();const av=m.avatarUrl?`<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( m.nom?.[0]||'?').toUpperCase();list.innerHTML+=`<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom||'?'}</div>${m.gift?`<span style="color:var(--yellow);font-weight:700">${m.texte}</span>`:m.texte}</div></div>`;});list.scrollTop=list.scrollHeight;});
+    addNotifTous('live',`🔴 ${UC.prenom} est en live ! "${titre}"`);
+  }catch(e){alert('❌ Caméra inaccessible : '+e.message);}
+};
     document.getElementById('ovLive').classList.add('open');
     document.getElementById('liveTitleDisplay').textContent=titre;
     await new Promise(r=>setTimeout(r,300));
