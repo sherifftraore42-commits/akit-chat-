@@ -2105,52 +2105,6 @@ window.supprimerStatut=async()=>{await updateDoc(doc(db,"users",UC.id),{statut:n
 async function renderStatutBand(){const band=document.getElementById('statutDisplay');if(!band)return;const now=Date.now();const uMap=await getUsers();const items=[];if(UC.statut&&(!UC.statutExpire||new Date(UC.statutExpire).getTime()>now))items.push({nom:"Moi",statut:UC.statut,uid:UC.id});Object.entries(uMap).forEach(([id,u])=>{if(id!==UC.id&&u.statut&&(!u.statutExpire||new Date(u.statutExpire).getTime()>now))items.push({nom:u.prenom||"?",statut:u.statut,uid:id});});if(items.length===0){band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i> Partager mon humeur</button>`;return;}band.innerHTML=`<button class="statut-bubble" onclick="ouvrirStatut()"><i class="fas fa-plus-circle"></i></button>`+items.slice(0,5).map(i=>`<div class="statut-bubble active" onclick="ouvrirProfilUser('${i.uid}')" title="${i.nom}">${i.statut}</div>`).join('');}
 
 // ===== LIVE =====
-window.ouvrirLive=()=>{ouv('ovStartLive');document.getElementById('liveTitleInput').value='';};
-window.demarrerLive=async()=>{
-  const titre=document.getElementById('liveTitleInput').value.trim()||`Live de ${UC.prenom}`;
-  ferm('ovStartLive');
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
-    liveStream=stream;
-    document.getElementById('ovLive').classList.add('open');
-    document.getElementById('liveTitleDisplay').textContent=titre;
-    await new Promise(r=>setTimeout(r,300));
-    const vid=document.getElementById('liveVideo');
-    vid.srcObject=stream;
-    vid.muted=true;
-    vid.setAttribute('playsinline','');
-    vid.setAttribute('autoplay','');
-    try{await vid.play();}catch(e){console.warn('play err',e);}
-    const liveRef=await addDoc(collection(db,'lives'),{userId:UC.id,nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||'',titre,viewers:[],coins:0,date:serverTimestamp(),actif:true});
-    currentLiveId=liveRef.id;
-    if(window._liveUnsub)window._liveUnsub();
-    window._liveUnsub=onSnapshot(doc(db,'lives',liveRef.id),s=>{if(s.exists())document.getElementById('liveViewerCount').textContent=(s.data().viewers||[]).length;});
-    if(window._liveComUnsub)window._liveComUnsub();
-    window._liveComUnsub=onSnapshot(query(collection(db,'liveComments',liveRef.id,'msgs'),orderBy('date','asc'),limit(50)),s=>{const list=document.getElementById('liveCommentsList');list.innerHTML='';s.docs.forEach(d=>{const m=d.data();const av=m.avatarUrl?`<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( m.nom?.[0]||'?').toUpperCase();list.innerHTML+=`<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom||'?'}</div>${m.gift?`<span style="color:var(--yellow);font-weight:700">${m.texte}</span>`:m.texte}</div></div>`;});list.scrollTop=list.scrollHeight;});
-    addNotifTous('live',`🔴 ${UC.prenom} est en live ! "${titre}"`);
-  }catch(e){alert('❌ Caméra inaccessible : '+e.message);}
-};
-    document.getElementById('ovLive').classList.add('open');
-    document.getElementById('liveTitleDisplay').textContent=titre;
-    await new Promise(r=>setTimeout(r,300));
-    const vid=document.getElementById('liveVideo');
-    vid.srcObject=stream;
-    vid.muted=true;
-    vid.setAttribute('playsinline','');
-    vid.setAttribute('autoplay','');
-    try{ await vid.play(); }catch(e){ console.warn('play err',e); }
-    document.getElementById('ovLive').classList.add('open');
-    document.getElementById('liveTitleDisplay').textContent=titre;
-    await vid.play().catch(()=>{});
-    const liveRef=await addDoc(collection(db,'lives'),{userId:UC.id,nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||'',titre,viewers:[],coins:0,date:serverTimestamp(),actif:true});
-    currentLiveId=liveRef.id;
-    if(window._liveUnsub)window._liveUnsub();
-    window._liveUnsub=onSnapshot(doc(db,'lives',liveRef.id),s=>{if(s.exists())document.getElementById('liveViewerCount').textContent=(s.data().viewers||[]).length;});
-    if(window._liveComUnsub)window._liveComUnsub();
-    window._liveComUnsub=onSnapshot(query(collection(db,'liveComments',liveRef.id,'msgs'),orderBy('date','asc'),limit(50)),s=>{const list=document.getElementById('liveCommentsList');list.innerHTML='';s.docs.forEach(d=>{const m=d.data();const av=m.avatarUrl?`<img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover"/>`:( m.nom?.[0]||'?').toUpperCase();list.innerHTML+=`<div class="live-comment-item"><div class="live-comment-av">${av}</div><div class="live-comment-bbl"><div class="live-comment-name">${m.nom||'?'}</div>${m.gift?`<span style="color:var(--yellow);font-weight:700">${m.texte}</span>`:m.texte}</div></div>`;});list.scrollTop=list.scrollHeight;});
-    addNotifTous('live',`🔴 ${UC.prenom} est en live ! "${titre}"`);
-  }catch(e){alert('❌ Caméra inaccessible : '+e.message);}
-};
 window.terminerLive=async()=>{if(liveStream){liveStream.getTracks().forEach(t=>t.stop());liveStream=null;}document.getElementById('ovLive').classList.remove('open');document.getElementById('liveVideo').srcObject=null;['_liveUnsub','_liveComUnsub'].forEach(k=>{if(window[k]){window[k]();window[k]=null;}});if(currentLiveId){try{await updateDoc(doc(db,'lives',currentLiveId),{actif:false});}catch{}}currentLiveId=null;};
 window.envoyerCommentaireLive=async()=>{const inp=document.getElementById('liveInp');const texte=inp.value.trim();if(!texte||!currentLiveId)return;await addDoc(collection(db,"liveComments",currentLiveId,"msgs"),{nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte,date:serverTimestamp()});inp.value="";};
 window.envoyerCadeau=async(emoji,cout)=>{if(!currentLiveId)return;if((UC.akit_coin||0)<cout){alert("❌ Solde insuffisant !");return;}await addCoins(-cout,`Cadeau ${emoji} en live`);const liveSnap=await getDoc(doc(db,"lives",currentLiveId));if(liveSnap.exists()){const ld=liveSnap.data();if(ld.userId&&ld.userId!==UC.id){const ss=await getDoc(doc(db,"users",ld.userId));if(ss.exists()){const gain=Math.floor(cout*0.7);await updateDoc(doc(db,"users",ld.userId),{akit_coin:(ss.data().akit_coin||0)+gain});addNotif(ld.userId,"coin",`🎁 ${UC.prenom} vous a envoyé ${emoji} = +${gain} coins`);}}}await addDoc(collection(db,"liveComments",currentLiveId,"msgs"),{nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||"",texte:`envoie ${emoji} (${cout} coins)`,gift:true,date:serverTimestamp()});const floatEl=document.createElement('div');floatEl.className='gift-float';floatEl.textContent=emoji;floatEl.style.left=Math.random()*60+20+"%";floatEl.style.bottom='120px';document.body.appendChild(floatEl);setTimeout(()=>floatEl.remove(),2000);};
