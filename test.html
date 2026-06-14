@@ -243,7 +243,7 @@ input,textarea,select{font-family:var(--font);}
 .call-timer{color:rgba(255,255,255,.6);font-size:14px;font-family:monospace;}
 
 /* ===== MODALES ===== */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:6000;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px;}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:7000;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:12px;}
 .ov.open{display:flex;}
 .modal{background:var(--blanc);border-radius:16px;width:100%;max-width:480px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:su .25s ease;border:.5px solid var(--gris2);}
 @media(max-width:640px){
@@ -680,7 +680,7 @@ input,textarea,select{font-family:var(--font);}
 .bn-bdg.on{display:flex;}
 
 /* ===== VIDEOS AKIT UNIQUE ===== */
-#ovVideos{display:none;position:fixed;inset:0;z-index:5500;background:#000;flex-direction:column;}
+#ovVideos{display:none;position:fixed;inset:0;z-index:5000;background:#000;flex-direction:column;}
 
 /* Header vidéo fixe */
 .vid-top-bar{
@@ -1675,7 +1675,7 @@ setTimeout(step,300);
   <div class="vid-top-bar">
     <button onclick="fermerVideos()" style="background:rgba(0,0,0,.45);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(6px)"><i class="fas fa-arrow-left"></i></button>
     <span style="font-size:16px;font-weight:900;color:#fff;letter-spacing:1px;background:linear-gradient(90deg,#E24B4A,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AKIT Vidéos</span>
-    <button onclick="ouvrirComposerVideo()" style="background:linear-gradient(135deg,#E24B4A,#7c3aed);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer"><i class="fas fa-plus"></i></button>
+    <button onclick="ouvrirComposerVideo()" style="background:linear-gradient(135deg,#E24B4A,#7c3aed);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;z-index:6000"><i class="fas fa-plus"></i></button>
   </div>
   <!-- Feed -->
   <div id="videoFeed"></div>
