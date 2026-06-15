@@ -1927,7 +1927,7 @@ let pendAvFile=null,pendCoverFile=null;
 let unsubPosts=null,unsubMsgs=null,unsubTyping=null;
 let prevNotifCount=-1,prevMsgCount=-1;
 const POSTS_PER_PAGE=6;
-let lastPostDoc=null,allPostsLoaded=false;
+let lastPostDoc=null,allPostsLoaded=false,isLoadingMore=false;
 let typingTimeout=null,isDisappear=false;
 let replyMsg=null,replyMsgFrom=null;
 let mediaRecorder=null,audioChunks=[],recordInterval=null,recordSec=0,isRecording=false;
@@ -2004,6 +2004,18 @@ onAuthStateChanged(auth,async fireUser=>{
   mmState.coin.balance=UC.akit_coin||0;
   if("Notification"in window&&Notification.permission==="default")Notification.requestPermission();
   initUI();renderStories();renderPosts();renderStatutBand();
+
+  // 🔽 NOUVEAU : scroll infini sur le fil d'actualité
+  const mainLayoutEl=document.getElementById('mainLayout');
+  if(mainLayoutEl){
+    mainLayoutEl.addEventListener('scroll',()=>{
+      const scrollBottom = mainLayoutEl.scrollTop + mainLayoutEl.clientHeight;
+      const scrollHeight = mainLayoutEl.scrollHeight;
+      if(scrollHeight - scrollBottom < 300){
+        chargerPlus();
+      }
+    });
+  }
   window.addEventListener("beforeunload",()=>marquerEnLigne(false));
 
  onSnapshot(
@@ -2540,7 +2552,6 @@ function renderPosts(){
       }
     });
 // Premier chargement OU rechargement complet
-   // Premier chargement OU rechargement complet
     const isFirstLoad = el.innerHTML.includes('Chargement') || el.innerHTML.includes('padding:40px');
     const allAdded = snap.docChanges().every(c=>c.type==='added');
     if(isFirstLoad || (allAdded && el.querySelectorAll('.post').length === 0)){
@@ -2550,7 +2561,8 @@ function renderPosts(){
     // 🔽 NOUVEAU : retenir le dernier post chargé pour la pagination
     lastPostDoc = snap.docs[snap.docs.length-1];
     allPostsLoaded = snap.docs.length < 30;
-
+  });
+}
     const btnMore = document.getElementById('btnMore');
     if(btnMore){
       if(allPostsLoaded){
@@ -2562,10 +2574,11 @@ function renderPosts(){
     }
   });
 }
-     window.chargerPlus = async () => {
-  if(allPostsLoaded || !lastPostDoc) return;
+   window.chargerPlus = async () => {
+  if(allPostsLoaded || !lastPostDoc || isLoadingMore) return;
+  isLoadingMore = true;
   const btnMore=document.getElementById('btnMore');
-  btnMore.innerHTML = `<button class="btn-more" disabled>⏳ Chargement...</button>`;
+  if(btnMore) btnMore.innerHTML = `<button class="btn-more" disabled>⏳ Chargement...</button>`;
 
   const q2 = query(
     collection(db,"posts"),
@@ -2577,7 +2590,8 @@ function renderPosts(){
 
   if(snap.empty){
     allPostsLoaded = true;
-    btnMore.style.display='none';
+    if(btnMore) btnMore.style.display='none';
+    isLoadingMore = false;
     return;
   }
 
@@ -2595,10 +2609,11 @@ function renderPosts(){
   lastPostDoc = snap.docs[snap.docs.length-1];
   if(snap.docs.length < POSTS_PER_PAGE){
     allPostsLoaded = true;
-    btnMore.style.display='none';
-  } else {
+    if(btnMore) btnMore.style.display='none';
+  } else if(btnMore){
     btnMore.innerHTML = `<button class="btn-more" onclick="chargerPlus()">⬇️ Voir plus</button>`;
   }
+  isLoadingMore = false;
 };
 function buildPubHtml(pub){return `<div class="pub-banner" onclick="${pub.contact?`window.open('${pub.contact.startsWith('http')?pub.contact:'https://wa.me/'+pub.contact.replace(/\D/g,'')}','_blank')`:''}"><div class="pub-banner-label">Sponsorisé</div><div class="pub-banner-inner"><div class="pub-banner-title">${pub.nom||pub.slogan||'Annonce'}</div><div class="pub-banner-sub">${pub.sub||pub.slogan||''}</div><div class="pub-banner-btn">En savoir plus →</div></div></div>`;}
 
