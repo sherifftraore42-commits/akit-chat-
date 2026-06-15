@@ -2557,12 +2557,10 @@ function renderPosts(){
     if(isFirstLoad || (allAdded && el.querySelectorAll('.post').length === 0)){
       el.innerHTML = html;
     }
-
-    // 🔽 NOUVEAU : retenir le dernier post chargé pour la pagination
+// 🔽 NOUVEAU : retenir le dernier post chargé pour la pagination
     lastPostDoc = snap.docs[snap.docs.length-1];
     allPostsLoaded = snap.docs.length < 30;
-  });
-}
+
     const btnMore = document.getElementById('btnMore');
     if(btnMore){
       if(allPostsLoaded){
@@ -2574,7 +2572,7 @@ function renderPosts(){
     }
   });
 }
-   window.chargerPlus = async () => {
+     window.chargerPlus = async () => {
   if(allPostsLoaded || !lastPostDoc || isLoadingMore) return;
   isLoadingMore = true;
   const btnMore=document.getElementById('btnMore');
