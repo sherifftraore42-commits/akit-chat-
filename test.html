@@ -2540,14 +2540,66 @@ function renderPosts(){
       }
     });
 // Premier chargement OU rechargement complet
+   // Premier chargement OU rechargement complet
     const isFirstLoad = el.innerHTML.includes('Chargement') || el.innerHTML.includes('padding:40px');
     const allAdded = snap.docChanges().every(c=>c.type==='added');
     if(isFirstLoad || (allAdded && el.querySelectorAll('.post').length === 0)){
       el.innerHTML = html;
     }
+
+    // 🔽 NOUVEAU : retenir le dernier post chargé pour la pagination
+    lastPostDoc = snap.docs[snap.docs.length-1];
+    allPostsLoaded = snap.docs.length < 30;
+
+    const btnMore = document.getElementById('btnMore');
+    if(btnMore){
+      if(allPostsLoaded){
+        btnMore.style.display = 'none';
+      }else{
+        btnMore.style.display = 'block';
+        btnMore.innerHTML = `<button class="btn-more" onclick="chargerPlus()">⬇️ Voir les publications plus anciennes</button>`;
+      }
+    }
   });
 }
-window.chargerPlus=()=>{};
+     window.chargerPlus = async () => {
+  if(allPostsLoaded || !lastPostDoc) return;
+  const btnMore=document.getElementById('btnMore');
+  btnMore.innerHTML = `<button class="btn-more" disabled>⏳ Chargement...</button>`;
+
+  const q2 = query(
+    collection(db,"posts"),
+    orderBy("date","desc"),
+    startAfter(lastPostDoc),
+    limit(POSTS_PER_PAGE)
+  );
+  const snap = await getDocs(q2);
+
+  if(snap.empty){
+    allPostsLoaded = true;
+    btnMore.style.display='none';
+    return;
+  }
+
+  const [uMap, favDoc] = await Promise.all([getUsers(), getDoc(doc(db,"favs",UC.id))]);
+  const favs = favDoc.exists() ? (favDoc.data().ids||[]) : [];
+
+  let html = '';
+  snap.forEach(d=>{
+    const p={id:d.id,...d.data()};
+    html += buildPostHtml(p, uMap, favs);
+  });
+
+  document.getElementById('postsEl').insertAdjacentHTML('beforeend', html);
+
+  lastPostDoc = snap.docs[snap.docs.length-1];
+  if(snap.docs.length < POSTS_PER_PAGE){
+    allPostsLoaded = true;
+    btnMore.style.display='none';
+  } else {
+    btnMore.innerHTML = `<button class="btn-more" onclick="chargerPlus()">⬇️ Voir plus</button>`;
+  }
+};
 function buildPubHtml(pub){return `<div class="pub-banner" onclick="${pub.contact?`window.open('${pub.contact.startsWith('http')?pub.contact:'https://wa.me/'+pub.contact.replace(/\D/g,'')}','_blank')`:''}"><div class="pub-banner-label">Sponsorisé</div><div class="pub-banner-inner"><div class="pub-banner-title">${pub.nom||pub.slogan||'Annonce'}</div><div class="pub-banner-sub">${pub.sub||pub.slogan||''}</div><div class="pub-banner-btn">En savoir plus →</div></div></div>`;}
 
 function buildPostHtml(p,uMap,favs){
