@@ -1649,7 +1649,7 @@ setTimeout(step,300);
 </div>
 
 <!-- SEND MONEY -->
-<div class="ov" id="ovSendMoney" onclick="closeSiDehors(event,'ovSendMoney')"><div class="modal" style="max-width:400px"><div class="m-head"><h2 id="sendMoneyTitle">💸 Envoyer</h2><button class="m-close" onclick="ferm('ovSendMoney')"><i class="fas fa-times"></i></button></div><div class="m-body"><input class="p-inp" id="sendMoneyDest" placeholder="📱 Numéro destinataire..."/><input class="p-inp" id="sendMoneyAmount" type="number" placeholder="💰 Montant (min 100 FCFA)" min="100"/><input class="p-inp" id="sendMoneyNote" placeholder="📝 Motif (optionnel)"/><div style="background:var(--gris);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--texte2)"><div>⚡ Transfert sécurisé</div><div>🔒 Transaction SSL</div></div><button class="btn-sv" id="btnConfirmSend" onclick="confirmerEnvoi()"><i class="fas fa-paper-plane"></i> Envoyer maintenant</button><button class="btn-sv red" onclick="ferm('ovSendMoney')">Annuler</button></div></div></div>
+<div class="ov" id="ovSendMoney" onclick="closeSiDehors(event,'ovSendMoney')"><div class="modal" style="max-width:400px"><div class="m-head"><h2 id="sendMoneyTitle">💸 Envoyer</h2><button class="m-close" onclick="ferm('ovSendMoney')"><i class="fas fa-times"></i></button></div><div class="m-body"><input class="p-inp" id="sendMoneyDest" placeholder="📧 Email du destinataire (ex: ami@gmail.com)..." type="email" autocomplete="email"/><input class="p-inp" id="sendMoneyAmount" type="number" placeholder="💰 Montant (min 100 FCFA)" min="100"/><input class="p-inp" id="sendMoneyNote" placeholder="📝 Motif (optionnel)"/><div style="background:var(--gris);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--texte2)"><div>⚡ Transfert sécurisé</div><div>🔒 Transaction SSL</div></div><button class="btn-sv" id="btnConfirmSend" onclick="confirmerEnvoi()"><i class="fas fa-paper-plane"></i> Envoyer maintenant</button><button class="btn-sv red" onclick="ferm('ovSendMoney')">Annuler</button></div></div></div>
 
 <!-- AKIT COIN -->
 <div class="ov" id="ovCoin" onclick="closeSiDehors(event,'ovCoin')">
@@ -2218,7 +2218,6 @@ window.demarrerLive=async()=>{
     const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
 liveStream=stream;
 const vid=document.getElementById('liveVideo');vid.srcObject=stream;vid.muted=true;
-vid.style.transform = 'scaleX(-1)';
      document.getElementById('ovLive').classList.add('open');
     document.getElementById('liveTitleDisplay').textContent=titre;
     await vid.play().catch(()=>{});
@@ -2510,9 +2509,11 @@ function renderPosts(){
         existing.remove();
       }
     });
-    // Premier chargement : tout afficher
-    if(snap.docChanges().every(c=>c.type==='added')&&el.children.length===0||el.innerHTML.includes('Chargement')){
-      el.innerHTML=html;
+// Premier chargement OU rechargement complet
+    const isFirstLoad = el.innerHTML.includes('Chargement') || el.innerHTML.includes('padding:40px');
+    const allAdded = snap.docChanges().every(c=>c.type==='added');
+    if(isFirstLoad || (allAdded && el.querySelectorAll('.post').length === 0)){
+      el.innerHTML = html;
     }
   });
 }
@@ -2667,11 +2668,66 @@ window.connecterMobileMoney=async(provider)=>{const label=provider==='om'?'Orang
 window.mmRecevoir=async(provider)=>{if(provider==='coin'){const montant=prompt("💰 Montant AKIT Coins à acheter (FCFA) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Min 100");return;}const msg=`Bonjour, je souhaite acheter ${montant} AKIT Coins.\nMon ID: ${UC.id}\nNom: ${UC.prenom} ${UC.nom}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');alert("✅ Après paiement confirmé, vos coins seront crédités sous 5 minutes.");return;}if(!mmState[provider]?.connected){alert("❌ Connectez d'abord votre compte");return;}const montant=prompt("💰 Montant à recevoir (FCFA, min 100) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Min 100 FCFA");return;}const amount=parseInt(montant);const msg=`📲 DÉPÔT ${provider.toUpperCase()}\nID: ${UC.id}\nMontant: ${amount.toLocaleString()} FCFA\nNuméro: ${mmState[provider].phone}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].hist.push({type:'in',label:`Dépôt ${provider.toUpperCase()} (en attente)`,amount,date:now});await saveMM();refreshMMDisplay();alert("✅ Demande envoyée !");};
 window.mmEnvoyer=async(provider)=>{ferm("ovMobileMoney");document.getElementById("sendMoneyTitle").textContent=`💸 Envoyer via ${provider.toUpperCase()}`;window._sendProvider=provider;document.getElementById("sendMoneyDest").value="";document.getElementById("sendMoneyAmount").value="";document.getElementById("sendMoneyNote").value="";ouv("ovSendMoney");};
 window.confirmerEnvoi=async()=>{
-  const dest=document.getElementById("sendMoneyDest").value.trim();const amount=parseInt(document.getElementById("sendMoneyAmount").value);const note=document.getElementById("sendMoneyNote").value.trim();const provider=window._sendProvider||'om';
-  if(!dest){alert("⚠️ Entrez le numéro destinataire");return;}if(!amount||amount<100){alert("⚠️ Montant minimum : 100");return;}
-  let destNum=dest.replace(/\s/g,'').replace(/^0/,'');if(!destNum.startsWith('237')&&destNum.length<=9)destNum='237'+destNum;
-  if(provider==='coin'){if((UC.akit_coin||0)<amount){alert("❌ Solde insuffisant");return;}if(!confirm(`Envoyer ${amount.toLocaleString()} AKIT Coins à ${dest} ?`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="Envoi...";try{const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState.coin.balance-=amount;mmState.coin.hist.push({type:'out',label:`Envoi à ${dest}${note?' - '+note:''}`,amount,date:now});UC.akit_coin=mmState.coin.balance;await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});const destSnap=await getDocs(query(collection(db,"users"),where("telephone","==",destNum)));if(!destSnap.empty){const dd=destSnap.docs[0];await updateDoc(doc(db,"users",dd.id),{akit_coin:(dd.data().akit_coin||0)+amount});addNotif(dd.id,"coin",`💰 ${UC.prenom} vous a envoyé ${amount.toLocaleString()} AKIT Coins`);}else{alert("⚠️ Destinataire introuvable.");}await saveMM();updateCoinDisplay();ferm("ovSendMoney");alert(`✅ ${amount.toLocaleString()} Coins envoyés !`);}catch(e){alert("❌ "+e.message);}finally{document.getElementById("btnConfirmSend").disabled=false;document.getElementById("btnConfirmSend").textContent="Envoyer maintenant";}return;}
-  if(!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA vers ${destNum} ?`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="⏳ Envoi...";try{const msg=`💸 TRANSFERT ${provider.toUpperCase()}\nDe: ${UC.prenom} ${UC.nom}\nID: ${UC.id}\nVers: ${destNum}\nMontant: ${amount.toLocaleString()} FCFA\nMotif: ${note||'Aucun'}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].hist.push({type:'out',label:`Envoi vers ${destNum}${note?' - '+note:''}`,amount,date:now});await saveMM();refreshMMDisplay();ferm("ovSendMoney");alert("✅ Demande envoyée !");}catch(e){alert("❌ "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}
+  const dest=document.getElementById("sendMoneyDest").value.trim();
+  const amount=parseInt(document.getElementById("sendMoneyAmount").value);
+  const note=document.getElementById("sendMoneyNote").value.trim();
+  const provider=window._sendProvider||'om';
+  if(!dest){alert("⚠️ Entrez l'email du destinataire");return;}
+  if(!amount||amount<1){alert("⚠️ Montant minimum : 1 Coin");return;}
+
+  if(provider==='coin'){
+    // Recherche par EMAIL uniquement
+    const emailDest=dest.toLowerCase().trim();
+    if(!emailDest.includes('@')){alert("⚠️ Veuillez entrer un email valide (ex: ami@gmail.com)");return;}
+    if((UC.akit_coin||0)<amount){alert("❌ Solde insuffisant !\nVotre solde : "+(UC.akit_coin||0)+" Coins");return;}
+    if(!confirm(`Envoyer ${amount.toLocaleString()} AKIT Coins à ${emailDest} ?`))return;
+    const btn=document.getElementById("btnConfirmSend");
+    btn.disabled=true;btn.textContent="⏳ Envoi...";
+    try{
+      // Chercher le destinataire par email
+      const destSnap=await getDocs(query(collection(db,"users"),where("email","==",emailDest)));
+      if(destSnap.empty){
+        alert("❌ Aucun compte AKIT-CHAT trouvé avec cet email.\nVérifiez l'email du destinataire.");
+        btn.disabled=false;btn.textContent="Envoyer maintenant";
+        return;
+      }
+      const dd=destSnap.docs[0];
+      const destData=dd.data();
+      if(dd.id===UC.id){alert("❌ Vous ne pouvez pas vous envoyer des Coins à vous-même !");btn.disabled=false;btn.textContent="Envoyer maintenant";return;}
+      
+      // Débiter l'expéditeur
+      const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+      mmState.coin.balance-=amount;
+      mmState.coin.hist.push({type:'out',label:`Envoi à ${destData.prenom||emailDest}${note?' - '+note:''}`,amount,date:now});
+      UC.akit_coin=mmState.coin.balance;
+      await updateDoc(doc(db,"users",UC.id),{akit_coin:UC.akit_coin});
+      
+      // Créditer le destinataire
+      const newBalance=(destData.akit_coin||0)+amount;
+      await updateDoc(doc(db,"users",dd.id),{akit_coin:newBalance});
+      
+      // Notifier le destinataire
+      await addDoc(collection(db,"notifications"),{
+        userId:dd.id,
+        type:"coin",
+        texte:`💰 ${UC.prenom} ${UC.nom} vous a envoyé ${amount.toLocaleString()} AKIT Coins${note?' : '+note:''}`,
+        fromUid:UC.id,
+        date:serverTimestamp(),
+        lu:false
+      });
+      
+      await saveMM();
+      updateCoinDisplay();
+      ferm("ovSendMoney");
+      alert(`✅ ${amount.toLocaleString()} Coins envoyés à ${destData.prenom||''} ${destData.nom||''} (${emailDest}) !`);
+    }catch(e){
+      alert("❌ Erreur : "+e.message);
+    }finally{
+      btn.disabled=false;btn.textContent="Envoyer maintenant";
+    }
+    return;
+  }
+   if(!mmState[provider]?.connected){alert("❌ Compte non connecté");return;}if(!confirm(`Envoyer ${amount.toLocaleString()} FCFA vers ${destNum} ?`))return;const btn=document.getElementById("btnConfirmSend");btn.disabled=true;btn.textContent="⏳ Envoi...";try{const msg=`💸 TRANSFERT ${provider.toUpperCase()}\nDe: ${UC.prenom} ${UC.nom}\nID: ${UC.id}\nVers: ${destNum}\nMontant: ${amount.toLocaleString()} FCFA\nMotif: ${note||'Aucun'}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].hist.push({type:'out',label:`Envoi vers ${destNum}${note?' - '+note:''}`,amount,date:now});await saveMM();refreshMMDisplay();ferm("ovSendMoney");alert("✅ Demande envoyée !");}catch(e){alert("❌ "+e.message);}finally{btn.disabled=false;btn.textContent="Envoyer maintenant";}
 };
 
 window.openNotif=async()=>{ouv("ovNotif");const liste=document.getElementById("listeNotif");liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:18px'>⏳...</p>`;try{const snap=await getDocs(query(collection(db,"notifications"),where("userId","==",UC.id),limit(50)));if(snap.empty){liste.innerHTML=`<p style='text-align:center;color:var(--texte2);padding:28px'>Aucune notification.</p>`;return;}let notifs=[];snap.forEach(d=>notifs.push({id:d.id,...d.data()}));notifs.sort((a,b)=>{const da=a.date?.toDate?a.date.toDate():new Date(0);const db2=b.date?.toDate?b.date.toDate():new Date(0);return db2-da;});const nonLues = snap.docs.filter(d => !d.data().lu);
