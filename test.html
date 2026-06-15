@@ -818,7 +818,12 @@ input,textarea,select{font-family:var(--font);}
   font-size:12px;font-weight:800;color:#fff;
   text-shadow:0 1px 4px rgba(0,0,0,.7);
 }
-
+/* Option : cacher avec CSS */
+.eye-icon,
+.view-count,
+[class*="eye"] {
+  display: none !important;
+}
 /* Indicateur vues */
 .vid-views-badge{
   position:absolute;top:max(env(safe-area-inset-top),60px);right:14px;
@@ -2031,7 +2036,35 @@ onAuthStateChanged(auth,async fireUser=>{
   verifierEarnTasks();
   onSnapshot(collection(db,"lives"),snap2=>{renderLiveSection(snap2.docs.map(d=>({id:d.id,...d.data()})));});
 });
-
+function renderLiveSection(lives) {
+  const el = document.getElementById('liveSectionEl');
+  const cards = document.getElementById('liveSectionCards');
+  const label = document.getElementById('liveCountLabel');
+  
+  // Filtrer seulement les lives actifs (pas le tien)
+  const actifs = lives.filter(l => l.actif === true && l.userId !== UC?.id);
+  
+  if (actifs.length === 0) {
+    el.classList.remove('visible');
+    return;
+  }
+  
+  el.classList.add('visible');
+  label.textContent = actifs.length + ' en direct';
+  
+  cards.innerHTML = actifs.map(l => {
+    const av = l.avatarUrl
+      ? `<img src="${l.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+      : (l.nom?.[0] || '?').toUpperCase();
+    return `
+      <div class="live-mini-card" onclick="rejoindreLive('${l.id}', ${JSON.stringify(l).replace(/"/g,"'")})">
+        <div class="live-mini-av">${av}</div>
+        <div class="live-mini-badge">LIVE</div>
+        <div class="live-mini-name">${l.nom || '?'}</div>
+      </div>`;
+  }).join('');
+}
+window.renderLiveSection = renderLiveSection;
 function initUI(){
   const mini=document.getElementById("miniAv"),sbAv=document.getElementById("sbAv"),sbName=document.getElementById("sbName");
   if(UC.avatarUrl){mini.innerHTML=`<img src="${UC.avatarUrl}"/>`;sbAv.innerHTML=`<img src="${UC.avatarUrl}"/>`;}
@@ -2068,7 +2101,14 @@ window.lancerAppel=async(type)=>{
     callPC=new RTCPeerConnection(ICE_SERVERS);
     callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
     document.getElementById('callLocalVideo').srcObject=callStream;
-    callPC.ontrack=e=>{const rv=document.getElementById('callRemoteVideo');if(e.streams&&e.streams[0])rv.srcObject=e.streams[0];};
+    callPC.ontrack = e => {
+  const rv = document.getElementById('callRemoteVideo');
+  if (e.streams && e.streams[0]) {
+    rv.srcObject = e.streams[0];
+    rv.muted = false; // ✅ Important : pas muet pour entendre l'autre
+    rv.play().catch(() => {});
+  }
+}; 
     callPC.onicecandidate=async e=>{if(e.candidate&&currentCallId){await addDoc(collection(db,'videoCalls',currentCallId,'callerCandidates'),e.candidate.toJSON());}};
     const offer=await callPC.createOffer();
     await callPC.setLocalDescription(offer);
@@ -2092,17 +2132,33 @@ window.lancerAppel=async(type)=>{
   }catch(e){alert('❌ Impossible d\'accéder à la caméra/micro : '+e.message);}
 };
 
-function afficherAppelEntrant(callId,data){
-  currentCallId=callId;currentCallType=data.type||'video';currentCallUID=data.callerId;
-  document.getElementById('ovCall').style.display='flex';
-  document.getElementById('callIncomingOverlay').style.display='flex';
-  document.getElementById('callIncomingName').textContent=data.callerNom||'Appelant';
-  document.getElementById('callIncomingType').textContent=data.type==='video'?'📹 Appel vidéo entrant':'🎙 Appel audio entrant';
-  const av=document.getElementById('callIncomingAv');
-  av.innerHTML=data.callerAvatar?`<img src="${data.callerAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:data.callerNom?.[0]?.toUpperCase()||'?';
+let _ringtoneInterval = null;
+function stopRingtone() {
+  if (_ringtoneInterval) { clearInterval(_ringtoneInterval); _ringtoneInterval = null; }
+}
+function startRingtone() {
+  stopRingtone();
   jouerSon(440);
+  _ringtoneInterval = setInterval(() => jouerSon(440), 1200);
+}
+
+function afficherAppelEntrant(callId, data) {
+  currentCallId = callId;
+  currentCallType = data.type || 'video';
+  currentCallUID = data.callerId;
+  document.getElementById('ovCall').style.display = 'flex';
+  document.getElementById('callIncomingOverlay').style.display = 'flex';
+  document.getElementById('callIncomingName').textContent = data.callerNom || 'Appelant';
+  document.getElementById('callIncomingType').textContent = data.type === 'video' ? '📹 Appel vidéo entrant' : '🎙 Appel audio entrant';
+  const av = document.getElementById('callIncomingAv');
+  av.innerHTML = data.callerAvatar
+    ? `<img src="${data.callerAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+    : data.callerNom?.[0]?.toUpperCase() || '?';
+  // ✅ Sonnerie qui répète
+  startRingtone();
 }
 window.accepterAppel=async()=>{
+   stopRingtone();
   if(!currentCallId)return;
   try{
     const constraints=currentCallType==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
@@ -2110,8 +2166,15 @@ window.accepterAppel=async()=>{
     callPC=new RTCPeerConnection(ICE_SERVERS);
     callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
     document.getElementById('callLocalVideo').srcObject=callStream;
-    callPC.ontrack=e=>{const rv=document.getElementById('callRemoteVideo');if(e.streams&&e.streams[0])rv.srcObject=e.streams[0];};
-    callPC.onicecandidate=async e=>{if(e.candidate)await addDoc(collection(db,'videoCalls',currentCallId,'calleeCandidates'),e.candidate.toJSON());};
+   callPC.ontrack = e => {
+  const rv = document.getElementById('callRemoteVideo');
+  if (e.streams && e.streams[0]) {
+    rv.srcObject = e.streams[0];
+    rv.muted = false; // ✅
+    rv.play().catch(() => {});
+  }
+};
+     callPC.onicecandidate=async e=>{if(e.candidate)await addDoc(collection(db,'videoCalls',currentCallId,'calleeCandidates'),e.candidate.toJSON());};
     const callSnap=await getDoc(doc(db,'videoCalls',currentCallId));
     await callPC.setRemoteDescription(new RTCSessionDescription(callSnap.data().offer));
     const answer=await callPC.createAnswer();
@@ -2125,7 +2188,7 @@ window.accepterAppel=async()=>{
     demarrerTimerAppel();
   }catch(e){alert('❌ Erreur : '+e.message);}
 };
-window.refuserAppel=async()=>{if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'refuse'}).catch(()=>{});document.getElementById('ovCall').style.display='none';currentCallId=null;};
+window.refuserAppel=async()=>{stopRingtone();if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'refuse'}).catch(()=>{});document.getElementById('ovCall').style.display='none';currentCallId=null;};
 window.raccrocherAppel=async()=>{clearInterval(callTimer);callSeconds=0;if(callPC){callPC.close();callPC=null;}if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null;}if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'termine'}).catch(()=>{});document.getElementById('ovCall').style.display='none';document.getElementById('callRemoteVideo').srcObject=null;document.getElementById('callLocalVideo').srcObject=null;currentCallId=null;};
 function demarrerTimerAppel(){callSeconds=0;clearInterval(callTimer);callTimer=setInterval(()=>{callSeconds++;const m=Math.floor(callSeconds/60),s=callSeconds%60;const str=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;const el=document.getElementById('callTimerDisplay');if(el)el.textContent=str;const st=document.getElementById('callStatus');if(st&&callSeconds>0)st.textContent=str;},1000);}
 window.toggleCallMute=()=>{callMuted=!callMuted;callStream?.getAudioTracks().forEach(t=>t.enabled=!callMuted);const btn=document.getElementById('callMuteBtn');if(btn){btn.style.background=callMuted?'rgba(255,59,48,.3)':'rgba(255,255,255,.15)';btn.innerHTML=`<i class="fas fa-microphone${callMuted?'-slash':''}"></i>`;}};
@@ -2146,10 +2209,11 @@ window.demarrerLive=async()=>{
   const titre=document.getElementById('liveTitleInput').value.trim()||`Live de ${UC.prenom}`;
   ferm('ovStartLive');
   try{
-    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
-    liveStream=stream;
-    const vid=document.getElementById('liveVideo');vid.srcObject=stream;vid.muted=true;
-    document.getElementById('ovLive').classList.add('open');
+    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},audio:true});
+liveStream=stream;
+const vid=document.getElementById('liveVideo');vid.srcObject=stream;vid.muted=true;
+vid.style.transform = 'scaleX(-1)';
+     document.getElementById('ovLive').classList.add('open');
     document.getElementById('liveTitleDisplay').textContent=titre;
     await vid.play().catch(()=>{});
     const liveRef=await addDoc(collection(db,'lives'),{userId:UC.id,nom:`${UC.prenom} ${UC.nom}`,avatarUrl:UC.avatarUrl||'',titre,viewers:[],coins:0,date:serverTimestamp(),actif:true});
