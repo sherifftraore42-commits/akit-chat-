@@ -542,7 +542,12 @@ input,textarea,select{font-family:var(--font);}
 .lb-info{flex:1;}
 .lb-name{font-size:13px;font-weight:700;color:var(--texte);}
 .lb-score{font-size:11px;color:var(--texte2);}
-
+#callLocalVideo {
+  transform: none !important;
+}
+#callRemoteVideo {
+  transform: none !important;
+}
 /* ===== EARN ===== */
 .earn-card{background:var(--blanc);border:.5px solid var(--gris2);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--ombre);}
 .earn-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
@@ -2128,11 +2133,21 @@ window.lancerAppel=async(type)=>{
     if(type==='audio'){document.getElementById('callNoVideo').style.display='flex';document.getElementById('callRemoteVideo').style.display='none';}
     else{document.getElementById('callNoVideo').style.display='none';document.getElementById('callRemoteVideo').style.display='block';}
     addNotif(uid,'message',`📞 ${UC.prenom} vous appelle en ${type==='video'?'vidéo':'audio'} !`);
-    const unsub=onSnapshot(doc(db,'videoCalls',currentCallId),async snap=>{
+   const unsub=onSnapshot(doc(db,'videoCalls',currentCallId),async snap=>{
       if(!snap.exists())return;
       const data=snap.data();
-      if(data.statut==='refuse'){raccrocherAppel();unsub();return;}
-      if(data.answer&&callPC&&callPC.signalingState==='have-local-offer'){await callPC.setRemoteDescription(new RTCSessionDescription(data.answer));document.getElementById('callStatus').textContent=type==='video'?'📹 En communication':'🎙 En communication';demarrerTimerAppel();unsub();}
+      if(data.statut==='refuse'||data.statut==='termine'){
+        unsub();
+        raccrocherAppel();
+        return;
+      }
+      if(data.answer&&callPC&&callPC.signalingState==='have-local-offer'){
+        await callPC.setRemoteDescription(new RTCSessionDescription(data.answer));
+        document.getElementById('callStatus').textContent=type==='video'?'📹 En communication':'🎙 En communication';
+        demarrerTimerAppel();
+        // Continuer à écouter pour détecter si l'autre raccroche
+        // Ne pas faire unsub() ici
+      }
     });
     onSnapshot(collection(db,'videoCalls',currentCallId,'calleeCandidates'),snap=>{snap.docChanges().forEach(change=>{if(change.type==='added')callPC?.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{});});});
   }catch(e){alert('❌ Impossible d\'accéder à la caméra/micro : '+e.message);}
@@ -2163,9 +2178,11 @@ function afficherAppelEntrant(callId, data) {
   // ✅ Sonnerie qui répète
   startRingtone();
 }
+let _acceptingCall = false;
 window.accepterAppel=async()=>{
-   stopRingtone();
-  if(!currentCallId)return;
+  stopRingtone();
+  if(!currentCallId || _acceptingCall)return;
+  _acceptingCall = true;
   try{
     const constraints=currentCallType==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
     callStream=await navigator.mediaDevices.getUserMedia(constraints);
@@ -2192,11 +2209,24 @@ window.accepterAppel=async()=>{
     if(currentCallType==='audio'){document.getElementById('callNoVideo').style.display='flex';document.getElementById('callRemoteVideo').style.display='none';}
     else{document.getElementById('callNoVideo').style.display='none';document.getElementById('callRemoteVideo').style.display='block';}
     demarrerTimerAppel();
-  }catch(e){alert('❌ Erreur : '+e.message);}
+}catch(e){
+    _acceptingCall = false;
+    alert('❌ Erreur : '+e.message);
+  }
 };
 window.refuserAppel=async()=>{stopRingtone();if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'refuse'}).catch(()=>{});document.getElementById('ovCall').style.display='none';currentCallId=null;};
-window.raccrocherAppel=async()=>{clearInterval(callTimer);callSeconds=0;if(callPC){callPC.close();callPC=null;}if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null;}if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'termine'}).catch(()=>{});document.getElementById('ovCall').style.display='none';document.getElementById('callRemoteVideo').srcObject=null;document.getElementById('callLocalVideo').srcObject=null;currentCallId=null;};
-function demarrerTimerAppel(){callSeconds=0;clearInterval(callTimer);callTimer=setInterval(()=>{callSeconds++;const m=Math.floor(callSeconds/60),s=callSeconds%60;const str=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;const el=document.getElementById('callTimerDisplay');if(el)el.textContent=str;const st=document.getElementById('callStatus');if(st&&callSeconds>0)st.textContent=str;},1000);}
+window.raccrocherAppel=async()=>{
+  clearInterval(callTimer);callSeconds=0;
+  _acceptingCall=false;
+  if(callPC){callPC.close();callPC=null;}
+  if(callStream){callStream.getTracks().forEach(t=>t.stop());callStream=null;}
+  if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'termine'}).catch(()=>{});
+  document.getElementById('ovCall').style.display='none';
+  document.getElementById('callRemoteVideo').srcObject=null;
+  document.getElementById('callLocalVideo').srcObject=null;
+  currentCallId=null;
+};
+   function demarrerTimerAppel(){callSeconds=0;clearInterval(callTimer);callTimer=setInterval(()=>{callSeconds++;const m=Math.floor(callSeconds/60),s=callSeconds%60;const str=`${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;const el=document.getElementById('callTimerDisplay');if(el)el.textContent=str;const st=document.getElementById('callStatus');if(st&&callSeconds>0)st.textContent=str;},1000);}
 window.toggleCallMute=()=>{callMuted=!callMuted;callStream?.getAudioTracks().forEach(t=>t.enabled=!callMuted);const btn=document.getElementById('callMuteBtn');if(btn){btn.style.background=callMuted?'rgba(255,59,48,.3)':'rgba(255,255,255,.15)';btn.innerHTML=`<i class="fas fa-microphone${callMuted?'-slash':''}"></i>`;}};
 window.toggleCallCam=()=>{callCamOff=!callCamOff;callStream?.getVideoTracks().forEach(t=>t.enabled=!callCamOff);const btn=document.getElementById('callCamBtn');if(btn){btn.style.background=callCamOff?'rgba(255,59,48,.3)':'rgba(255,255,255,.15)';btn.innerHTML=`<i class="fas fa-video${callCamOff?'-slash':''}"></i>`;}document.getElementById('callNoVideo').style.display=callCamOff?'flex':'none';document.getElementById('callRemoteVideo').style.display=callCamOff?'none':'block';};
 window.toggleCallSpeaker=()=>{callSpeakerOn=!callSpeakerOn;const vid=document.getElementById('callRemoteVideo');if(vid)vid.muted=!callSpeakerOn;const btn=document.getElementById('callSpeakerBtn');if(btn){btn.style.background=callSpeakerOn?'rgba(0,255,136,.2)':'rgba(255,255,255,.15)';btn.style.color=callSpeakerOn?'var(--green)':'#fff';}};
@@ -2666,8 +2696,26 @@ function refreshMMDisplay(){['om','mtn','mpesa'].forEach(p=>{const s=mmState[p];
 function renderMMHist(p){const el=document.getElementById(`${p}-hist`);const hist=mmState[p].hist||[];if(hist.length===0){el.innerHTML=`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:8px">Aucune transaction</p>`;return;}el.innerHTML=hist.slice(-10).reverse().map(h=>`<div class="mm-hist-item"><div class="mm-hist-ico ${h.type}">${h.type==='out'?'💸':'💰'}</div><div class="mm-hist-info"><div class="mm-hist-name">${h.label}</div><div class="mm-hist-date">${h.date||""}</div></div><div class="mm-hist-amount ${h.type}">${h.type==='out'?'-':'+'}${(h.amount||0).toLocaleString()} FCFA</div></div>`).join("");}
 window.connecterMobileMoney=async(provider)=>{const label=provider==='om'?'Orange Money':provider==='mtn'?'MTN MoMo':'M-Pesa';const phone=prompt(`📱 Entrez votre numéro ${label} :`);if(!phone||phone.length<9){alert("❌ Numéro invalide");return;}let num=phone.replace(/\s/g,'').replace(/^0/,'');if(!num.startsWith('237'))num='237'+num;mmState[provider]={connected:true,balance:0,phone:num,hist:[]};await saveMM();refreshMMDisplay();alert(`✅ ${label} connecté !\n${num}`);};
 window.mmRecevoir=async(provider)=>{if(provider==='coin'){const montant=prompt("💰 Montant AKIT Coins à acheter (FCFA) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Min 100");return;}const msg=`Bonjour, je souhaite acheter ${montant} AKIT Coins.\nMon ID: ${UC.id}\nNom: ${UC.prenom} ${UC.nom}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');alert("✅ Après paiement confirmé, vos coins seront crédités sous 5 minutes.");return;}if(!mmState[provider]?.connected){alert("❌ Connectez d'abord votre compte");return;}const montant=prompt("💰 Montant à recevoir (FCFA, min 100) :");if(!montant||isNaN(montant)||parseInt(montant)<100){alert("❌ Min 100 FCFA");return;}const amount=parseInt(montant);const msg=`📲 DÉPÔT ${provider.toUpperCase()}\nID: ${UC.id}\nMontant: ${amount.toLocaleString()} FCFA\nNuméro: ${mmState[provider].phone}`;window.open(`https://wa.me/237698083058?text=${encodeURIComponent(msg)}`,'_blank');const now=new Date().toLocaleDateString("fr-FR")+" "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});mmState[provider].hist.push({type:'in',label:`Dépôt ${provider.toUpperCase()} (en attente)`,amount,date:now});await saveMM();refreshMMDisplay();alert("✅ Demande envoyée !");};
-window.mmEnvoyer=async(provider)=>{ferm("ovMobileMoney");document.getElementById("sendMoneyTitle").textContent=`💸 Envoyer via ${provider.toUpperCase()}`;window._sendProvider=provider;document.getElementById("sendMoneyDest").value="";document.getElementById("sendMoneyAmount").value="";document.getElementById("sendMoneyNote").value="";ouv("ovSendMoney");};
-window.confirmerEnvoi=async()=>{
+window.mmEnvoyer=async(provider)=>{
+  document.getElementById("sendMoneyTitle").textContent=provider==='coin'?'💸 Envoyer AKIT Coins':`💸 Envoyer via ${provider.toUpperCase()}`;
+  window._sendProvider=provider;
+  document.getElementById("sendMoneyDest").value="";
+  document.getElementById("sendMoneyAmount").value="";
+  document.getElementById("sendMoneyNote").value="";
+  // Mettre à jour le placeholder selon le provider
+  const destInp=document.getElementById("sendMoneyDest");
+  if(provider==='coin'){
+    destInp.placeholder="📧 Email du destinataire (ex: ami@gmail.com)...";
+    destInp.type="email";
+  }else{
+    destInp.placeholder="📱 Numéro destinataire...";
+    destInp.type="tel";
+  }
+  ferm("ovMobileMoney");
+  ferm("ovCoin");
+  ouv("ovSendMoney");
+};
+   window.confirmerEnvoi=async()=>{
   const dest=document.getElementById("sendMoneyDest").value.trim();
   const amount=parseInt(document.getElementById("sendMoneyAmount").value);
   const note=document.getElementById("sendMoneyNote").value.trim();
@@ -2715,10 +2763,16 @@ window.confirmerEnvoi=async()=>{
         date:serverTimestamp(),
         lu:false
       });
-      
       await saveMM();
       updateCoinDisplay();
       ferm("ovSendMoney");
+      // Recharger les données utilisateur depuis Firestore
+      const freshUC = await getDoc(doc(db,"users",UC.id));
+      if(freshUC.exists()){
+        UC.akit_coin = freshUC.data().akit_coin||0;
+        mmState.coin.balance = UC.akit_coin;
+        updateCoinDisplay();
+      }
       alert(`✅ ${amount.toLocaleString()} Coins envoyés à ${destData.prenom||''} ${destData.nom||''} (${emailDest}) !`);
     }catch(e){
       alert("❌ Erreur : "+e.message);
