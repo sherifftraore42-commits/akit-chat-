@@ -1365,7 +1365,11 @@ window.lancerAppel=async(type)=>{
   currentCallUID=uid;currentCallType=type;
   try{
     const constraints=type==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
-    callStream=await navigator.mediaDevices.getUserMedia(constraints);
+ callStream=await navigator.mediaDevices.getUserMedia(constraints);
+    if(callStream.getAudioTracks().length===0){
+      alert('⚠️ Aucun microphone détecté. Vérifiez les permissions du navigateur.');
+    }
+    callStream.getAudioTracks().forEach(t=>t.enabled=true);
     callPC=new RTCPeerConnection(ICE_SERVERS);
     callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
     document.getElementById('callLocalVideo').srcObject=callStream;
@@ -1691,26 +1695,71 @@ window.svP=()=>{clearInterval(svTimer);svPaused=false;if(storyAudio){storyAudio.
 
 // ===== POSTS =====
 // ✅ OPTIMISATION : renderPosts avec lazy loading images
+let _postsCache=new Map(); // id -> données du dernier rendu
 function renderPosts(){
   if(unsubPosts)unsubPosts();
   const el=document.getElementById("postsEl");
   el.innerHTML=`<div style="text-align:center;padding:32px;color:var(--texte2)">⏳ Chargement...</div>`;
+  _postsCache=new Map();
   const q=query(collection(db,"posts"),orderBy("date","desc"),limit(POSTS_PER_PAGE));
   unsubPosts=onSnapshot(q,async snap=>{
-    if(snap.empty){el.innerHTML=`<div style="text-align:center;padding:32px;background:var(--blanc);border-radius:var(--radius);box-shadow:var(--ombre);color:var(--texte2)">Aucune publication.</div>`;return;}
+    if(snap.empty){el.innerHTML=`<div style="text-align:center;padding:32px;background:var(--blanc);border-radius:var(--radius);box-shadow:var(--ombre);color:var(--texte2)">Aucune publication.</div>`;_postsCache=new Map();return;}
     const[uMap,favDoc,pubsSnap]=await Promise.all([getUsers(),getDoc(doc(db,"favs",UC.id)),getDocs(query(collection(db,"pubs"),where("statut","==","active")))]);
     const favs=favDoc.exists()?(favDoc.data().ids||[]):[];
     const pubs=pubsSnap.docs.map(d=>({id:d.id,...d.data()}));
-    let html="";let postCount=0;
-    snap.forEach(d=>{const p={id:d.id,...d.data()};html+=buildPostHtml(p,uMap,favs);postCount++;if(postCount%4===0&&pubs.length>0){const pub=pubs[(postCount/4-1)%pubs.length];html+=buildPubHtml(pub);}});
-    el.innerHTML=html;
+
+    const newIds=snap.docs.map(d=>d.id);
+    const oldIds=Array.from(_postsCache.keys());
+    const structureChanged=newIds.length!==oldIds.length||newIds.some((id,i)=>id!==oldIds[i]);
+
+    if(structureChanged||el.querySelector('.empty-state-posts')||el.children.length===0||el.firstElementChild?.textContent?.includes('Chargement')){
+      // Re-render complet seulement si l'ordre/liste des posts a vraiment changé
+      let html="";let postCount=0;
+      const newCache=new Map();
+      snap.forEach(d=>{
+        const p={id:d.id,...d.data()};
+        newCache.set(d.id,p);
+        html+=buildPostHtml(p,uMap,favs);
+        postCount++;
+        if(postCount%4===0&&pubs.length>0){const pub=pubs[(postCount/4-1)%pubs.length];html+=buildPubHtml(pub);}
+      });
+      el.innerHTML=html;
+      _postsCache=newCache;
+    }else{
+      // Patch ciblé : on met juste à jour les compteurs/contenus des posts existants, sans toucher au DOM global
+      snap.forEach(d=>{
+        const p={id:d.id,...d.data()};
+        const old=_postsCache.get(d.id);
+        _postsCache.set(d.id,p);
+        if(!old)return;
+        const changed=old.likes!==p.likes||(old.comments||[]).length!==(p.comments||[]).length||old.shares!==p.shares||JSON.stringify(old.likedBy)!==JSON.stringify(p.likedBy);
+        if(!changed)return;
+        const postEl=document.getElementById(`post_${d.id}`);
+        if(!postEl)return;
+        const statsEl=postEl.querySelector('.p-stats');
+        if(statsEl)statsEl.innerHTML=`<span style="cursor:pointer" onclick="voirLikesPost('${d.id}')">❤️ ${p.likes||0} J'aime</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span>`;
+        const likeBtn=postEl.querySelectorAll('.p-btn')[0];
+        if(likeBtn){const isLiked=(p.likedBy||[]).includes(UC.id);likeBtn.className=`p-btn${isLiked?' liked':''}`;}
+        // mise à jour des commentaires affichés si le panneau est ouvert
+        const cmtsEl=document.getElementById(`cmts_${d.id}`);
+        if(cmtsEl&&cmtsEl.classList.contains('open')){
+          const cmtHtml=(p.comments||[]).map(c=>{
+            const cu=uMap[c.userId];const cavUrl=cu?.avatarUrl?optimiserUrlImage(cu.avatarUrl,60):null;
+            const cav=cavUrl?`<img src="${cavUrl}" loading="lazy" style="width:100%;height:100%"/>`:( c.userPrenom?.[0]||"U").toUpperCase();
+            return `<div class="ci"><div class="c-av2" onclick="ouvrirProfilUser('${c.userId||''}')">${cav}</div><div class="c-bbl"><div class="c-un" onclick="ouvrirProfilUser('${c.userId||''}')">${c.userPrenom||"?"}</div><div class="c-tx">${c.texte}</div><div class="c-tm">${c.time||""}</div></div></div>`;
+          }).join("");
+          const inputRow=cmtsEl.querySelector('.ci-row').outerHTML;
+          cmtsEl.innerHTML=cmtHtml+inputRow;
+        }
+      });
+    }
+
     lastPostDoc=snap.docs[snap.docs.length-1];
     allPostsLoaded=snap.docs.length<POSTS_PER_PAGE;
     const btnMore=document.getElementById('btnMore');
     if(btnMore){if(allPostsLoaded){btnMore.style.display='none';}else{btnMore.style.display='block';btnMore.innerHTML=`<button class="btn-more" onclick="chargerPlus()">⬇️ Voir plus de publications</button>`;}}
   });
 }
-
 window.chargerPlus=async()=>{
   if(allPostsLoaded||!lastPostDoc||isLoadingMore)return;
   isLoadingMore=true;
@@ -1749,7 +1798,7 @@ function buildPostHtml(p,uMap,favs){
   return `<div class="post ${isBoosted?'sponsored':''}" id="post_${p.id}">${isBoosted?`<div style="padding:6px 14px;font-size:11px;color:#c79b00;background:#fffde7;display:flex;align-items:center;gap:5px"><i class="fas fa-bolt"></i> Post boosté <span class="sponsored-badge">Sponsorisé</span></div>`:''}
     <div class="p-head"><div class="p-av" onclick="ouvrirProfilUser('${p.userId}')">${avC}</div><div class="p-info"><div class="p-nom" onclick="ouvrirProfilUser('${p.userId}')">${nom} ${u.modeCreateur?'⭐':''}</div><div class="p-date">${fmtDate(p.date)}</div></div>${menuPost}</div>
     ${p.texte?`<div class="p-text">${p.texte}</div>`:""}${mediaHtml}
-    <div class="p-stats"><span>❤️ ${p.likes||0} J'aime</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span></div>
+    <div class="p-stats"><span style="cursor:pointer" onclick="voirLikesPost('${p.id}')">❤️ ${p.likes||0} J'aime</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span></div>
     <div class="p-actions"><button class="p-btn${isLiked?" liked":""}" onclick="likePost('${p.id}')"><i class="fa-solid fa-heart"></i> J'aime</button><button class="p-btn" onclick="toggleCmts('${p.id}')"><i class="fa-solid fa-comment"></i> Commenter</button><button class="p-btn" onclick="sharePost('${p.id}')"><i class="fa-solid fa-share-nodes"></i> Partager</button><button class="p-btn${isFav?" faved":""}" onclick="toggleFav('${p.id}')"><i class="fa-solid fa-bookmark"></i></button>${p.mediaUrl?`<button class="p-btn" onclick="telechargerDepuisPost('${p.id}')"><i class="fa-solid fa-download"></i> Sauver</button>`:''}</div>
     <div class="cmts" id="cmts_${p.id}">${cmtHtml}<div class="ci-row"><input class="ci-inp" id="ci_${p.id}" placeholder="Commenter..." autocomplete="off" onkeydown="if(event.key==='Enter')sendCmt('${p.id}')"/><button class="ci-send" onclick="sendCmt('${p.id}')"><i class="fas fa-paper-plane"></i></button></div></div>
   </div>`;
@@ -1772,6 +1821,34 @@ window.likePost=async id=>{
   if(postEl){const statsEl=postEl.querySelector('.p-stats');if(statsEl)statsEl.innerHTML=`<span>❤️ ${newLikes} J'aime</span><span>💬 ${(p.comments||[]).length}</span><span>🔁 ${p.shares||0}</span>`;const likeBtn=postEl.querySelectorAll('.p-btn')[0];if(likeBtn)likeBtn.className=`p-btn${!liked?' liked':''}`;if(!liked)animerReaction('❤️');}
   await updateDoc(doc(db,"posts",id),{likedBy:newLikedBy,likes:newLikes});
   if(!liked&&p.userId!==UC.id)addNotif(p.userId,"like",`${UC.prenom} a aimé votre publication ❤️`);
+};
+  window.voirLikesPost=async(postId)=>{
+  document.querySelectorAll('.likes-list-modal').forEach(el=>el.remove());
+  const snap=await getDoc(doc(db,"posts",postId));if(!snap.exists())return;
+  const p=snap.data();const likedBy=p.likedBy||[];
+  const uMap=await getUsers();
+  const modal=document.createElement('div');
+  modal.className='likes-list-modal';
+  modal.style.cssText=`position:fixed;bottom:0;left:0;right:0;z-index:7000;background:var(--blanc);border-radius:20px 20px 0 0;max-height:65vh;display:flex;flex-direction:column;box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:su .25s ease;`;
+  modal.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;padding:10px 0 6px"><div style="width:36px;height:4px;background:var(--gris2);border-radius:4px"></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 18px 12px;border-bottom:.5px solid var(--gris2)">
+      <span style="font-size:15px;font-weight:800">❤️ ${likedBy.length} J'aime</span>
+      <button onclick="this.closest('.likes-list-modal').remove()" style="background:var(--gris);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px">✕</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:10px 14px">
+      ${likedBy.length===0?`<div style="text-align:center;padding:36px;color:var(--texte2)"><div style="font-size:36px">❤️</div><div>Personne n'a encore aimé</div></div>`:
+      likedBy.map(uid=>{
+        const u=uMap[uid]||{prenom:'?'};
+        const avUrl=u.avatarUrl?optimiserUrlImage(u.avatarUrl,80):null;
+        const av=avUrl?`<img src="${avUrl}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:( u.prenom?.[0]||'?').toUpperCase();
+        return `<div class="a-item" onclick="this.closest('.likes-list-modal').remove();ouvrirProfilUser('${uid}')">
+          <div class="a-av">${av}</div>
+          <div class="a-info"><div class="a-nom">${u.prenom||''} ${u.nom||''}</div><div class="a-sub">${getPresenceInfo(u).label}</div></div>
+          <div style="font-size:18px">❤️</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  document.body.appendChild(modal);
 };
 window.sendCmt=async id=>{const inp=document.getElementById(`ci_${id}`);const texte=inp.value.trim();if(!texte)return;const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const newCmt={userId:UC.id,userPrenom:UC.prenom,texte,time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})};await updateDoc(doc(db,"posts",id),{comments:[...(p.comments||[]),newCmt]});if(p.userId!==UC.id)addNotif(p.userId,"comment",`${UC.prenom} a commenté votre publication 💬`);inp.value="";await addCoins(5,'Commentaire 💬');};
 window.sharePost=async id=>{const snap=await getDoc(doc(db,"posts",id));if(!snap.exists())return;const p=snap.data();const sharedBy=p.sharedBy||[];if(!sharedBy.includes(UC.id))await updateDoc(doc(db,"posts",id),{shares:(p.shares||0)+1,sharedBy:[...sharedBy,UC.id]});if(navigator.share)try{await navigator.share({title:"AKIT-CHAT",url:location.href});}catch{}};
