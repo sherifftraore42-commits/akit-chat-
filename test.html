@@ -752,14 +752,82 @@ input,textarea,select{font-family:var(--font);}
 </script>
 
 <!-- APPEL VIDEO/AUDIO -->
+<!-- APPEL VIDEO/AUDIO -->
 <div id="ovCall">
   <video id="callRemoteVideo" class="call-remote-video" autoplay playsinline></video>
   <video id="callLocalVideo" class="call-local-video" autoplay playsinline muted></video>
-  <div class="call-no-video" id="callNoVideo" style="display:none">
-    <div class="call-no-video-av" id="callNoVideoAv"></div>
-    <div style="color:#fff;font-size:18px;font-weight:700" id="callNoVideoName"></div>
-    <div class="call-timer" id="callTimerDisplay">00:00</div>
+  
+  <!-- UI AUDIO STYLE WHATSAPP -->
+  <div class="call-no-video" id="callNoVideo" style="display:none;background:linear-gradient(135deg,#075E54,#128C7E,#25D366);">
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:0;padding:40px 20px 0;">
+      <!-- Avatar animé -->
+      <div style="position:relative;margin-bottom:24px;">
+        <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(255,255,255,.4);overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);animation:callPulse 2s ease-in-out infinite;" id="callNoVideoAv"></div>
+        <div style="position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(255,255,255,.15);animation:callPulse 2s ease-in-out infinite .3s;pointer-events:none"></div>
+        <div style="position:absolute;inset:-24px;border-radius:50%;border:1px solid rgba(255,255,255,.08);animation:callPulse 2s ease-in-out infinite .6s;pointer-events:none"></div>
+      </div>
+      <div id="callNoVideoName" style="color:#fff;font-size:26px;font-weight:800;margin-bottom:8px;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.3)"></div>
+      <div id="callTimerDisplay" style="color:rgba(255,255,255,.8);font-size:16px;font-family:monospace;font-weight:500;letter-spacing:1px;margin-bottom:4px">00:00</div>
+      <div id="callStatus" style="color:rgba(255,255,255,.7);font-size:13px;">⏳ Connexion...</div>
+    </div>
+    
+    <!-- Boutons style WhatsApp -->
+    <div style="padding:20px 30px 50px;width:100%;">
+      <!-- Ligne 1: Muet + Haut-parleur -->
+      <div style="display:flex;justify-content:space-around;margin-bottom:20px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <button class="call-btn mute" id="callMuteBtn" onclick="toggleCallMute()" style="background:rgba(255,255,255,.2);width:60px;height:60px;border-radius:50%;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="fas fa-microphone"></i></button>
+          <span style="color:rgba(255,255,255,.8);font-size:11px;font-weight:600;">Micro</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <button class="call-btn speaker" id="callSpeakerBtn" onclick="toggleCallSpeaker()" style="background:rgba(255,255,255,.2);width:60px;height:60px;border-radius:50%;border:none;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="fas fa-volume-up"></i></button>
+          <span style="color:rgba(255,255,255,.8);font-size:11px;font-weight:600;">HP</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <button onclick="basculerVersVideo()" style="background:rgba(255,255,255,.2);width:60px;height:60px;border-radius:50%;border:none;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><i class="fas fa-video"></i></button>
+          <span style="color:rgba(255,255,255,.8);font-size:11px;font-weight:600;">Vidéo</span>
+        </div>
+      </div>
+      <!-- Raccrocher -->
+      <div style="display:flex;justify-content:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <button class="call-btn hangup" onclick="raccrocherAppel()" style="width:72px;height:72px;border-radius:50%;background:#E24B4A;border:none;color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(226,75,74,.5);"><i class="fas fa-phone-slash"></i></button>
+          <span style="color:rgba(255,255,255,.8);font-size:11px;font-weight:600;">Raccrocher</span>
+        </div>
+      </div>
+    </div>
   </div>
+  
+  <!-- Top bar appel vidéo -->
+  <div class="call-top" id="callVideoTop">
+    <div class="call-av" id="callRemoteAv"></div>
+    <div>
+      <div class="call-name" id="callRemoteName">Appel...</div>
+      <div style="color:rgba(255,255,255,.6);font-size:12px;margin-top:2px" id="callStatus2"></div>
+    </div>
+    <div style="background:rgba(255,255,255,.15);color:#fff;border-radius:50px;padding:4px 10px;font-size:11px;font-weight:600" id="callTypeBadge">📹 Vidéo</div>
+  </div>
+  
+  <!-- Contrôles appel vidéo -->
+  <div class="call-controls" id="callVideoControls">
+    <button class="call-btn mute" id="callMuteBtn2" onclick="toggleCallMute()"><i class="fas fa-microphone"></i></button>
+    <button class="call-btn speaker" id="callSpeakerBtn2" onclick="toggleCallSpeaker()"><i class="fas fa-volume-up"></i></button>
+    <button class="call-btn hangup" onclick="raccrocherAppel()"><i class="fas fa-phone-slash"></i></button>
+    <button class="call-btn cam" id="callCamBtn" onclick="toggleCallCam()"><i class="fas fa-video"></i></button>
+    <button class="call-btn" style="background:rgba(255,255,255,.15);color:#fff" onclick="flipCamera()"><i class="fas fa-sync"></i></button>
+  </div>
+  
+  <!-- Appel entrant -->
+  <div class="call-incoming-overlay" id="callIncomingOverlay" style="display:none">
+    <div class="call-incoming-av" id="callIncomingAv"></div>
+    <div style="color:#fff;font-size:22px;font-weight:800" id="callIncomingName">Appelant</div>
+    <div style="color:rgba(255,255,255,.6);font-size:14px" id="callIncomingType">Appel entrant...</div>
+    <div style="display:flex;gap:40px;margin-top:10px">
+      <button class="call-btn-reject" onclick="refuserAppel()"><i class="fas fa-phone-slash"></i></button>
+      <button class="call-btn-answer" onclick="accepterAppel()"><i class="fas fa-phone"></i></button>
+    </div>
+  </div>
+</div>
   <div class="call-top">
     <div class="call-av" id="callRemoteAv"></div>
     <div><div class="call-name" id="callRemoteName">Appel...</div><div class="call-status" id="callStatus">Connexion...</div></div>
@@ -1062,7 +1130,33 @@ input,textarea,select{font-family:var(--font);}
 <!-- AKIT COIN -->
 <div class="ov" id="ovCoin" onclick="closeSiDehors(event,'ovCoin')"><div class="modal" style="max-width:420px"><div class="m-head" style="padding:0;border:none;flex-shrink:0"><div class="coin-modal-head" style="width:100%;border-radius:16px 16px 0 0"><div class="coin-modal-logo"><i class="fas fa-bolt"></i> AKIT COIN</div><div class="coin-modal-amount">A <span id="coinAmount">0</span></div><div class="coin-modal-fcfa">1 Coin = 1 FCFA</div></div></div><div class="m-body"><div class="coin-action-btns"><button class="coin-action-btn send" onclick="mmEnvoyer('coin')"><i class="fas fa-paper-plane"></i> Envoyer</button><button class="coin-action-btn recv" onclick="mmRecevoir('coin')"><i class="fas fa-check"></i> Recharger</button></div><div style="font-size:12px;font-weight:600;color:var(--texte2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Historique</div><div id="coinHistEl"><p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p></div></div><div style="padding:12px 14px;border-top:.5px solid var(--gris2)"><button onclick="ferm('ovCoin')" style="width:100%;background:var(--gris);border:none;border-radius:9px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">Fermer</button></div></div></div>
 <!-- PARAMETRES -->
-<div class="ov" id="ovParam" onclick="closeSiDehors(event,'ovParam')"><div class="modal"><div class="m-head"><h2><i class="fa-solid fa-gear" style="color:var(--bleu);margin-right:7px"></i>Paramètres</h2><button class="m-close" onclick="ferm('ovParam')"><i class="fas fa-times"></i></button></div><div class="m-body"><div class="ps"><h4>Modifier mon profil</h4><input class="p-inp" id="pp" placeholder="Prénom"/><input class="p-inp" id="pn" placeholder="Nom"/><input class="p-inp" id="pe" placeholder="Email" type="email"/><input class="p-inp" id="pt" placeholder="Téléphone"/><input class="p-inp" id="pbio" placeholder="Bio"/><button class="btn-sv" onclick="saveProfil()">✅ Sauvegarder</button></div><div class="ps"><h4>Apparence</h4><div class="br-row"><i class="fa-solid fa-sun" style="color:var(--texte2)"></i><input type="range" class="br-sl" id="brSlider" min="40" max="100" value="100" oninput="setBright(this.value)"/><span id="brVal">100%</span></div><div class="p-row"><span class="p-lbl">🌙 Mode sombre</span><div class="tgl" id="tglDark" onclick="toggleDark(this)"></div></div></div><div class="ps"><h4>Monétisation</h4><button class="btn-sv grn" onclick="ouvrirCreateur()"><i class="fas fa-star"></i> Mode Créateur</button></div><div class="ps"><h4>Compte</h4><button class="btn-sv red" onclick="effacerDonnees()">🗑️ Effacer mes données</button><button class="btn-sv red" onclick="seDeco()">🚪 Se déconnecter</button></div></div></div></div>
+<div class="ov" id="ovParam" onclick="closeSiDehors(event,'ovParam')"><div class="modal"><div class="m-head"><h2><i class="fa-solid fa-gear" style="color:var(--bleu);margin-right:7px"></i>Paramètres</h2><button class="m-close" onclick="ferm('ovParam')"><i class="fas fa-times"></i></button></div><div class="m-body"><div class="ps"><h4>Modifier mon profil</h4><input class="p-inp" id="pp" placeholder="Prénom"/><input class="p-inp" id="pn" placeholder="Nom"/><input class="p-inp" id="pe" placeholder="Email" type="email"/><input class="p-inp" id="pt" placeholder="Téléphone"/><input class="p-inp" id="pbio" placeholder="Bio"/><button class="btn-sv" onclick="saveProfil()">✅ Sauvegarder</button></div>
+  <div class="ps">
+  <h4>🌍 Langue</h4>
+  <select class="p-inp" id="langueSelect" onchange="changerLangue(this.value)" style="cursor:pointer">
+    <option value="fr">🇫🇷 Français</option>
+    <option value="en">🇬🇧 English</option>
+    <option value="ln">🌍 Lingala</option>
+    <option value="ha">🌍 Haoussa</option>
+    <option value="ff">🌍 Fulfulde / Peul</option>
+    <option value="yo">🌍 Yoruba</option>
+    <option value="ig">🌍 Igbo</option>
+    <option value="sw">🌍 Swahili</option>
+    <option value="am">🌍 Amharique</option>
+    <option value="zu">🌍 Zulu</option>
+    <option value="xh">🌍 Xhosa</option>
+    <option value="sn">🌍 Shona</option>
+    <option value="wo">🌍 Wolof</option>
+    <option value="bm">🌍 Bambara</option>
+    <option value="tw">🌍 Twi / Akan</option>
+    <option value="ar">🇸🇦 Arabe</option>
+    <option value="pt">🇧🇷 Português</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="zh">🇨🇳 中文 (Chinois)</option>
+    <option value="de">🇩🇪 Deutsch</option>
+  </select>
+</div>
+  <div class="ps"><h4>Apparence</h4><div class="br-row"><i class="fa-solid fa-sun" style="color:var(--texte2)"></i><input type="range" class="br-sl" id="brSlider" min="40" max="100" value="100" oninput="setBright(this.value)"/><span id="brVal">100%</span></div><div class="p-row"><span class="p-lbl">🌙 Mode sombre</span><div class="tgl" id="tglDark" onclick="toggleDark(this)"></div></div></div><div class="ps"><h4>Monétisation</h4><button class="btn-sv grn" onclick="ouvrirCreateur()"><i class="fas fa-star"></i> Mode Créateur</button></div><div class="ps"><h4>Compte</h4><button class="btn-sv red" onclick="effacerDonnees()">🗑️ Effacer mes données</button><button class="btn-sv red" onclick="seDeco()">🚪 Se déconnecter</button></div></div></div></div>
 <!-- PROFIL -->
 <div class="ov" id="ovProfil" onclick="closeSiDehors(event,'ovProfil')"><div class="modal" style="max-width:520px"><div class="m-head"><h2><i class="fa-solid fa-circle-user" style="color:var(--bleu);margin-right:7px"></i>Mon Profil</h2><button class="m-close" onclick="ferm('ovProfil')"><i class="fas fa-times"></i></button></div><div class="m-body" style="padding:0;background:var(--dark)"><div class="confirm-bar" id="cfBar"><span>Sauvegarder les modifications ?</span><div style="display:flex;gap:7px"><button class="btn-cf" onclick="confirmChgs()">✅ Oui</button><button class="btn-cl" onclick="cancelChgs()">✕ Non</button></div></div><div class="new-prf-cover" id="prfCover"><img id="prfCoverImg" src="" alt="" style="display:none"/><button class="new-prf-cover-btn" onclick="document.getElementById('inpCover').click()">📷 Couverture</button></div><div class="new-prf-head"><div class="new-prf-av-wrap"><div class="new-prf-av" onclick="document.getElementById('inpAv').click()"><div id="prfAvEl" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700"></div></div><button class="new-prf-edit-btn" onclick="openParam();ferm('ovProfil')"><i class="fa-solid fa-pen-to-square" style="font-size:12px"></i> Modifier</button></div><div class="new-prf-name" id="prfNom">... <span class="new-prf-check">✓</span></div><div id="prfStatutDisplay" style="margin-top:4px"></div><div class="new-prf-location" id="prfLocation">Cameroun 🌍</div><div id="prfEmail" style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px"></div><div class="new-prf-bio" id="prfBio">Membre AKIT-CHAT</div><div class="new-prf-stats"><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psPosts">0</div><div class="new-prf-stat-lb">Posts</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAmis">0</div><div class="new-prf-stat-lb">Amis</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psAbonnes">0</div><div class="new-prf-stat-lb">Abonnés</div></div><div class="new-prf-stat"><div class="new-prf-stat-nb" id="psVids">0</div><div class="new-prf-stat-lb">Vidéos</div></div></div><div class="video-stats-card" id="prfVideoStats" style="display:none"><div class="video-stats-title"><i class="fas fa-chart-bar"></i> Mes stats vidéo</div><div class="video-stats-grid"><div class="video-stat-item"><div class="video-stat-nb" id="prfVidViews">0</div><div class="video-stat-lb">Vues</div></div><div class="video-stat-item"><div class="video-stat-nb" id="prfVidLikes">0</div><div class="video-stat-lb">Likes</div></div><div class="video-stat-item"><div class="video-stat-nb" id="prfVidShares">0</div><div class="video-stat-lb">Partages</div></div></div><div class="video-coins-earned"><i class="fas fa-bolt" style="color:var(--green);font-size:18px"></i><div><div class="video-coins-nb">A <span id="prfVidCoins">0</span></div><div style="font-size:10px;color:rgba(255,255,255,.5)">Coins gagnés via vidéos</div></div></div></div><div class="new-prf-coin"><i class="fas fa-bolt" style="color:var(--yellow);font-size:18px"></i><div><div style="font-size:16px;font-weight:800;color:var(--yellow)">A <span id="prfCoinNb">0</span></div><div style="font-size:11px;color:rgba(255,255,255,.4)">AKIT Coin</div></div><button onclick="openCoin();ferm('ovProfil')" style="margin-left:auto;background:rgba(255,215,0,.15);border:.5px solid rgba(255,215,0,.3);color:var(--yellow);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font)">Gérer</button></div><div class="new-prf-tabs"><div class="new-prf-tab act" onclick="switchPrfTab('posts',this)">Publications</div><div class="new-prf-tab" onclick="switchPrfTab('photos',this)">Photos</div><div class="new-prf-tab" onclick="switchPrfTab('videos',this)">Vidéos</div><div class="new-prf-tab" onclick="switchPrfTab('amis',this)">Amis</div><div class="new-prf-tab" onclick="switchPrfTab('apropos',this)">À propos</div></div></div><div id="prfTabContent"></div></div></div></div>
 <!-- PROFIL AUTRE USER -->
@@ -1364,43 +1458,155 @@ window.lancerAppel=async(type)=>{
   const u=await getUser(uid);
   currentCallUID=uid;currentCallType=type;
   try{
-    const constraints=type==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
- callStream=await navigator.mediaDevices.getUserMedia(constraints);
-    if(callStream.getAudioTracks().length===0){
-      alert('⚠️ Aucun microphone détecté. Vérifiez les permissions du navigateur.');
-    }
-    callStream.getAudioTracks().forEach(t=>t.enabled=true);
-    callPC=new RTCPeerConnection(ICE_SERVERS);
-    callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
-    document.getElementById('callLocalVideo').srcObject=callStream;
-    callPC.ontrack=e=>{const rv=document.getElementById('callRemoteVideo');if(e.streams&&e.streams[0]){rv.srcObject=e.streams[0];rv.muted=false;rv.play().catch(()=>{});}};
-    callPC.onicecandidate=async e=>{if(e.candidate&&currentCallId){await addDoc(collection(db,'videoCalls',currentCallId,'callerCandidates'),e.candidate.toJSON());}};
-    const offer=await callPC.createOffer();
+    // Contraintes selon type d'appel
+    const constraints=type==='video'
+      ?{video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:{echoCancellation:true,noiseSuppression:true,sampleRate:44100}}
+      :{audio:{echoCancellation:true,noiseSuppression:true,sampleRate:44100}};
+    
+    callStream=await navigator.mediaDevices.getUserMedia(constraints);
+    
+    // Configuration ICE améliorée
+    const iceConfig={
+      iceServers:[
+        {urls:'stun:stun.l.google.com:19302'},
+        {urls:'stun:stun1.l.google.com:19302'},
+        {urls:'stun:stun2.l.google.com:19302'},
+        {urls:'turn:a.relay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+        {urls:'turn:a.relay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+        {urls:'turn:a.relay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
+      ],
+      iceCandidatePoolSize:10,
+      bundlePolicy:'max-bundle',
+      rtcpMuxPolicy:'require'
+    };
+    
+    callPC=new RTCPeerConnection(iceConfig);
+    
+    // Ajouter TOUS les tracks du stream local
+    callStream.getTracks().forEach(track=>{
+      console.log('Ajout track local:',track.kind,track.enabled);
+      callPC.addTrack(track,callStream);
+    });
+    
+    // Afficher vidéo locale
+    const localVid=document.getElementById('callLocalVideo');
+    localVid.srcObject=callStream;
+    localVid.muted=true;
+    await localVid.play().catch(()=>{});
+    
+    // Recevoir les tracks distants
+    callPC.ontrack=e=>{
+      console.log('Track reçu:',e.track.kind);
+      if(e.streams&&e.streams[0]){
+        const rv=document.getElementById('callRemoteVideo');
+        rv.srcObject=e.streams[0];
+        rv.muted=false;
+        rv.volume=1.0;
+        rv.play().catch(err=>console.log('Play erreur:',err));
+        // Forcer audio
+        if(type==='audio'){
+          document.getElementById('callNoVideo').style.display='flex';
+          const noVidAv=document.getElementById('callNoVideoAv');
+          noVidAv.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:( u.prenom?.[0]||'?').toUpperCase();
+          document.getElementById('callNoVideoName').textContent=`${u.prenom||''} ${u.nom||''}`;
+        }
+      }
+    };
+    
+    // Envoyer ICE candidates au fur et à mesure
+    callPC.onicecandidate=async e=>{
+      if(e.candidate&&currentCallId){
+        console.log('ICE candidate envoyé');
+        await addDoc(collection(db,'videoCalls',currentCallId,'callerCandidates'),e.candidate.toJSON());
+      }
+    };
+    
+    // Log état connexion
+    callPC.onconnectionstatechange=()=>{
+      console.log('État connexion:',callPC.connectionState);
+      const st=document.getElementById('callStatus');
+      if(callPC.connectionState==='connected'){
+        if(st)st.textContent=type==='video'?'📹 En communication':'🎙 En communication';
+        demarrerTimerAppel();
+      }else if(callPC.connectionState==='failed'){
+        if(st)st.textContent='❌ Connexion échouée';
+      }
+    };
+    
+    callPC.oniceconnectionstatechange=()=>{
+      console.log('ICE state:',callPC.iceConnectionState);
+    };
+    
+    // Créer l'offre SDP
+    const offerOptions={offerToReceiveAudio:true,offerToReceiveVideo:type==='video'};
+    const offer=await callPC.createOffer(offerOptions);
     await callPC.setLocalDescription(offer);
-    const callRef=await addDoc(collection(db,'videoCalls'),{callerId:UC.id,calleeId:uid,callerNom:`${UC.prenom} ${UC.nom}`,callerAvatar:UC.avatarUrl||'',type,statut:'en_attente',offer:{type:offer.type,sdp:offer.sdp},answer:null,date:serverTimestamp()});
+    
+    // Sauvegarder l'appel dans Firebase
+    const callRef=await addDoc(collection(db,'videoCalls'),{
+      callerId:UC.id,
+      calleeId:uid,
+      callerNom:`${UC.prenom} ${UC.nom}`,
+      callerAvatar:UC.avatarUrl||'',
+      type,
+      statut:'en_attente',
+      offer:{type:offer.type,sdp:offer.sdp},
+      answer:null,
+      date:serverTimestamp()
+    });
     currentCallId=callRef.id;
+    
+    // Afficher UI appel
     document.getElementById('ovCall').style.display='flex';
-    document.getElementById('callRemoteName').textContent=`${u.prenom||""} ${u.nom||""}`;
-    document.getElementById('callStatus').textContent='Appel en cours...';
+    
+    if(type==='audio'){
+      // UI audio différente
+      document.getElementById('callLocalVideo').style.display='none';
+      document.getElementById('callRemoteVideo').style.display='none';
+      document.getElementById('callNoVideo').style.display='flex';
+      const av=document.getElementById('callNoVideoAv');
+      av.style.cssText='width:90px;height:90px;border-radius:50%;background:var(--bleu);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px;font-weight:700;border:3px solid rgba(255,255,255,.3)';
+      av.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:( u.prenom?.[0]||'?').toUpperCase();
+      document.getElementById('callNoVideoName').textContent=`${u.prenom||''} ${u.nom||''}`;
+      document.getElementById('callNoVideoName').style.cssText='color:#fff;font-size:20px;font-weight:800;margin-top:8px';
+    }else{
+      document.getElementById('callLocalVideo').style.display='block';
+      document.getElementById('callRemoteVideo').style.display='block';
+      document.getElementById('callNoVideo').style.display='none';
+    }
+    
+    document.getElementById('callRemoteName').textContent=`${u.prenom||''} ${u.nom||''}`;
+    document.getElementById('callStatus').textContent='⏳ Appel en cours...';
     document.getElementById('callTypeBadge').textContent=type==='video'?'📹 Vidéo':'🎙 Audio';
     document.getElementById('callIncomingOverlay').style.display='none';
-    if(type==='audio'){document.getElementById('callNoVideo').style.display='flex';document.getElementById('callRemoteVideo').style.display='none';}
-    else{document.getElementById('callNoVideo').style.display='none';document.getElementById('callRemoteVideo').style.display='block';}
+    
     addNotif(uid,'message',`📞 ${UC.prenom} vous appelle en ${type==='video'?'vidéo':'audio'} !`);
+    
+    // Écouter la réponse
     const unsub=onSnapshot(doc(db,'videoCalls',currentCallId),async snap=>{
       if(!snap.exists())return;
       const data=snap.data();
       if(data.statut==='refuse'||data.statut==='termine'){unsub();raccrocherAppel();return;}
       if(data.answer&&callPC&&callPC.signalingState==='have-local-offer'){
-        await callPC.setRemoteDescription(new RTCSessionDescription(data.answer));
-        document.getElementById('callStatus').textContent=type==='video'?'📹 En communication':'🎙 En communication';
-        demarrerTimerAppel();
+        try{
+          await callPC.setRemoteDescription(new RTCSessionDescription(data.answer));
+          console.log('Answer défini, connexion établie');
+        }catch(err){console.log('Erreur setRemoteDescription:',err);}
       }
     });
-    onSnapshot(collection(db,'videoCalls',currentCallId,'calleeCandidates'),snap=>{snap.docChanges().forEach(change=>{if(change.type==='added')callPC?.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{});});});
-  }catch(e){alert('❌ Impossible d\'accéder à la caméra/micro : '+e.message);}
+    
+    // Écouter ICE candidates du destinataire
+    onSnapshot(collection(db,'videoCalls',currentCallId,'calleeCandidates'),snap=>{
+      snap.docChanges().forEach(change=>{
+        if(change.type==='added'){
+          const candidate=new RTCIceCandidate(change.doc.data());
+          callPC?.addIceCandidate(candidate).catch(err=>console.log('ICE erreur:',err));
+        }
+      });
+    });
+    
+  }catch(e){alert('❌ Impossible d\'accéder à la caméra/micro : '+e.message);console.error(e);}
 };
-
 function stopRingtone(){if(_ringtoneInterval){clearInterval(_ringtoneInterval);_ringtoneInterval=null;}}
 function startRingtone(){stopRingtone();jouerSon(440);_ringtoneInterval=setInterval(()=>jouerSon(440),1200);}
 
@@ -1420,25 +1626,113 @@ window.accepterAppel=async()=>{
   if(!currentCallId||_acceptingCall)return;
   _acceptingCall=true;
   try{
-    const constraints=currentCallType==='video'?{video:{facingMode:'user'},audio:true}:{audio:true,video:false};
+    const constraints=currentCallType==='video'
+      ?{video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:{echoCancellation:true,noiseSuppression:true}}
+      :{audio:{echoCancellation:true,noiseSuppression:true}};
+    
     callStream=await navigator.mediaDevices.getUserMedia(constraints);
-    callPC=new RTCPeerConnection(ICE_SERVERS);
-    callStream.getTracks().forEach(track=>callPC.addTrack(track,callStream));
-    document.getElementById('callLocalVideo').srcObject=callStream;
-    callPC.ontrack=e=>{const rv=document.getElementById('callRemoteVideo');if(e.streams&&e.streams[0]){rv.srcObject=e.streams[0];rv.muted=false;rv.play().catch(()=>{});}};
-    callPC.onicecandidate=async e=>{if(e.candidate)await addDoc(collection(db,'videoCalls',currentCallId,'calleeCandidates'),e.candidate.toJSON());};
+    
+    const iceConfig={
+      iceServers:[
+        {urls:'stun:stun.l.google.com:19302'},
+        {urls:'stun:stun1.l.google.com:19302'},
+        {urls:'stun:stun2.l.google.com:19302'},
+        {urls:'turn:a.relay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+        {urls:'turn:a.relay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+        {urls:'turn:a.relay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
+      ],
+      iceCandidatePoolSize:10,
+      bundlePolicy:'max-bundle',
+      rtcpMuxPolicy:'require'
+    };
+    
+    callPC=new RTCPeerConnection(iceConfig);
+    
+    // Ajouter tracks locaux
+    callStream.getTracks().forEach(track=>{
+      console.log('Track local callee:',track.kind);
+      callPC.addTrack(track,callStream);
+    });
+    
+    // Vidéo locale
+    const localVid=document.getElementById('callLocalVideo');
+    localVid.srcObject=callStream;
+    localVid.muted=true;
+    await localVid.play().catch(()=>{});
+    
+    // Recevoir tracks distants
+    callPC.ontrack=e=>{
+      console.log('Track reçu callee:',e.track.kind);
+      if(e.streams&&e.streams[0]){
+        const rv=document.getElementById('callRemoteVideo');
+        rv.srcObject=e.streams[0];
+        rv.muted=false;
+        rv.volume=1.0;
+        rv.play().catch(err=>console.log('Play err:',err));
+      }
+    };
+    
+    callPC.onicecandidate=async e=>{
+      if(e.candidate&&currentCallId){
+        console.log('ICE candidate callee envoyé');
+        await addDoc(collection(db,'videoCalls',currentCallId,'calleeCandidates'),e.candidate.toJSON());
+      }
+    };
+    
+    callPC.onconnectionstatechange=()=>{
+      console.log('Callee état:',callPC.connectionState);
+      if(callPC.connectionState==='connected'){
+        const st=document.getElementById('callStatus');
+        if(st)st.textContent=currentCallType==='video'?'📹 En communication':'🎙 En communication';
+        demarrerTimerAppel();
+      }
+    };
+    
+    // Récupérer l'offre et créer la réponse
     const callSnap=await getDoc(doc(db,'videoCalls',currentCallId));
-    await callPC.setRemoteDescription(new RTCSessionDescription(callSnap.data().offer));
+    if(!callSnap.exists()){_acceptingCall=false;return;}
+    
+    const offerData=callSnap.data().offer;
+    await callPC.setRemoteDescription(new RTCSessionDescription(offerData));
+    
     const answer=await callPC.createAnswer();
     await callPC.setLocalDescription(answer);
-    await updateDoc(doc(db,'videoCalls',currentCallId),{answer:{type:answer.type,sdp:answer.sdp},statut:'accepte'});
-    onSnapshot(collection(db,'videoCalls',currentCallId,'callerCandidates'),snap=>{snap.docChanges().forEach(change=>{if(change.type==='added')callPC?.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(()=>{});});});
+    
+    // Sauvegarder la réponse
+    await updateDoc(doc(db,'videoCalls',currentCallId),{
+      answer:{type:answer.type,sdp:answer.sdp},
+      statut:'accepte'
+    });
+    
+    // Écouter ICE candidates de l'appelant
+    onSnapshot(collection(db,'videoCalls',currentCallId,'callerCandidates'),snap=>{
+      snap.docChanges().forEach(change=>{
+        if(change.type==='added'){
+          const candidate=new RTCIceCandidate(change.doc.data());
+          callPC?.addIceCandidate(candidate).catch(err=>console.log('ICE callee err:',err));
+        }
+      });
+    });
+    
+    // UI selon type
     document.getElementById('callIncomingOverlay').style.display='none';
-    document.getElementById('callStatus').textContent=currentCallType==='video'?'📹 En communication':'🎙 En communication';
-    if(currentCallType==='audio'){document.getElementById('callNoVideo').style.display='flex';document.getElementById('callRemoteVideo').style.display='none';}
-    else{document.getElementById('callNoVideo').style.display='none';document.getElementById('callRemoteVideo').style.display='block';}
-    demarrerTimerAppel();
-  }catch(e){_acceptingCall=false;alert('❌ Erreur : '+e.message);}
+    document.getElementById('callStatus').textContent='⏳ Connexion...';
+    
+    if(currentCallType==='audio'){
+      document.getElementById('callLocalVideo').style.display='none';
+      document.getElementById('callRemoteVideo').style.display='none';
+      document.getElementById('callNoVideo').style.display='flex';
+      const u=await getUser(currentCallUID);
+      const av=document.getElementById('callNoVideoAv');
+      av.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`:( u.prenom?.[0]||'?').toUpperCase();
+      document.getElementById('callNoVideoName').textContent=`${u.prenom||''} ${u.nom||''}`;
+    }else{
+      document.getElementById('callLocalVideo').style.display='block';
+      document.getElementById('callRemoteVideo').style.display='block';
+      document.getElementById('callNoVideo').style.display='none';
+    }
+    
+  }catch(e){_acceptingCall=false;alert('❌ Erreur : '+e.message);console.error(e);}
 };
 
 window.refuserAppel=async()=>{stopRingtone();if(currentCallId)await updateDoc(doc(db,'videoCalls',currentCallId),{statut:'refuse'}).catch(()=>{});document.getElementById('ovCall').style.display='none';currentCallId=null;};
@@ -1460,7 +1754,21 @@ window.toggleCallMute=()=>{callMuted=!callMuted;callStream?.getAudioTracks().for
 window.toggleCallCam=()=>{callCamOff=!callCamOff;callStream?.getVideoTracks().forEach(t=>t.enabled=!callCamOff);const btn=document.getElementById('callCamBtn');if(btn){btn.style.background=callCamOff?'rgba(255,59,48,.3)':'rgba(255,255,255,.15)';btn.innerHTML=`<i class="fas fa-video${callCamOff?'-slash':''}"></i>`;}document.getElementById('callNoVideo').style.display=callCamOff?'flex':'none';document.getElementById('callRemoteVideo').style.display=callCamOff?'none':'block';};
 window.toggleCallSpeaker=()=>{callSpeakerOn=!callSpeakerOn;const vid=document.getElementById('callRemoteVideo');if(vid)vid.muted=!callSpeakerOn;const btn=document.getElementById('callSpeakerBtn');if(btn){btn.style.background=callSpeakerOn?'rgba(0,255,136,.2)':'rgba(255,255,255,.15)';btn.style.color=callSpeakerOn?'var(--green)':'#fff';}};
 window.flipCamera=async()=>{if(!callStream)return;const vt=callStream.getVideoTracks()[0];if(!vt)return;const cf=vt.getSettings().facingMode||'user';const nf=cf==='user'?'environment':'user';try{const ns=await navigator.mediaDevices.getUserMedia({video:{facingMode:nf},audio:true});const nvt=ns.getVideoTracks()[0];document.getElementById('callLocalVideo').srcObject=ns;const sender=callPC?.getSenders().find(s=>s.track?.kind==='video');if(sender)sender.replaceTrack(nvt);callStream.getVideoTracks().forEach(t=>t.stop());callStream=ns;}catch{}};
-
+window.basculerVersVideo=async()=>{
+  if(!callStream)return;
+  try{
+    const vs=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:true});
+    vs.getTracks().forEach(t=>{
+      callPC?.getSenders().forEach(s=>{if(s.track?.kind===t.kind)s.replaceTrack(t);});
+    });
+    callStream=vs;
+    document.getElementById('callLocalVideo').srcObject=vs;
+    currentCallType='video';
+    document.getElementById('callNoVideo').style.display='none';
+    document.getElementById('callLocalVideo').style.display='block';
+    document.getElementById('callRemoteVideo').style.display='block';
+  }catch(e){alert('❌ Caméra inaccessible');}
+};
 // ===== STATUT =====
 window.ouvrirStatut=()=>{selectedStatut=null;document.getElementById('btnPublierStatut').disabled=true;document.getElementById('statutTexteCustom').value='';document.querySelectorAll('.statut-emoji-btn').forEach(b=>{b.style.borderColor='var(--gris2)';b.style.background='var(--gris)';});ouv('ovStatut');};
 window.selStatutEmoji=(el,val)=>{selectedStatut=val;document.querySelectorAll('.statut-emoji-btn').forEach(b=>{b.style.borderColor='var(--gris2)';b.style.background='var(--gris)';});el.style.borderColor='var(--bleu)';el.style.background='var(--bleu3)';document.getElementById('btnPublierStatut').disabled=false;};
@@ -2040,7 +2348,63 @@ window.openParam=()=>{document.getElementById("pp").value=UC.prenom||"";document
 window.saveProfil=async()=>{UC.prenom=document.getElementById("pp").value.trim()||UC.prenom;UC.nom=document.getElementById("pn").value.trim()||UC.nom;UC.email=document.getElementById("pe").value.trim()||UC.email;UC.telephone=document.getElementById("pt").value.trim()||UC.telephone;UC.bio=document.getElementById("pbio").value.trim();invalidateUserCache(UC.id);await updateDoc(doc(db,"users",UC.id),{prenom:UC.prenom,nom:UC.nom,email:UC.email,telephone:UC.telephone,bio:UC.bio});ferm("ovParam");initUI();alert("✅ Profil mis à jour !");};
 window.setBright=v=>{document.body.style.filter=`brightness(${v}%)`;document.getElementById("brVal").textContent=v+"%";};
 window.toggleDark=el=>{el.classList.toggle("on");const dark=el.classList.contains("on");document.documentElement.style.setProperty("--gris",dark?"#18191a":"#f4f5f7");document.documentElement.style.setProperty("--blanc",dark?"#1e1f22":"#ffffff");document.documentElement.style.setProperty("--texte",dark?"#e4e6eb":"#1a1d23");document.documentElement.style.setProperty("--gris2",dark?"#2e2f33":"#e8eaed");document.documentElement.style.setProperty("--texte2",dark?"#9ea3ae":"#6b7280");};
-window.effacerDonnees=async()=>{if(!confirm("Supprimer TOUTES vos données ?"))return;const[sp,ss]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"stories"),where("userId","==",UC.id)))]);for(const d of sp.docs)await deleteDoc(doc(db,"posts",d.id));for(const d of ss.docs)await deleteDoc(doc(db,"stories",d.id));await deleteDoc(doc(db,"users",UC.id));await signOut(auth);window.location.replace("index.html");};
+const TRADUCTIONS={
+  fr:{accueil:'Accueil',messages:'Messages',notifications:'Notifications',amis:'Ami(e)s',stories:'Stories & Moments',publier:'Publier',commenter:'Commenter',partager:'Partager',parametre:'Paramètres',profil:'Mon Profil',deconnexion:'Se déconnecter',humeur:'Humeur',videos:'Vidéos',marche:'Marché',plus:'Plus',ecrire:'Quoi de neuf ?',nouveau:'Nouveau',jeux:'Jeux & Défis',classement:'Classement',gagner:'Gagner Coins',vivre:'Live 🔴',sauvegarder:'✅ Sauvegarder',raccrocher:'Raccrocher',micro:'Micro',hautparleur:'HP',langue:'Langue'},
+  en:{accueil:'Home',messages:'Messages',notifications:'Notifications',amis:'Friends',stories:'Stories & Moments',publier:'Post',commenter:'Comment',partager:'Share',parametre:'Settings',profil:'My Profile',deconnexion:'Sign out',humeur:'Mood',videos:'Videos',marche:'Market',plus:'More',ecrire:"What's new?",nouveau:'New',jeux:'Games & Challenges',classement:'Leaderboard',gagner:'Earn Coins',vivre:'Live 🔴',sauvegarder:'✅ Save',raccrocher:'Hang up',micro:'Mute',hautparleur:'Speaker',langue:'Language'},
+  ln:{accueil:'Ndako',messages:'Miminú',notifications:'Bilanga',amis:'Baninga',stories:'Makambu',publier:'Tiya',commenter:'Yeba',partager:'Kabola',parametre:'Mikanda',profil:'Comté na ngai',deconnexion:'Bima',humeur:'Motema',videos:'Bavídéo',marche:'Zando',plus:'Mosusu',ecrire:'Nini ya sika?',nouveau:'Ya sika',jeux:'Mitá',classement:'Lolenge',gagner:'Kozwá Coins',vivre:'Live 🔴',sauvegarder:'✅ Bomba',raccrocher:'Kata',micro:'Loba',hautparleur:'Longi',langue:'Monoko'},
+  ha:{accueil:'Gida',messages:'Sakonni',notifications:'Sanarwa',amis:'Abokái',stories:'Labari',publier:'Wallafa',commenter:'Sharhi',partager:'Raba',parametre:'Saitattuna',profil:'Bayanan na',deconnexion:'Fita',humeur:'Yanayi',videos:'Bidiyo',marche:'Kasuwa',plus:'Ƙari',ecrire:'Mé sabo?',nouveau:'Sabo',jeux:'Wasanni',classement:'Jerin',gagner:'Nemi Coins',vivre:'Live 🔴',sauvegarder:'✅ Ajiye',raccrocher:'Katse',micro:'Murya',hautparleur:'Ƙararrawa',langue:'Harshe'},
+  ff:{accueil:'Galle',messages:'Tindirɗe',notifications:'Binnde',amis:'Yolʼen',stories:'Haala',publier:'Hollir',commenter:'Jaabir',partager:'Ɓeydaa',parametre:'Naatirɗe',profil:'Koohaagu am',deconnexion:'Yah',humeur:'Ɗeriinaare',videos:'Vidiyo',marche:'Luumo',plus:'Seeɗa',ecrire:'Ko fotnoo?',nouveau:'Laawol',jeux:'Fijirde',classement:'Jaagorɗe',gagner:'Heɓ Coins',vivre:'Live 🔴',sauvegarder:'✅ Haɓɓir',raccrocher:'Haɓɓu',micro:'Daande',hautparleur:'Tuuba',langue:'Demngal'},
+  sw:{accueil:'Nyumbani',messages:'Ujumbe',notifications:'Arifa',amis:'Marafiki',stories:'Hadithi',publier:'Chapisha',commenter:'Toa maoni',partager:'Shiriki',parametre:'Mipangilio',profil:'Wasifu wangu',deconnexion:'Toka',humeur:'Hisia',videos:'Video',marche:'Soko',plus:'Zaidi',ecrire:'Nini kipya?',nouveau:'Mpya',jeux:'Michezo',classement:'Orodha',gagner:'Pata Coins',vivre:'Live 🔴',sauvegarder:'✅ Hifadhi',raccrocher:'Kata',micro:'Maikrofoni',hautparleur:'Spika',langue:'Lugha'},
+  yo:{accueil:'Ile',messages:'Ifiranṣẹ',notifications:'Ìkìlọ',amis:'Àwọn ọrẹ',stories:'Itan',publier:'Tẹ jade',commenter:'Ṣe asọye',partager:'Pin',parametre:'Eto',profil:'Profaili mi',deconnexion:'Jade',humeur:'Ikunsinu',videos:'Fidio',marche:'Oja',plus:'Diẹ sii',ecrire:'Kí nì tuntun?',nouveau:'Tuntun',jeux:'Ere idaraya',classement:'Ipo',gagner:'Gba Coins',vivre:'Live 🔴',sauvegarder:'✅ Fipamọ',raccrocher:'Yọkuro',micro:'Makirofoonu',hautparleur:'Agbohunsoke',langue:'Ede'},
+  zh:{accueil:'首页',messages:'消息',notifications:'通知',amis:'好友',stories:'故事',publier:'发布',commenter:'评论',partager:'分享',parametre:'设置',profil:'我的主页',deconnexion:'退出',humeur:'心情',videos:'视频',marche:'市场',plus:'更多',ecrire:'最近怎样？',nouveau:'新',jeux:'游戏与挑战',classement:'排行榜',gagner:'赚取金币',vivre:'直播 🔴',sauvegarder:'✅ 保存',raccrocher:'挂断',micro:'静音',hautparleur:'扬声器',langue:'语言'},
+  ar:{accueil:'الرئيسية',messages:'الرسائل',notifications:'الإشعارات',amis:'الأصدقاء',stories:'القصص',publier:'نشر',commenter:'تعليق',partager:'مشاركة',parametre:'الإعدادات',profil:'ملفي',deconnexion:'خروج',humeur:'المزاج',videos:'الفيديوهات',marche:'السوق',plus:'المزيد',ecrire:'ما الجديد؟',nouveau:'جديد',jeux:'الألعاب',classement:'الترتيب',gagner:'اكسب عملات',vivre:'بث مباشر 🔴',sauvegarder:'✅ حفظ',raccrocher:'إنهاء',micro:'كتم',hautparleur:'مكبر الصوت',langue:'اللغة'}
+};
+
+window.changerLangue=async(code)=>{
+  if(!TRADUCTIONS[code])code='fr';
+  const t=TRADUCTIONS[code];
+  localStorage.setItem('akitLangue',code);
+  
+  // Direction texte pour arabe
+  document.body.style.direction=code==='ar'?'rtl':'ltr';
+  
+  // Mettre à jour les éléments de navigation
+  const navLabels=document.querySelectorAll('.bn-btn span');
+  const navKeys=['accueil','videos','plus','marche','amis'];
+  navLabels.forEach((el,i)=>{if(navKeys[i]&&t[navKeys[i]])el.textContent=t[navKeys[i]];});
+  
+  // Sidebar
+  const sbItems=document.querySelectorAll('.sb-item-lbl');
+  const sbKeys=['accueil','messages','notifications','amis'];
+  sbItems.forEach((el,i)=>{if(sbKeys[i]&&t[sbKeys[i]])el.textContent=t[sbKeys[i]];});
+  
+  // Placeholder compositeur
+  const cinput=document.querySelector('.c-input');
+  if(cinput&&t.ecrire)cinput.placeholder=t.ecrire;
+  
+  // Bouton sauvegarder
+  const btnSv=document.querySelector('.btn-sv:not(.red):not(.grn)');
+  if(btnSv&&t.sauvegarder)btnSv.textContent=t.sauvegarder;
+  
+  // Appel audio
+  document.querySelectorAll('.call-btn.hangup+span,[data-lang="raccrocher"]').forEach(el=>{if(t.raccrocher)el.textContent=t.raccrocher;});
+  
+  // Sauvegarder dans Firebase
+  if(UC)await updateDoc(doc(db,'users',UC.id),{langue:code});
+  
+  alert(`✅ Langue changée : ${document.getElementById('langueSelect').options[document.getElementById('langueSelect').selectedIndex].text}`);
+};
+
+// Charger la langue sauvegardée au démarrage
+(function(){
+  const saved=localStorage.getItem('akitLangue');
+  if(saved){
+    const sel=document.getElementById('langueSelect');
+    if(sel)sel.value=saved;
+    setTimeout(()=>changerLangue(saved),1000);
+  }
+})();
+  window.effacerDonnees=async()=>{if(!confirm("Supprimer TOUTES vos données ?"))return;const[sp,ss]=await Promise.all([getDocs(query(collection(db,"posts"),where("userId","==",UC.id))),getDocs(query(collection(db,"stories"),where("userId","==",UC.id)))]);for(const d of sp.docs)await deleteDoc(doc(db,"posts",d.id));for(const d of ss.docs)await deleteDoc(doc(db,"stories",d.id));await deleteDoc(doc(db,"users",UC.id));await signOut(auth);window.location.replace("index.html");};
 
 // ===== COIN =====
 window.openCoin=()=>{updateCoinDisplay();const el=document.getElementById("coinHistEl");const hist=mmState.coin.hist||[];el.innerHTML=hist.length===0?`<p style="color:var(--texte2);font-size:12px;text-align:center;padding:12px">Aucune transaction</p>`:hist.slice(-15).reverse().map(h=>`<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:var(--gris);margin-bottom:6px"><div style="width:36px;height:36px;border-radius:50%;background:${h.type==='out'?'#ffebe9':'#e8f5e9'};display:flex;align-items:center;justify-content:center;font-size:16px">${h.type==='out'?'💸':'💰'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${h.label}</div><div style="font-size:11px;color:var(--texte2)">${h.date||""}</div></div><div style="font-size:14px;font-weight:700;color:${h.type==='out'?'#E24B4A':'#1D9E75'}">${h.type==='out'?'-':'+'}${h.amount?.toLocaleString()||0} A</div></div>`).join("");ouv("ovCoin");};
